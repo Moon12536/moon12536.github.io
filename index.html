@@ -1,1166 +1,2608 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>بيان | بوت ديسكورد</title>
-    <meta
-        name="description"
-        content="بيان - بوت ديسكورد لإدارة السيرفرات والتذاكر والحماية والمسابقات."
-    >
-
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family:
-                Arial,
-                "Segoe UI",
-                Tahoma,
-                sans-serif;
-            background:
-                radial-gradient(
-                    circle at 15% 15%,
-                    rgba(88, 101, 242, 0.20),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 25%,
-                    rgba(114, 137, 218, 0.14),
-                    transparent 28%
-                ),
-                radial-gradient(
-                    circle at 50% 100%,
-                    rgba(88, 101, 242, 0.12),
-                    transparent 35%
-                ),
-                #070a12;
-            color: #ffffff;
-            overflow-x: hidden;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        button,
-        a {
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .background-glow {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.25;
-            animation: floatOrb 10s ease-in-out infinite;
-        }
-
-        .orb.one {
-            width: 280px;
-            height: 280px;
-            top: 5%;
-            left: 5%;
-            background: #5865f2;
-        }
-
-        .orb.two {
-            width: 220px;
-            height: 220px;
-            top: 30%;
-            right: 7%;
-            background: #7289da;
-            animation-delay: -3s;
-        }
-
-        .orb.three {
-            width: 260px;
-            height: 260px;
-            bottom: 5%;
-            left: 40%;
-            background: #3f4fb8;
-            animation-delay: -6s;
-        }
-
-        @keyframes floatOrb {
-            0%,
-            100% {
-                transform: translate3d(0, 0, 0) scale(1);
-            }
-
-            50% {
-                transform: translate3d(20px, -25px, 0) scale(1.08);
-            }
-        }
-
-        .page {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* NAVBAR */
-
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(18px);
-            background: rgba(7, 10, 18, 0.72);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-        }
-
-        .nav-inner {
-            width: min(1180px, calc(100% - 32px));
-            margin: auto;
-            min-height: 76px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 900;
-            font-size: 22px;
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            background:
-                linear-gradient(
-                    135deg,
-                    #5865f2,
-                    #7c89ff
-                );
-            box-shadow:
-                0 10px 35px rgba(88, 101, 242, 0.35);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-links a {
-            padding: 10px 14px;
-            border-radius: 10px;
-            color: #b9c0d0;
-            transition: 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: 0;
-            border-radius: 13px;
-            padding: 12px 18px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease,
-                background 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            color: #fff;
-            background:
-                linear-gradient(
-                    135deg,
-                    #5865f2,
-                    #6f7cff
-                );
-            box-shadow:
-                0 12px 35px rgba(88, 101, 242, 0.28);
-        }
-
-        .btn-primary:hover {
-            box-shadow:
-                0 16px 45px rgba(88, 101, 242, 0.38);
-        }
-
-        .btn-secondary {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        /* HERO */
-
-        .hero {
-            width: min(1180px, calc(100% - 32px));
-            margin: auto;
-            min-height: calc(100vh - 76px);
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            align-items: center;
-            gap: 60px;
-            padding: 70px 0;
-        }
-
-        .hero-content {
-            animation: heroIn 0.8s ease both;
-        }
-
-        @keyframes heroIn {
-            from {
-                opacity: 0;
-                transform: translateY(25px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            background: rgba(255, 255, 255, 0.045);
-            border-radius: 999px;
-            color: #c7ccef;
-            font-size: 13px;
-            margin-bottom: 18px;
-        }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #5865f2;
-            box-shadow: 0 0 15px #5865f2;
-        }
-
-        .hero h1 {
-            margin: 0;
-            font-size: clamp(45px, 7vw, 82px);
-            line-height: 0.98;
-            letter-spacing: -2px;
-        }
-
-        .hero h1 span {
-            color: #7289da;
-        }
-
-        .hero p {
-            max-width: 700px;
-            margin: 24px 0 0;
-            color: #aeb6ca;
-            font-size: 18px;
-            line-height: 1.9;
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 28px;
-        }
-
-        .hero-note {
-            margin-top: 15px;
-            color: #737d94;
-            font-size: 13px;
-        }
-
-        /* HERO CARD */
-
-        .hero-card {
-            position: relative;
-            padding: 20px;
-            border-radius: 24px;
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(255, 255, 255, 0.075),
-                    rgba(255, 255, 255, 0.03)
-                );
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.35);
-            animation:
-                cardFloat 5s ease-in-out infinite;
-        }
-
-        @keyframes cardFloat {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-8px);
-            }
-        }
-
-        .window {
-            overflow: hidden;
-            border-radius: 18px;
-            background: #0d111b;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .window-top {
-            height: 48px;
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.035);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .window-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .window-dots span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #41495c;
-        }
-
-        .window-title {
-            color: #8e98ae;
-            font-size: 13px;
-        }
-
-        .preview {
-            padding: 22px;
-        }
-
-        .preview-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .preview-logo {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            background: #5865f2;
-            font-weight: 900;
-        }
-
-        .preview-name {
-            font-weight: 900;
-        }
-
-        .preview-sub {
-            margin-top: 3px;
-            color: #727d93;
-            font-size: 12px;
-        }
-
-        .preview-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .preview-item {
-            padding: 15px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.035);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .preview-item strong {
-            display: block;
-            font-size: 22px;
-        }
-
-        .preview-item span {
-            display: block;
-            margin-top: 4px;
-            color: #79849a;
-            font-size: 12px;
-        }
-
-        /* SECTION */
-
-        .section {
-            width: min(1180px, calc(100% - 32px));
-            margin: auto;
-            padding: 100px 0;
-        }
-
-        .section-head {
-            max-width: 700px;
-            margin: 0 auto 45px;
-            text-align: center;
-        }
-
-        .section-head .eyebrow {
-            color: #8290ff;
-            font-size: 13px;
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
-
-        .section-head h2 {
-            margin: 0;
-            font-size: clamp(30px, 4vw, 48px);
-        }
-
-        .section-head p {
-            margin: 14px 0 0;
-            color: #929cb2;
-            line-height: 1.8;
-        }
-
-        /* FEATURE GRID */
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-
-        .feature {
-            padding: 24px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.035);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            transition:
-                transform 0.25s ease,
-                border-color 0.25s ease,
-                background 0.25s ease;
-        }
-
-        .feature:hover {
-            transform: translateY(-5px);
-            border-color: rgba(114, 137, 218, 0.32);
-            background: rgba(255, 255, 255, 0.055);
-        }
-
-        .feature-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            background: rgba(88, 101, 242, 0.15);
-            color: #aeb7ff;
-            margin-bottom: 16px;
-            font-weight: 900;
-        }
-
-        .feature h3 {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .feature p {
-            margin: 10px 0 0;
-            color: #808ba0;
-            line-height: 1.75;
-            font-size: 14px;
-        }
-
-        /* COMMANDS */
-
-        .commands {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .command {
-            padding: 17px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.035);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .command code {
-            color: #8996ff;
-            font-family: Consolas, monospace;
-            font-weight: 800;
-        }
-
-        .command p {
-            margin: 8px 0 0;
-            color: #778197;
-            font-size: 13px;
-        }
-
-        /* CTA */
-
-        .cta {
-            padding: 70px 35px;
-            border-radius: 28px;
-            text-align: center;
-            background:
-                radial-gradient(
-                    circle at center,
-                    rgba(88, 101, 242, 0.20),
-                    rgba(255, 255, 255, 0.035)
-                );
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .cta h2 {
-            margin: 0;
-            font-size: clamp(30px, 4vw, 48px);
-        }
-
-        .cta p {
-            max-width: 650px;
-            margin: 15px auto 0;
-            color: #909aae;
-            line-height: 1.8;
-        }
-
-        .cta-actions {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        /* FOOTER */
-
-        footer {
-            width: min(1180px, calc(100% - 32px));
-            margin: auto;
-            padding: 30px 0 45px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
-            color: #687287;
-            font-size: 13px;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a:hover {
-            color: #fff;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 950px) {
-            .hero {
-                grid-template-columns: 1fr;
-                gap: 35px;
-            }
-
-            .features {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .commands {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .nav-links {
-                display: none;
-            }
-        }
-
-        @media (max-width: 650px) {
-            .nav-actions .dashboard-btn {
-                display: none;
-            }
-
-            .hero {
-                padding: 50px 0;
-            }
-
-            .hero p {
-                font-size: 16px;
-            }
-
-            .features,
-            .commands {
-                grid-template-columns: 1fr;
-            }
-
-            .section {
-                padding: 70px 0;
-            }
-
-            footer {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .hero-actions,
-            .cta-actions {
-                flex-direction: column;
-            }
-
-            .hero-actions .btn,
-            .cta-actions .btn {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Bayan — Powerful Discord Bot</title>
+  <meta
+    name="description"
+    content="Bayan is a powerful Discord bot for moderation, tickets, giveaways, tournaments, logging and server management."
+  >
+
+  <style>
+    :root {
+      --bg: #07080d;
+      --bg-2: #0b0d14;
+      --panel: rgba(17, 20, 31, 0.72);
+      --panel-solid: #11141f;
+      --panel-2: rgba(25, 29, 43, 0.72);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text: #f6f7fb;
+      --muted: #9ca3b8;
+      --soft: #737b92;
+      --accent: #7c5cff;
+      --accent-2: #5ea7ff;
+      --accent-3: #9d7cff;
+      --success: #57db97;
+      --danger: #ff5f73;
+      --shadow: 0 24px 80px rgba(0,0,0,.4);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --container: 1200px;
+      --transition: 220ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(124,92,255,.12), transparent 28%),
+        radial-gradient(circle at 90% 5%, rgba(94,167,255,.10), transparent 25%),
+        linear-gradient(180deg, #07080d 0%, #090b11 45%, #06070c 100%);
+      color: var(--text);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      overflow-x: hidden;
+    }
+
+    body.light {
+      --bg: #eef1f8;
+      --bg-2: #f5f6fb;
+      --panel: rgba(255,255,255,.72);
+      --panel-solid: #ffffff;
+      --panel-2: rgba(255,255,255,.78);
+      --border: rgba(20,25,40,.10);
+      --border-strong: rgba(20,25,40,.16);
+      --text: #111522;
+      --muted: #62697b;
+      --soft: #7c8498;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(124,92,255,.12), transparent 25%),
+        radial-gradient(circle at 90% 5%, rgba(94,167,255,.10), transparent 25%),
+        linear-gradient(180deg, #eef1f8 0%, #f7f8fc 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(var(--container), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .025;
+      z-index: 0;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+    }
+
+    .orb {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      opacity: .18;
+      z-index: 0;
+      animation: floatOrb 12s ease-in-out infinite;
+    }
+
+    .orb.one {
+      background: #7c5cff;
+      top: -160px;
+      left: -140px;
+    }
+
+    .orb.two {
+      background: #4f9dff;
+      right: -160px;
+      top: 20%;
+      animation-delay: -5s;
+    }
+
+    .orb.three {
+      background: #9f6eff;
+      left: 25%;
+      bottom: -240px;
+      animation-delay: -8s;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(20px, -35px, 0) scale(1.08);
+      }
+    }
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 100;
+      padding: 18px 0;
+      transition: var(--transition);
+    }
+
+    .navbar.scrolled {
+      padding: 10px 0;
+      background: rgba(7,8,13,.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    body.light .navbar.scrolled {
+      background: rgba(245,247,252,.72);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(124,92,255,.9), rgba(94,167,255,.9));
+      box-shadow:
+        0 10px 30px rgba(124,92,255,.25),
+        inset 0 1px 0 rgba(255,255,255,.3);
+      font-weight: 900;
+      font-size: 19px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+
+    .brand-text strong {
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+
+    .brand-text span {
+      color: var(--soft);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      padding: 10px 13px;
+      border-radius: 12px;
+      color: var(--muted);
+      transition: var(--transition);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.05);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .language-select,
+    .icon-button {
+      height: 42px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      color: var(--text);
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+
+    .language-select {
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .icon-button {
+      width: 42px;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+    }
+
+    .language-select:hover,
+    .icon-button:hover {
+      transform: translateY(-1px);
+      border-color: var(--border-strong);
+      background: var(--panel-2);
+    }
+
+    .nav-cta {
+      padding: 11px 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 12px 32px rgba(124,92,255,.22);
+      transition: var(--transition);
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 38px rgba(124,92,255,.32);
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 140px 0 80px;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.035);
+      color: #c4c9d9;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 14px rgba(87,219,151,.6);
+    }
+
+    .hero-title {
+      font-size: clamp(48px, 7vw, 88px);
+      line-height: .95;
+      letter-spacing: -4px;
+      max-width: 820px;
+      font-weight: 900;
+    }
+
+    .hero-title .gradient {
+      background:
+        linear-gradient(
+          100deg,
+          #fff 10%,
+          #a895ff 48%,
+          #70b7ff 90%
+        );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      max-width: 670px;
+      margin-top: 24px;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 50px;
+      padding: 0 19px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      transition: var(--transition);
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 15px 35px rgba(124,92,255,.25);
+    }
+
+    .button.primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 44px rgba(124,92,255,.34);
+    }
+
+    .button.secondary {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.035);
+      color: var(--text);
+    }
+
+    .button.secondary:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+      background: rgba(255,255,255,.06);
+    }
+
+    .hero-mini-stats {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .mini-stat {
+      min-width: 90px;
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 24px;
+      letter-spacing: -.7px;
+    }
+
+    .mini-stat span {
+      display: block;
+      color: var(--soft);
+      font-size: 11px;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    /* =========================
+       SERVER PREVIEW
+    ========================= */
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .server-window {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 14px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(24,28,43,.92),
+          rgba(10,12,19,.96)
+        );
+      box-shadow:
+        var(--shadow),
+        0 0 80px rgba(124,92,255,.10);
+      overflow: hidden;
+      transform: perspective(1200px) rotateY(-4deg) rotateX(2deg);
+      transition: 500ms ease;
+    }
+
+    .server-window:hover {
+      transform: perspective(1200px) rotateY(0deg) rotateX(0deg) translateY(-4px);
+    }
+
+    .window-glow {
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: rgba(124,92,255,.12);
+      filter: blur(70px);
+      top: -80px;
+      right: -60px;
+      pointer-events: none;
+    }
+
+    .window-top {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .window-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.16);
+    }
+
+    .window-address {
+      flex: 1;
+      height: 26px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .server-content {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      min-height: 500px;
+    }
+
+    .server-sidebar {
+      padding: 16px 10px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .server-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #1a1e2b;
+      border: 1px solid var(--border);
+      color: #cdd2e2;
+      font-size: 13px;
+      font-weight: 800;
+      transition: var(--transition);
+    }
+
+    .server-circle.active {
+      background: linear-gradient(135deg, var(--accent), #6c8cff);
+      border-color: transparent;
+      box-shadow: 0 10px 25px rgba(124,92,255,.28);
+    }
+
+    .server-main {
+      padding: 20px;
+    }
+
+    .server-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .server-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .server-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      background:
+        linear-gradient(135deg, rgba(124,92,255,.95), rgba(94,167,255,.95));
+      box-shadow: 0 8px 24px rgba(124,92,255,.20);
+    }
+
+    .server-name strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .server-name span {
+      display: block;
+      color: var(--soft);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .server-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border: 1px solid rgba(87,219,151,.18);
+      background: rgba(87,219,151,.07);
+      color: #8ce8b6;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .server-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px rgba(87,219,151,.5);
+    }
+
+    .server-card {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124,92,255,.09),
+          rgba(255,255,255,.025)
+        );
+    }
+
+    .bot-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .bot-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #6951e8, #57a7ff);
+      box-shadow: 0 12px 30px rgba(124,92,255,.20);
+    }
+
+    .bot-info strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .bot-info span {
+      display: block;
+      font-size: 11px;
+      color: var(--soft);
+      margin-top: 3px;
+    }
+
+    .bot-badge {
+      margin-left: auto;
+      padding: 7px 9px;
+      border-radius: 9px;
+      background: rgba(124,92,255,.12);
+      color: #b9a9ff;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 11px;
+      margin-top: 15px;
+    }
+
+    .preview-card {
+      min-height: 95px;
+      padding: 13px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+    }
+
+    .preview-card .preview-icon {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      margin-bottom: 11px;
+      background: rgba(124,92,255,.12);
+      color: #baadff;
+      font-size: 13px;
+    }
+
+    .preview-card strong {
+      display: block;
+      font-size: 12px;
+    }
+
+    .preview-card span {
+      display: block;
+      color: var(--soft);
+      margin-top: 4px;
+      font-size: 10px;
+    }
+
+    .preview-channel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 15px;
+      padding: 12px 13px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid var(--border);
+    }
+
+    .preview-channel-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .preview-channel-right {
+      color: var(--soft);
+      font-size: 10px;
+    }
+
+    /* =========================
+       TRUST STRIP
+    ========================= */
+
+    .trust-strip {
+      position: relative;
+      z-index: 1;
+      padding: 18px 0 70px;
+    }
+
+    .trust-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .trust-item {
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .trust-item strong {
+      display: block;
+      font-size: 24px;
+    }
+
+    .trust-item span {
+      color: var(--soft);
+      font-size: 11px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* =========================
+       SECTION
+    ========================= */
+
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 100px 0;
+    }
+
+    .section-heading {
+      max-width: 730px;
+      margin-bottom: 46px;
+    }
+
+    .section-label {
+      color: #a99aff;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(34px, 5vw, 58px);
+      letter-spacing: -2px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .section-subtitle {
+      margin-top: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* =========================
+       FEATURES
+    ========================= */
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .feature {
+      position: relative;
+      min-height: 230px;
+      padding: 24px;
+      border-radius: 21px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.035),
+          rgba(255,255,255,.018)
+        );
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .feature::before {
+      content: "";
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(124,92,255,.09);
+      filter: blur(40px);
+      right: -50px;
+      top: -50px;
+      transition: 300ms ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124,92,255,.25);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(124,92,255,.07),
+          rgba(255,255,255,.025)
+        );
+    }
+
+    .feature:hover::before {
+      transform: scale(1.35);
+    }
+
+    .feature-icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(124,92,255,.12);
+      border: 1px solid rgba(124,92,255,.16);
+      color: #b7abff;
+      font-size: 18px;
+      margin-bottom: 21px;
+    }
+
+    .feature h3 {
+      font-size: 17px;
+    }
+
+    .feature p {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .feature-link {
+      display: inline-flex;
+      margin-top: 19px;
+      color: #b9acff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* =========================
+       COMMANDS
+    ========================= */
+
+    .commands-layout {
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: 18px;
+    }
+
+    .command-intro {
+      padding: 28px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(124,92,255,.10),
+          rgba(255,255,255,.025)
+        );
+      min-height: 100%;
+    }
+
+    .command-intro h3 {
+      font-size: 25px;
+      letter-spacing: -.7px;
+    }
+
+    .command-intro p {
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .command-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .command-chip {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255,255,255,.03);
+      color: #cfd4e3;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+    }
+
+    .commands-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .command {
+      padding: 17px;
+      border-radius: 17px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+      transition: var(--transition);
+    }
+
+    .command:hover {
+      transform: translateY(-3px);
+      border-color: rgba(124,92,255,.20);
+    }
+
+    .command-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .command-name {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      color: #c8bdff;
+    }
+
+    .command-tag {
+      color: var(--soft);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .command p {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    /* =========================
+       HOW IT WORKS
+    ========================= */
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .step {
+      padding: 25px;
+      border-radius: 21px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+      position: relative;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-weight: 900;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(124,92,255,.20);
+    }
+
+    .step h3 {
+      font-size: 17px;
+    }
+
+    .step p {
+      margin-top: 9px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    /* =========================
+       STATS
+    ========================= */
+
+    .stats-panel {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      background:
+        linear-gradient(
+          140deg,
+          rgba(124,92,255,.08),
+          rgba(255,255,255,.02)
+        );
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .big-stat {
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: rgba(0,0,0,.10);
+    }
+
+    .big-stat strong {
+      font-size: 35px;
+      letter-spacing: -1px;
+    }
+
+    .big-stat span {
+      display: block;
+      color: var(--soft);
+      font-size: 11px;
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    /* =========================
+       FAQ
+    ========================= */
+
+    .faq {
+      display: grid;
+      gap: 10px;
+      max-width: 900px;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: rgba(255,255,255,.025);
+      overflow: hidden;
+    }
+
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 18px 20px;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .faq-plus {
+      color: var(--soft);
+      font-size: 18px;
+      transition: var(--transition);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 260ms ease;
+    }
+
+    .faq-answer-inner {
+      padding: 0 20px 19px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+    }
+
+    .faq-item.open .faq-plus {
+      transform: rotate(45deg);
+      color: #b7abff;
+    }
+
+    /* =========================
+       FINAL CTA
+    ========================= */
+
+    .cta {
+      padding-bottom: 110px;
+    }
+
+    .cta-box {
+      position: relative;
+      padding: 50px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124,92,255,.20), transparent 36%),
+        radial-gradient(circle at 85% 80%, rgba(94,167,255,.15), transparent 32%),
+        linear-gradient(135deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .cta-box::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 29px;
+      pointer-events: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .cta-box h2 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(35px, 5vw, 58px);
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .cta-box p {
+      position: relative;
+      z-index: 1;
+      margin: 16px auto 0;
+      max-width: 620px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .cta-box .hero-buttons {
+      position: relative;
+      z-index: 1;
+      justify-content: center;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-brand {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      padding: 8px 10px;
+      border-radius: 9px;
+      color: var(--soft);
+      font-size: 11px;
+    }
+
+    .footer-link:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+    }
+
+    /* =========================
+       REVEAL
+    ========================= */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition:
+        opacity .7s ease,
+        transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================
+       RTL
+    ========================= */
+
+    body.rtl {
+      direction: rtl;
+    }
+
+    body.rtl .hero-title,
+    body.rtl .hero-subtitle,
+    body.rtl .section-heading {
+      text-align: right;
+    }
+
+    body.rtl .faq-question {
+      text-align: right;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 1000px) {
+      .hero-grid,
+      .commands-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 120px;
+      }
+
+      .hero-visual {
+        max-width: 760px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .trust-row,
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        width: min(100% - 24px, var(--container));
+      }
+
+      .nav-links,
+      .nav-cta {
+        display: none;
+      }
+
+      .mobile-menu {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        place-items: center;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        color: var(--text);
+      }
+
+      .nav-actions {
+        margin-left: auto;
+      }
+
+      .language-select {
+        display: none;
+      }
+
+      .hero-title {
+        letter-spacing: -2.5px;
+      }
+
+      .hero-subtitle {
+        font-size: 15px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .features-grid,
+      .commands-list {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trust-row,
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .server-content {
+        grid-template-columns: 57px 1fr;
+      }
+
+      .server-main {
+        padding: 14px;
+      }
+
+      .server-status {
+        display: none;
+      }
+
+      .cta-box {
+        padding: 34px 22px;
+      }
+
+      .footer-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-mini-stats {
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .trust-row,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .server-window {
+        padding: 9px;
+        border-radius: 20px;
+      }
+
+      .server-sidebar {
+        padding: 11px 7px;
+      }
+
+      .server-circle {
+        width: 37px;
+        height: 37px;
+        border-radius: 11px;
+      }
+
+      .server-name strong {
+        font-size: 13px;
+      }
+
+      .server-name span {
+        font-size: 9px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <div class="background-glow">
-        <div class="orb one"></div>
-        <div class="orb two"></div>
-        <div class="orb three"></div>
+  <div class="noise"></div>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <div class="orb three"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-inner">
+
+      <a href="#home" class="brand">
+        <div class="brand-icon">B</div>
+        <div class="brand-text">
+          <strong>Bayan</strong>
+          <span data-i18n="brandSub">Discord Bot</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features" class="nav-link" data-i18n="navFeatures">Features</a>
+        <a href="#commands" class="nav-link" data-i18n="navCommands">Commands</a>
+        <a href="#how" class="nav-link" data-i18n="navHow">How it works</a>
+        <a href="#faq" class="nav-link" data-i18n="navFaq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+
+        <select id="languageSelect" class="language-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
+
+        <button
+          class="icon-button"
+          id="themeButton"
+          aria-label="Toggle theme"
+          title="Toggle theme"
+        >
+          ◐
+        </button>
+
+        <a
+          class="nav-cta"
+          href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-i18n="addBayan"
+        >
+          Add Bayan
+        </a>
+
+        <button
+          class="mobile-menu"
+          id="mobileMenu"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main id="home">
+
+    <section class="hero">
+      <div class="container hero-grid">
+
+        <div class="reveal">
+
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            <span data-i18n="eyebrow">Built for modern Discord servers</span>
+          </div>
+
+          <h1 class="hero-title">
+            <span data-i18n="heroTitle1">Your server.</span><br>
+            <span class="gradient" data-i18n="heroTitle2">Smarter with Bayan.</span>
+          </h1>
+
+          <p class="hero-subtitle" data-i18n="heroSubtitle">
+            Bayan brings moderation, tickets, giveaways, tournaments,
+            logging and server management together in one powerful Discord bot.
+          </p>
+
+          <div class="hero-buttons">
+
+            <a
+              class="button primary"
+              href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="addServer"
+            >
+              Add to Server →
+            </a>
+
+            <a
+              class="button secondary"
+              href="#features"
+              data-i18n="explore"
+            >
+              Explore Features
+            </a>
+
+          </div>
+
+          <div class="hero-mini-stats">
+
+            <div class="mini-stat">
+              <strong>20+</strong>
+              <span data-i18n="statCommands">Commands</span>
+            </div>
+
+            <div class="mini-stat">
+              <strong>24/7</strong>
+              <span data-i18n="statReady">Ready</span>
+            </div>
+
+            <div class="mini-stat">
+              <strong>1</strong>
+              <span data-i18n="statControl">Control Center</span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- SERVER UI -->
+        <div class="hero-visual reveal">
+
+          <div class="server-window">
+
+            <div class="window-glow"></div>
+
+            <div class="window-top">
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+              <div class="window-address"></div>
+            </div>
+
+            <div class="server-content">
+
+              <aside class="server-sidebar">
+
+                <div class="server-circle active">M</div>
+                <div class="server-circle">B</div>
+                <div class="server-circle">+</div>
+
+              </aside>
+
+              <div class="server-main">
+
+                <div class="server-header">
+
+                  <div class="server-name">
+                    <div class="server-logo">M</div>
+
+                    <div>
+                      <strong>Moon Network</strong>
+                      <span data-i18n="serverPreview">Server preview</span>
+                    </div>
+                  </div>
+
+                  <div class="server-status">
+                    <span class="server-status-dot"></span>
+                    <span data-i18n="botOnline">Bayan ready</span>
+                  </div>
+
+                </div>
+
+                <div class="server-card">
+
+                  <div class="bot-row">
+
+                    <div class="bot-avatar">B</div>
+
+                    <div class="bot-info">
+                      <strong>Bayan</strong>
+                      <span data-i18n="botDescription">
+                        Server management bot
+                      </span>
+                    </div>
+
+                    <div class="bot-badge" data-i18n="verified">
+                      BOT
+                    </div>
+
+                  </div>
+
+                  <div class="preview-grid">
+
+                    <div class="preview-card">
+                      <div class="preview-icon">◆</div>
+                      <strong data-i18n="modCard">Moderation</strong>
+                      <span data-i18n="modCardText">Keep your server controlled</span>
+                    </div>
+
+                    <div class="preview-card">
+                      <div class="preview-icon">▣</div>
+                      <strong data-i18n="ticketCard">Tickets</strong>
+                      <span data-i18n="ticketCardText">Organize member support</span>
+                    </div>
+
+                    <div class="preview-card">
+                      <div class="preview-icon">★</div>
+                      <strong data-i18n="giveawayCard">Giveaways</strong>
+                      <span data-i18n="giveawayCardText">Run community events</span>
+                    </div>
+
+                    <div class="preview-card">
+                      <div class="preview-icon">⌁</div>
+                      <strong data-i18n="logsCard">Logs</strong>
+                      <span data-i18n="logsCardText">Track important activity</span>
+                    </div>
+
+                  </div>
+
+                  <div class="preview-channel">
+                    <div class="preview-channel-left">
+                      <span>#</span>
+                      <span data-i18n="channelName">general</span>
+                    </div>
+
+                    <div class="preview-channel-right">
+                      <span data-i18n="channelPeople">128 members</span>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TRUST -->
+    <section class="trust-strip">
+      <div class="container">
+
+        <div class="trust-row">
+
+          <div class="trust-item reveal">
+            <strong>20+</strong>
+            <span data-i18n="trust1">Useful commands</span>
+          </div>
+
+          <div class="trust-item reveal">
+            <strong>6+</strong>
+            <span data-i18n="trust2">Core systems</span>
+          </div>
+
+          <div class="trust-item reveal">
+            <strong>100%</strong>
+            <span data-i18n="trust3">Discord focused</span>
+          </div>
+
+          <div class="trust-item reveal">
+            <strong>∞</strong>
+            <span data-i18n="trust4">Room to grow</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+
+      <div class="container">
+
+        <div class="section-heading reveal">
+          <div class="section-label" data-i18n="featuresLabel">Powerful systems</div>
+
+          <h2 class="section-title" data-i18n="featuresTitle">
+            Everything your community needs.
+          </h2>
+
+          <p class="section-subtitle" data-i18n="featuresSubtitle">
+            Bayan is designed around the features Discord communities
+            actually use every day.
+          </p>
+        </div>
+
+        <div class="features-grid">
+
+          <article class="feature reveal">
+            <div class="feature-icon">◆</div>
+            <h3 data-i18n="feature1Title">Moderation</h3>
+            <p data-i18n="feature1Text">
+              Manage members with moderation commands,
+              warnings, bans, kicks, timeouts and cleanup tools.
+            </p>
+            <span class="feature-link">/ban · /kick · /warn</span>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-icon">▣</div>
+            <h3 data-i18n="feature2Title">Tickets</h3>
+            <p data-i18n="feature2Text">
+              Give members an organized way to ask for help,
+              report issues or submit appeals.
+            </p>
+            <span class="feature-link">Support · Reports · Appeals</span>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-icon">★</div>
+            <h3 data-i18n="feature3Title">Giveaways</h3>
+            <p data-i18n="feature3Text">
+              Create community giveaways and manage winners
+              directly from Discord.
+            </p>
+            <span class="feature-link">Fast · Simple · Community</span>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-icon">⌁</div>
+            <h3 data-i18n="feature4Title">Logging</h3>
+            <p data-i18n="feature4Text">
+              Keep important server activity visible with
+              message, voice and moderation logs.
+            </p>
+            <span class="feature-link">Messages · Voice · Actions</span>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-icon">◌</div>
+            <h3 data-i18n="feature5Title">Auto Role</h3>
+            <p data-i18n="feature5Text">
+              Automatically assign a role to new members
+              when they join your server.
+            </p>
+            <span class="feature-link">/autorole</span>
+          </article>
+
+          <article class="feature reveal">
+            <div class="feature-icon">♜</div>
+            <h3 data-i18n="feature6Title">Tournaments</h3>
+            <p data-i18n="feature6Text">
+              Organize matches and tournament brackets
+              for competitive communities.
+            </p>
+            <span class="feature-link">Brackets · Matches · Winners</span>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COMMANDS -->
+    <section id="commands">
+
+      <div class="container">
+
+        <div class="section-heading reveal">
+          <div class="section-label" data-i18n="commandsLabel">Commands</div>
+
+          <h2 class="section-title" data-i18n="commandsTitle">
+            Fast when you need it.
+          </h2>
+
+          <p class="section-subtitle" data-i18n="commandsSubtitle">
+            Clean slash commands built around real server management workflows.
+          </p>
+        </div>
+
+        <div class="commands-layout">
+
+          <div class="command-intro reveal">
+
+            <h3 data-i18n="commandIntroTitle">
+              Your tools, one bot.
+            </h3>
+
+            <p data-i18n="commandIntroText">
+              Bayan keeps server management simple with commands that are
+              easy for staff to understand and use.
+            </p>
+
+            <div class="command-chip-row">
+              <span class="command-chip">/ban</span>
+              <span class="command-chip">/kick</span>
+              <span class="command-chip">/warn</span>
+              <span class="command-chip">/clear</span>
+              <span class="command-chip">/ticket-setup</span>
+              <span class="command-chip">/autorole</span>
+              <span class="command-chip">/giveaway</span>
+              <span class="command-chip">/tournament</span>
+            </div>
+
+          </div>
+
+          <div class="commands-list">
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/ban</span>
+                <span class="command-tag">Moderation</span>
+              </div>
+              <p data-i18n="cmdBan">
+                Ban a member from the server.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/kick</span>
+                <span class="command-tag">Moderation</span>
+              </div>
+              <p data-i18n="cmdKick">
+                Remove a member from the server.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/warn</span>
+                <span class="command-tag">Moderation</span>
+              </div>
+              <p data-i18n="cmdWarn">
+                Issue a server warning.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/clear</span>
+                <span class="command-tag">Utility</span>
+              </div>
+              <p data-i18n="cmdClear">
+                Quickly remove messages from a channel.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/ticket-setup</span>
+                <span class="command-tag">Tickets</span>
+              </div>
+              <p data-i18n="cmdTicket">
+                Set up the support ticket system.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/autorole</span>
+                <span class="command-tag">Server</span>
+              </div>
+              <p data-i18n="cmdRole">
+                Configure the automatic member role.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/giveaway</span>
+                <span class="command-tag">Community</span>
+              </div>
+              <p data-i18n="cmdGiveaway">
+                Start and manage community giveaways.
+              </p>
+            </article>
+
+            <article class="command reveal">
+              <div class="command-top">
+                <span class="command-name">/tournament</span>
+                <span class="command-tag">Events</span>
+              </div>
+              <p data-i18n="cmdTournament">
+                Create and manage tournament matches.
+              </p>
+            </article>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how">
+
+      <div class="container">
+
+        <div class="section-heading reveal">
+          <div class="section-label" data-i18n="howLabel">Getting started</div>
+
+          <h2 class="section-title" data-i18n="howTitle">
+            Three steps. One better server.
+          </h2>
+
+          <p class="section-subtitle" data-i18n="howSubtitle">
+            Add Bayan, configure the systems you need and let your staff work.
+          </p>
+        </div>
+
+        <div class="steps">
+
+          <article class="step reveal">
+            <div class="step-number">1</div>
+            <h3 data-i18n="step1Title">Add Bayan</h3>
+            <p data-i18n="step1Text">
+              Invite Bayan to your Discord server with one click.
+            </p>
+          </article>
+
+          <article class="step reveal">
+            <div class="step-number">2</div>
+            <h3 data-i18n="step2Title">Configure</h3>
+            <p data-i18n="step2Text">
+              Set up tickets, roles, logs, moderation and your community tools.
+            </p>
+          </article>
+
+          <article class="step reveal">
+            <div class="step-number">3</div>
+            <h3 data-i18n="step3Title">Run your server</h3>
+            <p data-i18n="step3Text">
+              Let Bayan handle repetitive work while your team focuses on the community.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section>
+
+      <div class="container">
+
+        <div class="section-heading reveal">
+          <div class="section-label" data-i18n="statsLabel">At a glance</div>
+
+          <h2 class="section-title" data-i18n="statsTitle">
+            Built to scale with your community.
+          </h2>
+        </div>
+
+        <div class="stats-panel reveal">
+
+          <div class="stats-grid">
+
+            <div class="big-stat">
+              <strong class="counter" data-target="20">0</strong>
+              <span data-i18n="statsCommands">Commands</span>
+            </div>
+
+            <div class="big-stat">
+              <strong class="counter" data-target="6">0</strong>
+              <span data-i18n="statsSystems">Core systems</span>
+            </div>
+
+            <div class="big-stat">
+              <strong>24/7</strong>
+              <span data-i18n="statsReady">Designed for uptime</span>
+            </div>
+
+            <div class="big-stat">
+              <strong>1</strong>
+              <span data-i18n="statsBot">Bayan bot</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+
+      <div class="container">
+
+        <div class="section-heading reveal">
+          <div class="section-label" data-i18n="faqLabel">FAQ</div>
+
+          <h2 class="section-title" data-i18n="faqTitle">
+            Questions, answered.
+          </h2>
+
+          <p class="section-subtitle" data-i18n="faqSubtitle">
+            A few things to know before adding Bayan.
+          </p>
+        </div>
+
+        <div class="faq">
+
+          <article class="faq-item reveal">
+
+            <button class="faq-question">
+              <span data-i18n="faq1Question">
+                What is Bayan?
+              </span>
+
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <div class="faq-answer-inner" data-i18n="faq1Answer">
+                Bayan is a Discord bot focused on moderation,
+                server management, tickets and community systems.
+              </div>
+            </div>
+
+          </article>
+
+          <article class="faq-item reveal">
+
+            <button class="faq-question">
+              <span data-i18n="faq2Question">
+                Can I add Bayan to my server?
+              </span>
+
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <div class="faq-answer-inner" data-i18n="faq2Answer">
+                Yes. Use the Add Bayan button to open Discord's authorization page.
+              </div>
+            </div>
+
+          </article>
+
+          <article class="faq-item reveal">
+
+            <button class="faq-question">
+              <span data-i18n="faq3Question">
+                Does the website support Arabic?
+              </span>
+
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <div class="faq-answer-inner" data-i18n="faq3Answer">
+                Yes. Switch between English and Arabic from the language selector.
+              </div>
+            </div>
+
+          </article>
+
+          <article class="faq-item reveal">
+
+            <button class="faq-question">
+              <span data-i18n="faq4Question">
+                Does this page replace the dashboard?
+              </span>
+
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <div class="faq-answer-inner" data-i18n="faq4Answer">
+                No. This is the public Bayan website. Your dashboard remains separate.
+              </div>
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+
+      <div class="container">
+
+        <div class="cta-box reveal">
+
+          <h2 data-i18n="ctaTitle">
+            Ready to upgrade your server?
+          </h2>
+
+          <p data-i18n="ctaSubtitle">
+            Bring moderation, tickets, events and server tools together with Bayan.
+          </p>
+
+          <div class="hero-buttons">
+
+            <a
+              class="button primary"
+              href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="ctaButton"
+            >
+              Add Bayan to Discord →
+            </a>
+
+            <a
+              class="button secondary"
+              href="#home"
+              data-i18n="backTop"
+            >
+              Back to top
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+
+    <div class="container footer-row">
+
+      <div class="footer-brand">
+        © <span id="year"></span> Bayan. <span data-i18n="footerText">Built for Discord communities.</span>
+      </div>
+
+      <div class="footer-links">
+
+        <a href="#features" class="footer-link" data-i18n="footerFeatures">Features</a>
+        <a href="#commands" class="footer-link" data-i18n="footerCommands">Commands</a>
+        <a href="#faq" class="footer-link" data-i18n="footerFaq">FAQ</a>
+
+        <a
+          href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="footer-link"
+          data-i18n="footerAdd"
+        >
+          Add Bayan
+        </a>
+
+      </div>
+
     </div>
 
-    <div class="page">
-
-        <!-- NAVBAR -->
-        <header class="navbar">
-            <div class="nav-inner">
-
-                <a class="brand" href="#home">
-                    <div class="brand-icon">ب</div>
-                    <span>بيان</span>
-                </a>
-
-                <nav class="nav-links">
-                    <a href="#home">الرئيسية</a>
-                    <a href="#features">المميزات</a>
-                    <a href="#commands">الأوامر</a>
-                    <a href="#about">عن بيان</a>
-                </nav>
-
-                <div class="nav-actions">
-
-                    <a
-                        class="btn btn-secondary dashboard-btn"
-                        href="dashboard.html"
-                    >
-                        لوحة التحكم
-                    </a>
-
-                    <!-- DIRECT DISCORD BOT INVITE -->
-                    <a
-                        class="btn btn-primary"
-                        href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-sound
-                    >
-                        إضافة بيان
-                    </a>
-
-                </div>
-
-            </div>
-        </header>
-
-        <!-- HERO -->
-        <main id="home">
-
-            <section class="hero">
-
-                <div class="hero-content">
-
-                    <div class="badge">
-                        <span class="badge-dot"></span>
-                        بوت ديسكورد لإدارة السيرفر
-                    </div>
-
-                    <h1>
-                        إدارة سيرفرك
-                        <br>
-                        مع <span>بيان</span>
-                    </h1>
-
-                    <p>
-                        بيان يجمع أدوات الإدارة والحماية والتذاكر
-                        والمسابقات والإعدادات في بوت واحد،
-                        مع لوحة تحكم حديثة وسهلة الاستخدام.
-                    </p>
-
-                    <div class="hero-actions">
-
-                        <!-- DIRECT DISCORD BOT INVITE -->
-                        <a
-                            class="btn btn-primary"
-                            href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-sound
-                        >
-                            إضافة بيان إلى سيرفرك
-                        </a>
-
-                        <a
-                            class="btn btn-secondary"
-                            href="#features"
-                            data-sound
-                        >
-                            استكشف المميزات
-                        </a>
-
-                    </div>
-
-                    <div class="hero-note">
-                        لا تحتاج إلى فتح /add-bot — الزر يفتح Discord مباشرة.
-                    </div>
-
-                </div>
-
-                <!-- PREVIEW CARD -->
-                <div class="hero-card">
-
-                    <div class="window">
-
-                        <div class="window-top">
-
-                            <div class="window-dots">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-
-                            <div class="window-title">
-                                لوحة بيان
-                            </div>
-
-                        </div>
-
-                        <div class="preview">
-
-                            <div class="preview-header">
-
-                                <div class="preview-logo">
-                                    ب
-                                </div>
-
-                                <div>
-                                    <div class="preview-name">
-                                        بيان
-                                    </div>
-
-                                    <div class="preview-sub">
-                                        نظام إدارة متكامل
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="preview-grid">
-
-                                <div class="preview-item">
-                                    <strong>20+</strong>
-                                    <span>أمر</span>
-                                </div>
-
-                                <div class="preview-item">
-                                    <strong>24/7</strong>
-                                    <span>حماية وإدارة</span>
-                                </div>
-
-                                <div class="preview-item">
-                                    <strong>تذاكر</strong>
-                                    <span>نظام دعم</span>
-                                </div>
-
-                                <div class="preview-item">
-                                    <strong>مسابقات</strong>
-                                    <span>سحوبات وبطولات</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </main>
-
-        <!-- FEATURES -->
-        <section class="section" id="features">
-
-            <div class="section-head">
-
-                <div class="eyebrow">
-                    المميزات
-                </div>
-
-                <h2>
-                    كل ما يحتاجه سيرفرك
-                </h2>
-
-                <p>
-                    أدوات متعددة مصممة لتسهيل إدارة مجتمعك
-                    وتحسين تجربة الأعضاء.
-                </p>
-
-            </div>
-
-            <div class="features">
-
-                <article class="feature">
-                    <div class="feature-icon">⚙</div>
-                    <h3>إدارة السيرفر</h3>
-                    <p>
-                        أدوات للحظر والطرد والتحذيرات ومسح الرسائل
-                        والتحكم بالقنوات.
-                    </p>
-                </article>
-
-                <article class="feature">
-                    <div class="feature-icon">🛡</div>
-                    <h3>الحماية</h3>
-                    <p>
-                        إعدادات للحماية والمراقبة والمساعدة في
-                        الحفاظ على سيرفرك منظماً.
-                    </p>
-                </article>
-
-                <article class="feature">
-                    <div class="feature-icon">🎫</div>
-                    <h3>التذاكر</h3>
-                    <p>
-                        نظام تذاكر منظم للدعم والبلاغات
-                        والاستئنافات.
-                    </p>
-                </article>
-
-                <article class="feature">
-                    <div class="feature-icon">🎉</div>
-                    <h3>السحوبات</h3>
-                    <p>
-                        إنشاء وإدارة السحوبات والمسابقات
-                        داخل السيرفر.
-                    </p>
-                </article>
-
-                <article class="feature">
-                    <div class="feature-icon">🏆</div>
-                    <h3>البطولات</h3>
-                    <p>
-                        نظام بطولات ومباريات يساعدك على إدارة
-                        المنافسات داخل مجتمعك.
-                    </p>
-                </article>
-
-                <article class="feature">
-                    <div class="feature-icon">📋</div>
-                    <h3>السجلات</h3>
-                    <p>
-                        تنظيم أحداث الإدارة والتغييرات المهمة
-                        داخل السيرفر.
-                    </p>
-                </article>
-
-            </div>
-
-        </section>
-
-        <!-- COMMANDS -->
-        <section class="section" id="commands">
-
-            <div class="section-head">
-
-                <div class="eyebrow">
-                    الأوامر
-                </div>
-
-                <h2>
-                    أوامر بيان
-                </h2>
-
-                <p>
-                    مجموعة من أوامر الإدارة والخدمات الأساسية.
-                </p>
-
-            </div>
-
-            <div class="commands">
-
-                <div class="command">
-                    <code>/ban</code>
-                    <p>حظر عضو</p>
-                </div>
-
-                <div class="command">
-                    <code>/kick</code>
-                    <p>طرد عضو</p>
-                </div>
-
-                <div class="command">
-                    <code>/timeout</code>
-                    <p>تقييد عضو مؤقتاً</p>
-                </div>
-
-                <div class="command">
-                    <code>/warn</code>
-                    <p>تحذير عضو</p>
-                </div>
-
-                <div class="command">
-                    <code>/clear</code>
-                    <p>حذف الرسائل</p>
-                </div>
-
-                <div class="command">
-                    <code>/lock</code>
-                    <p>قفل القناة</p>
-                </div>
-
-                <div class="command">
-                    <code>/unlock</code>
-                    <p>فتح القناة</p>
-                </div>
-
-                <div class="command">
-                    <code>/slowmode</code>
-                    <p>تفعيل الوضع البطيء</p>
-                </div>
-
-                <div class="command">
-                    <code>/ticket-setup</code>
-                    <p>إعداد نظام التذاكر</p>
-                </div>
-
-                <div class="command">
-                    <code>/ticket-permissions</code>
-                    <p>إدارة صلاحيات التذاكر</p>
-                </div>
-
-                <div class="command">
-                    <code>/giveaway</code>
-                    <p>إنشاء سحب</p>
-                </div>
-
-                <div class="command">
-                    <code>/tournament</code>
-                    <p>إدارة البطولات</p>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- ABOUT -->
-        <section class="section" id="about">
-
-            <div class="cta">
-
-                <h2>
-                    جاهز لإضافة بيان؟
-                </h2>
-
-                <p>
-                    ابدأ بإضافة بيان إلى سيرفرك من خلال Discord
-                    مباشرة.
-                </p>
-
-                <div class="cta-actions">
-
-                    <a
-                        class="btn btn-primary"
-                        href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-sound
-                    >
-                        إضافة بيان
-                    </a>
-
-                    <a
-                        class="btn btn-secondary"
-                        href="dashboard.html"
-                        data-sound
-                    >
-                        فتح لوحة التحكم
-                    </a>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- FOOTER -->
-        <footer>
-
-            <div>
-                © 2026 بيان — جميع الحقوق محفوظة
-            </div>
-
-            <div class="footer-links">
-                <a href="#home">الرئيسية</a>
-                <a href="#features">المميزات</a>
-                <a href="#commands">الأوامر</a>
-                <a href="dashboard.html">لوحة التحكم</a>
-            </div>
-
-        </footer>
-
-    </div>
-
-    <script>
-        /* Simple click sound */
-        let audioContext = null;
-
-        function playClickSound() {
-            try {
-                if (!audioContext) {
-                    audioContext =
-                        new (
-                            window.AudioContext ||
-                            window.webkitAudioContext
-                        )();
-                }
-
-                const oscillator =
-                    audioContext.createOscillator();
-
-                const gain =
-                    audioContext.createGain();
-
-                oscillator.type = "sine";
-                oscillator.frequency.value = 520;
-
-                gain.gain.setValueAtTime(
-                    0.0001,
-                    audioContext.currentTime
-                );
-
-                gain.gain.exponentialRampToValueAtTime(
-                    0.035,
-                    audioContext.currentTime + 0.01
-                );
-
-                gain.gain.exponentialRampToValueAtTime(
-                    0.0001,
-                    audioContext.currentTime + 0.08
-                );
-
-                oscillator.connect(gain);
-                gain.connect(audioContext.destination);
-
-                oscillator.start();
-                oscillator.stop(
-                    audioContext.currentTime + 0.08
-                );
-            } catch (error) {
-                // Sound is optional.
-            }
+  </footer>
+
+  <script>
+    const translations = {
+      en: {
+        brandSub: "Discord Bot",
+        navFeatures: "Features",
+        navCommands: "Commands",
+        navHow: "How it works",
+        navFaq: "FAQ",
+        addBayan: "Add Bayan",
+
+        eyebrow: "Built for modern Discord servers",
+        heroTitle1: "Your server.",
+        heroTitle2: "Smarter with Bayan.",
+        heroSubtitle:
+          "Bayan brings moderation, tickets, giveaways, tournaments, logging and server management together in one powerful Discord bot.",
+        addServer: "Add to Server →",
+        explore: "Explore Features",
+
+        statCommands: "Commands",
+        statReady: "Ready",
+        statControl: "Control Center",
+
+        serverPreview: "Server preview",
+        botOnline: "Bayan ready",
+        botDescription: "Server management bot",
+        verified: "BOT",
+
+        modCard: "Moderation",
+        modCardText: "Keep your server controlled",
+        ticketCard: "Tickets",
+        ticketCardText: "Organize member support",
+        giveawayCard: "Giveaways",
+        giveawayCardText: "Run community events",
+        logsCard: "Logs",
+        logsCardText: "Track important activity",
+        channelName: "general",
+        channelPeople: "128 members",
+
+        trust1: "Useful commands",
+        trust2: "Core systems",
+        trust3: "Discord focused",
+        trust4: "Room to grow",
+
+        featuresLabel: "Powerful systems",
+        featuresTitle: "Everything your community needs.",
+        featuresSubtitle:
+          "Bayan is designed around the features Discord communities actually use every day.",
+
+        feature1Title: "Moderation",
+        feature1Text:
+          "Manage members with moderation commands, warnings, bans, kicks, timeouts and cleanup tools.",
+
+        feature2Title: "Tickets",
+        feature2Text:
+          "Give members an organized way to ask for help, report issues or submit appeals.",
+
+        feature3Title: "Giveaways",
+        feature3Text:
+          "Create community giveaways and manage winners directly from Discord.",
+
+        feature4Title: "Logging",
+        feature4Text:
+          "Keep important server activity visible with message, voice and moderation logs.",
+
+        feature5Title: "Auto Role",
+        feature5Text:
+          "Automatically assign a role to new members when they join your server.",
+
+        feature6Title: "Tournaments",
+        feature6Text:
+          "Organize matches and tournament brackets for competitive communities.",
+
+        commandsLabel: "Commands",
+        commandsTitle: "Fast when you need it.",
+        commandsSubtitle:
+          "Clean slash commands built around real server management workflows.",
+
+        commandIntroTitle: "Your tools, one bot.",
+        commandIntroText:
+          "Bayan keeps server management simple with commands that are easy for staff to understand and use.",
+
+        cmdBan: "Ban a member from the server.",
+        cmdKick: "Remove a member from the server.",
+        cmdWarn: "Issue a server warning.",
+        cmdClear: "Quickly remove messages from a channel.",
+        cmdTicket: "Set up the support ticket system.",
+        cmdRole: "Configure the automatic member role.",
+        cmdGiveaway: "Start and manage community giveaways.",
+        cmdTournament: "Create and manage tournament matches.",
+
+        howLabel: "Getting started",
+        howTitle: "Three steps. One better server.",
+        howSubtitle:
+          "Add Bayan, configure the systems you need and let your staff work.",
+
+        step1Title: "Add Bayan",
+        step1Text:
+          "Invite Bayan to your Discord server with one click.",
+
+        step2Title: "Configure",
+        step2Text:
+          "Set up tickets, roles, logs, moderation and your community tools.",
+
+        step3Title: "Run your server",
+        step3Text:
+          "Let Bayan handle repetitive work while your team focuses on the community.",
+
+        statsLabel: "At a glance",
+        statsTitle: "Built to scale with your community.",
+        statsCommands: "Commands",
+        statsSystems: "Core systems",
+        statsReady: "Designed for uptime",
+        statsBot: "Bayan bot",
+
+        faqLabel: "FAQ",
+        faqTitle: "Questions, answered.",
+        faqSubtitle:
+          "A few things to know before adding Bayan.",
+
+        faq1Question: "What is Bayan?",
+        faq1Answer:
+          "Bayan is a Discord bot focused on moderation, server management, tickets and community systems.",
+
+        faq2Question: "Can I add Bayan to my server?",
+        faq2Answer:
+          "Yes. Use the Add Bayan button to open Discord's authorization page.",
+
+        faq3Question: "Does the website support Arabic?",
+        faq3Answer:
+          "Yes. Switch between English and Arabic from the language selector.",
+
+        faq4Question: "Does this page replace the dashboard?",
+        faq4Answer:
+          "No. This is the public Bayan website. Your dashboard remains separate.",
+
+        ctaTitle: "Ready to upgrade your server?",
+        ctaSubtitle:
+          "Bring moderation, tickets, events and server tools together with Bayan.",
+        ctaButton: "Add Bayan to Discord →",
+        backTop: "Back to top",
+
+        footerText: "Built for Discord communities.",
+        footerFeatures: "Features",
+        footerCommands: "Commands",
+        footerFaq: "FAQ",
+        footerAdd: "Add Bayan"
+      },
+
+      ar: {
+        brandSub: "بوت ديسكورد",
+        navFeatures: "المميزات",
+        navCommands: "الأوامر",
+        navHow: "طريقة الاستخدام",
+        navFaq: "الأسئلة",
+        addBayan: "إضافة Bayan",
+
+        eyebrow: "مصمم لسيرفرات ديسكورد الحديثة",
+        heroTitle1: "سيرفرك.",
+        heroTitle2: "أذكى مع Bayan.",
+        heroSubtitle:
+          "يجمع Bayan بين الإشراف والتذاكر والهدايا والبطولات والسجلات وإدارة السيرفر في بوت ديسكورد واحد.",
+        addServer: "إضافة للسيرفر →",
+        explore: "استكشف المميزات",
+
+        statCommands: "أمر",
+        statReady: "جاهز",
+        statControl: "مركز تحكم",
+
+        serverPreview: "معاينة السيرفر",
+        botOnline: "Bayan جاهز",
+        botDescription: "بوت إدارة السيرفر",
+        verified: "BOT",
+
+        modCard: "الإشراف",
+        modCardText: "تحكم أفضل بالسيرفر",
+        ticketCard: "التذاكر",
+        ticketCardText: "تنظيم دعم الأعضاء",
+        giveawayCard: "الهدايا",
+        giveawayCardText: "إدارة فعاليات المجتمع",
+        logsCard: "السجلات",
+        logsCardText: "تتبع الأنشطة المهمة",
+        channelName: "general",
+        channelPeople: "128 عضو",
+
+        trust1: "أوامر مفيدة",
+        trust2: "أنظمة أساسية",
+        trust3: "مصمم لديسكورد",
+        trust4: "قابل للتوسع",
+
+        featuresLabel: "أنظمة قوية",
+        featuresTitle: "كل ما يحتاجه مجتمعك.",
+        featuresSubtitle:
+          "تم تصميم Bayan حول الأدوات التي تستخدمها مجتمعات ديسكورد يومياً.",
+
+        feature1Title: "الإشراف",
+        feature1Text:
+          "إدارة الأعضاء باستخدام التحذيرات والحظر والطرد والمهل وتنظيف الرسائل.",
+
+        feature2Title: "التذاكر",
+        feature2Text:
+          "طريقة منظمة للأعضاء لطلب المساعدة أو الإبلاغ عن المشاكل أو تقديم الاستئنافات.",
+
+        feature3Title: "الهدايا",
+        feature3Text:
+          "إنشاء هدايا للمجتمع وإدارة الفائزين مباشرة من ديسكورد.",
+
+        feature4Title: "السجلات",
+        feature4Text:
+          "عرض نشاط السيرفر المهم عبر سجلات الرسائل والصوت والإشراف.",
+
+        feature5Title: "الرتب التلقائية",
+        feature5Text:
+          "إعطاء رتبة تلقائياً للأعضاء الجدد عند دخولهم للسيرفر.",
+
+        feature6Title: "البطولات",
+        feature6Text:
+          "تنظيم المباريات وإنشاء بطولات للمجتمعات التنافسية.",
+
+        commandsLabel: "الأوامر",
+        commandsTitle: "سريع عندما تحتاجه.",
+        commandsSubtitle:
+          "أوامر Slash بسيطة مبنية حول إدارة السيرفر بشكل عملي.",
+
+        commandIntroTitle: "أدواتك في بوت واحد.",
+        commandIntroText:
+          "يحافظ Bayan على بساطة إدارة السيرفر بأوامر واضحة وسهلة لفريق الإدارة.",
+
+        cmdBan: "حظر عضو من السيرفر.",
+        cmdKick: "طرد عضو من السيرفر.",
+        cmdWarn: "إعطاء تحذير لعضو.",
+        cmdClear: "حذف الرسائل بسرعة من القناة.",
+        cmdTicket: "إعداد نظام تذاكر الدعم.",
+        cmdRole: "إعداد الرتبة التلقائية.",
+        cmdGiveaway: "بدء وإدارة الهدايا.",
+        cmdTournament: "إنشاء وإدارة مباريات البطولات.",
+
+        howLabel: "البدء",
+        howTitle: "ثلاث خطوات. سيرفر أفضل.",
+        howSubtitle:
+          "أضف Bayan، اضبط الأنظمة التي تحتاجها واترك الإدارة تعمل.",
+
+        step1Title: "أضف Bayan",
+        step1Text:
+          "قم بدعوة Bayan إلى سيرفر ديسكورد بضغطة واحدة.",
+
+        step2Title: "الإعداد",
+        step2Text:
+          "اضبط التذاكر والرتب والسجلات والإشراف وباقي أدوات المجتمع.",
+
+        step3Title: "أدر سيرفرك",
+        step3Text:
+          "دع Bayan يتعامل مع المهام المتكررة بينما يركز فريقك على المجتمع.",
+
+        statsLabel: "نظرة سريعة",
+        statsTitle: "مصمم لينمو مع مجتمعك.",
+        statsCommands: "أمر",
+        statsSystems: "نظام أساسي",
+        statsReady: "مصمم للاستمرارية",
+        statsBot: "بوت Bayan",
+
+        faqLabel: "الأسئلة",
+        faqTitle: "الإجابات هنا.",
+        faqSubtitle:
+          "بعض المعلومات المهمة قبل إضافة Bayan.",
+
+        faq1Question: "ما هو Bayan؟",
+        faq1Answer:
+          "Bayan هو بوت ديسكورد يركز على الإشراف وإدارة السيرفر والتذاكر وأنظمة المجتمع.",
+
+        faq2Question: "هل أستطيع إضافة Bayan إلى سيرفري؟",
+        faq2Answer:
+          "نعم. استخدم زر إضافة Bayan لفتح صفحة التفويض الرسمية في ديسكورد.",
+
+        faq3Question: "هل الموقع يدعم العربية؟",
+        faq3Answer:
+          "نعم. يمكنك التبديل بين العربية والإنجليزية من محدد اللغة.",
+
+        faq4Question: "هل هذه الصفحة تستبدل لوحة التحكم؟",
+        faq4Answer:
+          "لا. هذه هي واجهة موقع Bayan العامة، ولوحة التحكم منفصلة عنها.",
+
+        ctaTitle: "جاهز لتطوير سيرفرك؟",
+        ctaSubtitle:
+          "اجمع الإشراف والتذاكر والفعاليات وأدوات إدارة السيرفر مع Bayan.",
+        ctaButton: "إضافة Bayan إلى ديسكورد →",
+        backTop: "العودة للأعلى",
+
+        footerText: "مصمم لمجتمعات ديسكورد.",
+        footerFeatures: "المميزات",
+        footerCommands: "الأوامر",
+        footerFaq: "الأسئلة",
+        footerAdd: "إضافة Bayan"
+      }
+    };
+
+    const languageSelect = document.getElementById("languageSelect");
+    const themeButton = document.getElementById("themeButton");
+    const navbar = document.getElementById("navbar");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    function applyLanguage(language) {
+      const dictionary = translations[language] || translations.en;
+
+      document.documentElement.lang = language;
+      document.body.classList.toggle("rtl", language === "ar");
+
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const key = element.dataset.i18n;
+
+        if (dictionary[key] !== undefined) {
+          element.textContent = dictionary[key];
         }
+      });
 
-        document
-            .querySelectorAll("[data-sound]")
-            .forEach((element) => {
-                element.addEventListener(
-                    "click",
-                    playClickSound
-                );
-            });
+      localStorage.setItem("bayan_language", language);
+    }
 
-        /* Reveal animations */
-        const revealElements =
-            document.querySelectorAll(
-                ".feature, .command, .hero-card, .cta"
-            );
+    const savedLanguage = localStorage.getItem("bayan_language") || "en";
+    languageSelect.value = savedLanguage;
+    applyLanguage(savedLanguage);
 
-        const revealObserver =
-            new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        if (
-                            entry.isIntersecting
-                        ) {
-                            entry.target.style.opacity =
-                                "1";
+    languageSelect.addEventListener("change", (event) => {
+      applyLanguage(event.target.value);
+    });
 
-                            entry.target.style.transform =
-                                "translateY(0)";
+    function setTheme(mode) {
+      document.body.classList.toggle("light", mode === "light");
+      localStorage.setItem("bayan_theme", mode);
+    }
 
-                            revealObserver.unobserve(
-                                entry.target
-                            );
-                        }
-                    });
-                },
-                {
-                    threshold: 0.12
-                }
-            );
+    const savedTheme = localStorage.getItem("bayan_theme") || "dark";
+    setTheme(savedTheme);
 
-        revealElements.forEach((element) => {
-            element.style.opacity = "0";
-            element.style.transform =
-                "translateY(18px)";
-            element.style.transition =
-                "opacity .55s ease, transform .55s ease";
+    themeButton.addEventListener("click", () => {
+      const current = document.body.classList.contains("light")
+        ? "light"
+        : "dark";
 
-            revealObserver.observe(element);
+      setTheme(current === "light" ? "dark" : "light");
+    });
+
+    window.addEventListener("scroll", () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 18);
+    });
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            revealObserver.unobserve(entry.target);
+          }
         });
-    </script>
+      },
+      {
+        threshold: 0.08
+      }
+    );
+
+    document.querySelectorAll(".reveal").forEach((element) => {
+      revealObserver.observe(element);
+    });
+
+    document.querySelectorAll(".faq-question").forEach((button) => {
+      button.addEventListener("click", () => {
+        const item = button.closest(".faq-item");
+
+        document.querySelectorAll(".faq-item").forEach((other) => {
+          if (other !== item) {
+            other.classList.remove("open");
+          }
+        });
+
+        item.classList.toggle("open");
+      });
+    });
+
+    const counters = document.querySelectorAll(".counter");
+
+    const counterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const element = entry.target;
+          const target = Number(element.dataset.target);
+          let current = 0;
+
+          const step = Math.max(1, Math.ceil(target / 40));
+
+          const timer = setInterval(() => {
+            current += step;
+
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+
+            element.textContent = current;
+          }, 28);
+
+          counterObserver.unobserve(element);
+        });
+      },
+      {
+        threshold: 0.7
+      }
+    );
+
+    counters.forEach((counter) => {
+      counterObserver.observe(counter);
+    });
+
+    mobileMenu.addEventListener("click", () => {
+      const links = document.querySelector(".nav-links");
+
+      if (links.style.display === "flex") {
+        links.style.display = "";
+        return;
+      }
+
+      links.style.display = "flex";
+      links.style.position = "absolute";
+      links.style.left = "12px";
+      links.style.right = "12px";
+      links.style.top = "68px";
+      links.style.flexDirection = "column";
+      links.style.padding = "10px";
+      links.style.border = "1px solid var(--border)";
+      links.style.borderRadius = "16px";
+      links.style.background = "var(--panel-solid)";
+      links.style.backdropFilter = "blur(18px)";
+    });
+
+    document.querySelectorAll(".nav-link").forEach((link) => {
+      link.addEventListener("click", () => {
+        const links = document.querySelector(".nav-links");
+
+        if (window.innerWidth <= 760) {
+          links.style.display = "";
+        }
+      });
+    });
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+  </script>
 
 </body>
 </html>
