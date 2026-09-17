@@ -1,129 +1,45 @@
 "use strict";
 
 /* =========================================================
-   BAYAN WEBSITE SCRIPT
+   BAYAN WEBSITE
 ========================================================= */
 
 const API = "/api";
 
-const STORAGE_KEY =
-  "bayan_dashboard_settings";
+let bayan = {
+  me: null,
 
-/* =========================================================
-   TRANSLATIONS
-========================================================= */
+  guilds: [],
 
-const translations = {
-  en: {
-    chooseRole: "Choose a role",
-    chooseChannel: "Choose a channel",
-    search: "Search...",
-    noResults: "No results found",
-    loading: "Loading...",
-    save: "Save Settings",
-    reset: "Reset",
-    saved: "Settings saved successfully.",
-    loadingServer: "Loading server data...",
-    botOnline: "Bayan Online",
-    botOffline: "Bayan Offline"
-  },
+  guildId: "",
 
-  ar: {
-    chooseRole: "اختر رتبة",
-    chooseChannel: "اختر قناة",
-    search: "بحث...",
-    noResults: "لا توجد نتائج",
-    loading: "جاري التحميل...",
-    save: "حفظ الإعدادات",
-    reset: "إعادة ضبط",
-    saved: "تم حفظ الإعدادات بنجاح.",
-    loadingServer: "جاري تحميل بيانات السيرفر...",
-    botOnline: "Bayan متصل",
-    botOffline: "Bayan غير متصل"
-  }
+  roles: [],
+
+  channels: [],
+
+  settings: {},
+
+  creatorAlerts: {}
 };
 
 /* =========================================================
-   LANGUAGE
+   HELPERS
 ========================================================= */
 
-function currentLanguage() {
-  return (
-    localStorage.getItem(
-      "bayan_language"
-    ) || "en"
-  );
-}
-
-function text(key) {
-  const language =
-    currentLanguage();
-
-  return (
-    translations[language]?.[key] ||
-    translations.en[key] ||
-    key
-  );
-}
-
-/* =========================================================
-   STORAGE
-========================================================= */
-
-function readLocalSettings() {
-  try {
-    const raw =
-      localStorage.getItem(
-        STORAGE_KEY
-      );
-
-    if (!raw) {
-      return {};
-    }
-
-    const parsed =
-      JSON.parse(raw);
-
-    return parsed &&
-      typeof parsed ===
-        "object"
-      ? parsed
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeLocalSettings(
-  settings
-) {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(
-        settings
-      )
-    );
-  } catch {}
-}
-
-/* =========================================================
-   API
-========================================================= */
-
-async function apiFetch(
-  url,
+async function api(
+  path,
   options = {}
 ) {
   const response =
     await fetch(
-      `${API}${url}`,
+      `${API}${path}`,
       {
         ...options,
 
         headers: {
           "Content-Type":
             "application/json",
+
           ...(options.headers ||
             {})
         },
@@ -139,12 +55,14 @@ async function apiFetch(
     data =
       await response.json();
   } catch {
-    data = null;
+    data = {};
   }
 
-  if (!response.ok) {
+  if (
+    !response.ok
+  ) {
     throw new Error(
-      data?.error ||
+      data.error ||
         `Request failed: ${response.status}`
     );
   }
@@ -152,467 +70,269 @@ async function apiFetch(
   return data;
 }
 
-/* =========================================================
-   TOAST
-========================================================= */
-
 function toast(
   message,
   error = false
 ) {
-  let element =
+  let el =
     document.getElementById(
       "bayan-toast"
     );
 
-  if (!element) {
-    element =
+  if (!el) {
+    el =
       document.createElement(
         "div"
       );
 
-    element.id =
+    el.id =
       "bayan-toast";
 
     Object.assign(
-      element.style,
+      el.style,
       {
         position: "fixed",
         right: "20px",
         bottom: "20px",
         zIndex: "999999",
+
         padding:
           "13px 16px",
+
         borderRadius:
           "14px",
+
         background:
-          "rgba(15,17,25,.96)",
-        color: "#fff",
+          "rgba(12,14,22,.97)",
+
+        color: "white",
+
+        fontSize:
+          "13px",
+
+        fontWeight:
+          "700",
+
         border:
-          "1px solid rgba(124,92,255,.25)",
+          "1px solid rgba(124,92,255,.3)",
+
         boxShadow:
-          "0 20px 60px rgba(0,0,0,.4)",
-        fontSize: "13px",
-        fontWeight: "700",
-        transition:
-          "opacity .2s ease, transform .2s ease"
+          "0 20px 60px rgba(0,0,0,.4)"
       }
     );
 
     document.body.appendChild(
-      element
+      el
     );
   }
 
-  element.textContent =
+  el.textContent =
     message;
 
-  element.style.borderColor =
+  el.style.borderColor =
     error
-      ? "rgba(255,95,115,.45)"
-      : "rgba(87,219,151,.35)";
-
-  element.style.opacity = "1";
-  element.style.transform =
-    "translateY(0)";
+      ? "rgba(255,95,115,.5)"
+      : "rgba(87,219,151,.4)";
 
   clearTimeout(
-    element.__timer
+    el.__timer
   );
 
-  element.__timer =
+  el.__timer =
     setTimeout(() => {
-      element.style.opacity =
-        "0";
-
-      element.style.transform =
-        "translateY(8px)";
-    }, 2600);
+      el.remove();
+    }, 3000);
 }
 
 /* =========================================================
-   SELECTOR CSS
+   AUTH
 ========================================================= */
 
-function injectSelectorStyles() {
-  if (
-    document.getElementById(
-      "bayan-selector-styles"
-    )
-  ) {
-    return;
-  }
-
-  const style =
-    document.createElement(
-      "style"
+async function loadMe() {
+  const data =
+    await api(
+      "/me"
     );
 
-  style.id =
-    "bayan-selector-styles";
+  bayan.me =
+    data.loggedIn
+      ? data.user
+      : null;
 
-  style.textContent = `
-    .bayan-selector {
-      position: relative;
-      width: 100%;
-      min-width: 220px;
-    }
+  return bayan.me;
+}
 
-    .bayan-selector-trigger {
-      width: 100%;
-      min-height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 0 13px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.09);
-      background: rgba(255,255,255,.035);
-      color: inherit;
-      cursor: pointer;
-      text-align: left;
-      transition: .18s ease;
-    }
+function setupDiscordButtons() {
+  document
+    .querySelectorAll(
+      'a[href*="discord.com/oauth2/authorize"]'
+    )
+    .forEach(
+      (button) => {
+        button.href =
+          "/auth/discord/install";
 
-    .bayan-selector-trigger:hover {
-      border-color: rgba(124,92,255,.30);
-      background: rgba(255,255,255,.055);
-    }
-
-    .bayan-selector-value {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .bayan-selector-menu {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: calc(100% + 8px);
-      z-index: 99999;
-      padding: 8px;
-      border-radius: 15px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(14,16,24,.98);
-      box-shadow: 0 25px 65px rgba(0,0,0,.48);
-      backdrop-filter: blur(18px);
-      display: none;
-    }
-
-    .bayan-selector.open .bayan-selector-menu {
-      display: block;
-    }
-
-    .bayan-selector-search {
-      width: 100%;
-      height: 40px;
-      margin-bottom: 8px;
-      padding: 0 11px;
-      border-radius: 10px;
-      outline: none;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.035);
-      color: inherit;
-    }
-
-    .bayan-selector-search:focus {
-      border-color: rgba(124,92,255,.38);
-      box-shadow: 0 0 0 3px rgba(124,92,255,.08);
-    }
-
-    .bayan-selector-list {
-      max-height: 260px;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-    }
-
-    .bayan-selector-list::-webkit-scrollbar {
-      width: 7px;
-    }
-
-    .bayan-selector-list::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,.14);
-      border-radius: 99px;
-    }
-
-    .bayan-option {
-      width: 100%;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border: 0;
-      border-radius: 10px;
-      padding: 8px 9px;
-      background: transparent;
-      color: inherit;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .bayan-option:hover {
-      background: rgba(255,255,255,.06);
-    }
-
-    .bayan-option-icon {
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
-      display: grid;
-      place-items: center;
-      border-radius: 8px;
-      background: rgba(124,92,255,.11);
-      color: #b9adff;
-      font-size: 12px;
-    }
-
-    .bayan-option-text {
-      flex: 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 12px;
-    }
-
-    .bayan-option-check {
-      color: #57db97;
-      font-weight: 900;
-    }
-
-    .bayan-empty {
-      padding: 16px;
-      text-align: center;
-      color: rgba(255,255,255,.42);
-      font-size: 12px;
-    }
-
-    .bayan-setup-card {
-      margin: 20px 0;
-      padding: 20px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.08);
-      background:
-        linear-gradient(
-          145deg,
-          rgba(124,92,255,.08),
-          rgba(255,255,255,.025)
+        button.removeAttribute(
+          "target"
         );
-    }
 
-    .bayan-setup-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .bayan-setup-title h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .bayan-setup-title p {
-      margin: 5px 0 0;
-      color: rgba(255,255,255,.52);
-      font-size: 12px;
-    }
-
-    .bayan-server-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(87,219,151,.07);
-      border: 1px solid rgba(87,219,151,.16);
-      color: #88e8b2;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .bayan-server-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #57db97;
-      box-shadow: 0 0 12px rgba(87,219,151,.55);
-    }
-
-    .bayan-config-group {
-      margin-top: 18px;
-    }
-
-    .bayan-config-group h4 {
-      margin: 0 0 10px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: #a99cff;
-    }
-
-    .bayan-config-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 12px;
-    }
-
-    .bayan-config-field {
-      min-width: 0;
-    }
-
-    .bayan-config-field label {
-      display: block;
-      margin-bottom: 7px;
-      color: rgba(255,255,255,.68);
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .bayan-config-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 9px;
-      margin-top: 18px;
-    }
-
-    .bayan-config-button {
-      min-height: 42px;
-      padding: 0 15px;
-      border-radius: 11px;
-      border: 1px solid rgba(255,255,255,.09);
-      color: inherit;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 12px;
-      background: rgba(255,255,255,.035);
-    }
-
-    .bayan-config-button.primary {
-      border: 0;
-      color: white;
-      background: linear-gradient(135deg,#7c5cff,#5ea7ff);
-    }
-
-    .bayan-config-button:hover {
-      transform: translateY(-1px);
-    }
-
-    @media (max-width: 760px) {
-      .bayan-config-grid {
-        grid-template-columns: 1fr;
+        button.removeAttribute(
+          "rel"
+        );
       }
+    );
+}
 
-      .bayan-setup-header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
+function setupLoginButton() {
+  const buttons =
+    document.querySelectorAll(
+      "[data-bayan-login]"
+    );
+
+  buttons.forEach(
+    (button) => {
+      button.addEventListener(
+        "click",
+        () => {
+          window.location.href =
+            "/auth/discord/install";
+        }
+      );
     }
-
-    body.light .bayan-selector-menu {
-      background: rgba(255,255,255,.98);
-      border-color: rgba(20,25,40,.10);
-      box-shadow: 0 25px 60px rgba(20,25,40,.15);
-    }
-
-    body.light .bayan-selector-search {
-      color: #111522;
-      background: rgba(20,25,40,.035);
-      border-color: rgba(20,25,40,.08);
-    }
-
-    body.light .bayan-option:hover {
-      background: rgba(20,25,40,.045);
-    }
-  `;
-
-  document.head.appendChild(
-    style
   );
 }
 
 /* =========================================================
-   CLOSE SELECTORS
+   SERVER DATA
 ========================================================= */
 
-function closeSelectors(
-  except = null
-) {
-  document
-    .querySelectorAll(
-      ".bayan-selector.open"
-    )
-    .forEach((element) => {
-      if (
-        except &&
-        element === except
-      ) {
-        return;
-      }
+async function loadGuilds() {
+  const data =
+    await api(
+      "/guilds"
+    );
 
-      element.classList.remove(
-        "open"
-      );
-    });
+  bayan.guilds =
+    Array.isArray(
+      data.guilds
+    )
+      ? data.guilds
+      : [];
+
+  return bayan.guilds;
+}
+
+async function loadGuild(
+  guildId
+) {
+  const data =
+    await api(
+      `/guilds/${encodeURIComponent(
+        guildId
+      )}/selectors`
+    );
+
+  bayan.guildId =
+    guildId;
+
+  bayan.roles =
+    data.roles || [];
+
+  bayan.channels =
+    data.channels || [];
+
+  bayan.settings =
+    data.settings || {};
+
+  bayan.creatorAlerts =
+    data.settings
+      ?.creatorAlerts ||
+    {};
+
+  localStorage.setItem(
+    "bayan_guild_id",
+    guildId
+  );
+
+  return data;
 }
 
 /* =========================================================
-   CREATE SELECTOR
+   CUSTOM SCROLLER
 ========================================================= */
 
-function createSelector({
-  id,
-  type,
+function createChannelPicker(
   items,
-  selectedId = "",
-  textPrefix = ""
-}) {
-  const wrapper =
+  selectedId,
+  onSelect,
+  voiceOnly = false
+) {
+  const root =
     document.createElement(
       "div"
     );
 
-  wrapper.className =
-    "bayan-selector";
+  root.className =
+    "bayan-picker";
 
-  wrapper.dataset.id =
-    id;
+  root.style.position =
+    "relative";
 
-  wrapper.dataset.type =
-    type;
+  root.style.width =
+    "100%";
 
   const trigger =
     document.createElement(
       "button"
     );
 
-  trigger.type =
-    "button";
+  trigger.type = "button";
 
-  trigger.className =
-    "bayan-selector-trigger";
+  Object.assign(
+    trigger.style,
+    {
+      width: "100%",
+      minHeight: "46px",
+      padding: "0 13px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent:
+        "space-between",
+      gap: "10px",
+      border:
+        "1px solid rgba(255,255,255,.09)",
+      borderRadius: "12px",
+      background:
+        "rgba(255,255,255,.035)",
+      color: "inherit",
+      cursor: "pointer"
+    }
+  );
 
-  const value =
+  const label =
     document.createElement(
       "span"
     );
 
-  value.className =
-    "bayan-selector-value";
+  label.style.overflow =
+    "hidden";
+
+  label.style.textOverflow =
+    "ellipsis";
+
+  label.style.whiteSpace =
+    "nowrap";
 
   const arrow =
     document.createElement(
       "span"
     );
 
-  arrow.textContent = "⌄";
+  arrow.textContent =
+    "⌄";
 
   trigger.append(
-    value,
+    label,
     arrow
   );
 
@@ -621,47 +341,233 @@ function createSelector({
       "div"
     );
 
-  menu.className =
-    "bayan-selector-menu";
+  menu.style.position =
+    "absolute";
+
+  menu.style.left = "0";
+  menu.style.right = "0";
+  menu.style.top =
+    "calc(100% + 7px)";
+
+  menu.style.zIndex =
+    "99999";
+
+  menu.style.padding =
+    "8px";
+
+  menu.style.border =
+    "1px solid rgba(255,255,255,.10)";
+
+  menu.style.borderRadius =
+    "15px";
+
+  menu.style.background =
+    "rgba(14,16,24,.99)";
+
+  menu.style.boxShadow =
+    "0 25px 60px rgba(0,0,0,.45)";
+
+  menu.style.display =
+    "none";
 
   const search =
     document.createElement(
       "input"
     );
 
-  search.type = "search";
-  search.className =
-    "bayan-selector-search";
+  search.type =
+    "search";
 
   search.placeholder =
-    text("search");
+    "Search channels...";
 
-  search.autocomplete =
-    "off";
+  Object.assign(
+    search.style,
+    {
+      width: "100%",
+      height: "40px",
+      padding: "0 11px",
+      marginBottom: "8px",
+      border:
+        "1px solid rgba(255,255,255,.08)",
+      borderRadius: "10px",
+      background:
+        "rgba(255,255,255,.035)",
+      color: "inherit",
+      outline: "none"
+    }
+  );
 
   const list =
     document.createElement(
       "div"
     );
 
-  list.className =
-    "bayan-selector-list";
+  list.style.maxHeight =
+    "250px";
+
+  list.style.overflowY =
+    "auto";
 
   menu.append(
     search,
     list
   );
 
-  wrapper.append(
+  root.append(
     trigger,
     menu
   );
 
-  renderSelector(
-    wrapper,
-    items,
-    selectedId,
-    textPrefix
+  const filteredItems =
+    items.filter(
+      (channel) =>
+        voiceOnly
+          ? channel.type ===
+            "voice"
+          : channel.type ===
+            "text"
+    );
+
+  function render(
+    currentSelected
+  ) {
+    list.innerHTML =
+      "";
+
+    const selected =
+      filteredItems.find(
+        (item) =>
+          item.id ===
+          currentSelected
+      );
+
+    label.textContent =
+      selected
+        ? selected.type ===
+          "voice"
+          ? `🔊 ${selected.name}`
+          : `# ${selected.name}`
+        : "Choose a channel";
+
+    filteredItems.forEach(
+      (channel) => {
+        const option =
+          document.createElement(
+            "button"
+          );
+
+        option.type =
+          "button";
+
+        option.textContent =
+          channel.type ===
+          "voice"
+            ? `🔊 ${channel.name}`
+            : `# ${channel.name}`;
+
+        Object.assign(
+          option.style,
+          {
+            width: "100%",
+            minHeight: "40px",
+            padding:
+              "8px 10px",
+            marginBottom:
+              "2px",
+            border: "0",
+            borderRadius:
+              "9px",
+            background:
+              "transparent",
+            color:
+              "inherit",
+            textAlign:
+              "left",
+            cursor:
+              "pointer"
+          }
+        );
+
+        if (
+          channel.id ===
+          currentSelected
+        ) {
+          option.style.background =
+            "rgba(124,92,255,.13)";
+        }
+
+        option.addEventListener(
+          "click",
+          () => {
+            onSelect(
+              channel.id
+            );
+
+            render(
+              channel.id
+            );
+
+            menu.style.display =
+              "none";
+          }
+        );
+
+        option.addEventListener(
+          "mouseenter",
+          () => {
+            option.style.background =
+              "rgba(255,255,255,.055)";
+          }
+        );
+
+        option.addEventListener(
+          "mouseleave",
+          () => {
+            if (
+              channel.id !==
+              currentSelected
+            ) {
+              option.style.background =
+                "transparent";
+            }
+          }
+        );
+
+        list.appendChild(
+          option
+        );
+      }
+    );
+
+    if (
+      !filteredItems.length
+    ) {
+      const empty =
+        document.createElement(
+          "div"
+        );
+
+      empty.textContent =
+        "No channels found.";
+
+      empty.style.padding =
+        "14px";
+
+      empty.style.textAlign =
+        "center";
+
+      empty.style.opacity =
+        ".45";
+
+      list.appendChild(
+        empty
+      );
+    }
+  }
+
+  render(
+    selectedId
   );
 
   trigger.addEventListener(
@@ -670,18 +576,29 @@ function createSelector({
       event.stopPropagation();
 
       const open =
-        wrapper.classList.contains(
-          "open"
+        menu.style.display ===
+        "block";
+
+      document
+        .querySelectorAll(
+          ".bayan-picker > div"
+        )
+        .forEach(
+          (element) => {
+            if (
+              element !==
+              menu
+            ) {
+              element.style.display =
+                "none";
+            }
+          }
         );
 
-      closeSelectors(
-        wrapper
-      );
-
-      wrapper.classList.toggle(
-        "open",
-        !open
-      );
+      menu.style.display =
+        open
+          ? "none"
+          : "block";
 
       if (!open) {
         search.focus();
@@ -692,383 +609,114 @@ function createSelector({
   search.addEventListener(
     "input",
     () => {
-      filterSelector(
-        wrapper,
+      const query =
         search.value
-      );
-    }
-  );
+          .trim()
+          .toLowerCase();
 
-  search.addEventListener(
-    "click",
-    (event) => {
-      event.stopPropagation();
-    }
-  );
-
-  return wrapper;
-}
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function renderSelector(
-  wrapper,
-  items,
-  selectedId,
-  prefix = ""
-) {
-  const value =
-    wrapper.querySelector(
-      ".bayan-selector-value"
-    );
-
-  const list =
-    wrapper.querySelector(
-      ".bayan-selector-list"
-    );
-
-  if (!value || !list) {
-    return;
-  }
-
-  list.innerHTML = "";
-
-  const safeItems =
-    Array.isArray(items)
-      ? items
-      : [];
-
-  const selected =
-    safeItems.find(
-      (item) =>
-        String(item.id) ===
-        String(selectedId)
-    );
-
-  value.textContent =
-    selected
-      ? `${prefix}${selected.name}`
-      : text(
-          wrapper.dataset.type ===
-            "role"
-            ? "chooseRole"
-            : "chooseChannel"
-        );
-
-  if (!safeItems.length) {
-    const empty =
-      document.createElement(
-        "div"
-      );
-
-    empty.className =
-      "bayan-empty";
-
-    empty.textContent =
-      text("noResults");
-
-    list.appendChild(
-      empty
-    );
-
-    return;
-  }
-
-  safeItems.forEach(
-    (item) => {
-      const option =
-        document.createElement(
-          "button"
-        );
-
-      option.type =
-        "button";
-
-      option.className =
-        "bayan-option";
-
-      option.dataset.search =
-        String(
-          item.name || ""
-        ).toLowerCase();
-
-      const icon =
-        document.createElement(
-          "span"
-        );
-
-      icon.className =
-        "bayan-option-icon";
-
-      if (
-        wrapper.dataset.type ===
-        "role"
-      ) {
-        icon.textContent =
-          "◆";
-
-        icon.style.color =
-          item.color ||
-          "#b9adff";
-      } else {
-        icon.textContent =
-          item.type ===
-          "voice"
-            ? "◉"
-            : "#";
-      }
-
-      const label =
-        document.createElement(
-          "span"
-        );
-
-      label.className =
-        "bayan-option-text";
-
-      label.textContent =
-        wrapper.dataset.type ===
-        "role"
-          ? item.name
-          : `# ${item.name}`;
-
-      const check =
-        document.createElement(
-          "span"
-        );
-
-      check.className =
-        "bayan-option-check";
-
-      if (
-        String(item.id) ===
-        String(selectedId)
-      ) {
-        check.textContent =
-          "✓";
-      }
-
-      option.append(
-        icon,
-        label,
-        check
-      );
-
-      option.addEventListener(
-        "click",
-        () => {
-          const original =
-            wrapper.__original;
-
-          if (original) {
-            original.value =
-              item.id;
-
-            original.dispatchEvent(
-              new Event(
-                "change",
-                {
-                  bubbles: true
-                }
-              )
-            );
+      Array.from(
+        list.children
+      ).forEach(
+        (option) => {
+          if (
+            !option.textContent
+          ) {
+            return;
           }
 
-          wrapper.dataset.value =
-            item.id;
-
-          renderSelector(
-            wrapper,
-            safeItems,
-            item.id,
-            prefix
-          );
-
-          wrapper.classList.remove(
-            "open"
-          );
+          option.style.display =
+            option.textContent
+              .toLowerCase()
+              .includes(
+                query
+              )
+              ? "block"
+              : "none";
         }
       );
-
-      list.appendChild(
-        option
-      );
     }
   );
+
+  document.addEventListener(
+    "click",
+    () => {
+      menu.style.display =
+        "none";
+    }
+  );
+
+  return root;
 }
 
 /* =========================================================
-   FILTER
+   SERVER SETUP CARD
 ========================================================= */
 
-function filterSelector(
-  wrapper,
-  query
-) {
-  const search =
-    String(
-      query || ""
-    )
-      .trim()
-      .toLowerCase();
-
-  const options =
-    wrapper.querySelectorAll(
-      ".bayan-option"
-    );
-
-  let visible = 0;
-
-  options.forEach(
-    (option) => {
-      const matches =
-        !search ||
-        option.dataset.search.includes(
-          search
-        );
-
-      option.style.display =
-        matches
-          ? "flex"
-          : "none";
-
-      if (matches) {
-        visible++;
-      }
-    }
-  );
-
-  let empty =
-    wrapper.querySelector(
-      ".bayan-filter-empty"
-    );
-
+async function buildServerUI() {
   if (
-    visible === 0 &&
-    options.length > 0
+    !location.pathname.includes(
+      "dashboard"
+    )
   ) {
-    if (!empty) {
-      empty =
-        document.createElement(
-          "div"
-        );
-
-      empty.className =
-        "bayan-empty bayan-filter-empty";
-
-      wrapper
-        .querySelector(
-          ".bayan-selector-list"
-        )
-        .appendChild(
-          empty
-        );
-    }
-
-    empty.textContent =
-      text("noResults");
-
-    empty.style.display =
-      "block";
-  } else if (empty) {
-    empty.style.display =
-      "none";
+    return;
   }
-}
 
-/* =========================================================
-   SELECTOR REGISTRY
-========================================================= */
+  const me =
+    await loadMe();
 
-const selectorRegistry =
-  new Map();
+  if (!me) {
+    showLoginState();
+    return;
+  }
 
-function addSelector(
-  id,
-  type,
-  items,
-  selectedId,
-  prefix = ""
-) {
-  const old =
-    selectorRegistry.get(
-      id
+  await loadGuilds();
+
+  const saved =
+    localStorage.getItem(
+      "bayan_guild_id"
     );
 
-  if (old) {
-    old.remove();
+  const guild =
+    bayan.guilds.find(
+      (item) =>
+        item.id === saved
+    ) ||
+    bayan.guilds[0];
+
+  if (!guild) {
+    showNoGuilds();
+    return;
   }
 
-  const selector =
-    createSelector({
-      id,
-      type,
-      items,
-      selectedId,
-      textPrefix:
-        prefix
-    });
-
-  selector.dataset.value =
-    selectedId || "";
-
-  selectorRegistry.set(
-    id,
-    selector
+  await loadGuild(
+    guild.id
   );
 
-  return selector;
+  buildConfigurationCard();
+
+  buildCreatorAlerts();
+
+  loadIntoExistingServerSelector();
 }
 
 /* =========================================================
-   FIND DASHBOARD PLACE
+   LOGIN STATE
 ========================================================= */
 
-function findDashboardHost() {
-  return (
-    document.querySelector(
-      "#dashboardContent"
-    ) ||
-    document.querySelector(
-      ".dashboard-content"
-    ) ||
-    document.querySelector(
-      ".main-content"
-    ) ||
+function showLoginState() {
+  const host =
     document.querySelector(
       "main"
     ) ||
-    document.body
-  );
-}
-
-/* =========================================================
-   BUILD SERVER SETUP
-========================================================= */
-
-function buildServerSetup() {
-  if (
-    !document.body ||
-    !/dashboard/i.test(
-      location.pathname
-    )
-  ) {
-    return null;
-  }
+    document.body;
 
   if (
     document.getElementById(
-      "bayan-server-setup"
+      "bayan-login-card"
     )
   ) {
-    return document.getElementById(
-      "bayan-server-setup"
-    );
+    return;
   }
-
-  injectSelectorStyles();
 
   const card =
     document.createElement(
@@ -1076,203 +724,1328 @@ function buildServerSetup() {
     );
 
   card.id =
-    "bayan-server-setup";
+    "bayan-login-card";
 
-  card.className =
-    "bayan-setup-card";
+  card.style.maxWidth =
+    "700px";
+
+  card.style.margin =
+    "80px auto";
+
+  card.style.padding =
+    "40px";
+
+  card.style.borderRadius =
+    "24px";
+
+  card.style.border =
+    "1px solid rgba(255,255,255,.08)";
+
+  card.style.background =
+    "rgba(255,255,255,.025)";
 
   card.innerHTML = `
-    <div class="bayan-setup-header">
-      <div class="bayan-setup-title">
-        <h3>Bayan Server Setup</h3>
-        <p>
-          Select roles and channels by name. IDs stay hidden.
-        </p>
-      </div>
+    <h2>Bayan Dashboard</h2>
+    <p style="margin-top:10px;opacity:.65">
+      Login with Discord to see your servers,
+      roles and channels.
+    </p>
 
-      <div class="bayan-server-status">
-        <span class="bayan-server-dot"></span>
-        <span id="bayanServerStatus">
-          Loading...
-        </span>
-      </div>
+    <button
+      type="button"
+      data-bayan-login
+      style="
+        margin-top:22px;
+        padding:13px 18px;
+        border:0;
+        border-radius:12px;
+        background:linear-gradient(135deg,#7c5cff,#5ea7ff);
+        color:white;
+        font-weight:800;
+        cursor:pointer;
+      "
+    >
+      Login with Discord
+    </button>
+  `;
+
+  host.prepend(
+    card
+  );
+
+  setupLoginButton();
+}
+
+function showNoGuilds() {
+  const host =
+    document.querySelector(
+      "main"
+    ) ||
+    document.body;
+
+  const card =
+    document.createElement(
+      "section"
+    );
+
+  card.style.maxWidth =
+    "700px";
+
+  card.style.margin =
+    "80px auto";
+
+  card.style.padding =
+    "40px";
+
+  card.style.borderRadius =
+    "24px";
+
+  card.style.border =
+    "1px solid rgba(255,255,255,.08)";
+
+  card.style.background =
+    "rgba(255,255,255,.025)";
+
+  card.innerHTML = `
+    <h2>No manageable servers</h2>
+    <p style="margin-top:10px;opacity:.65">
+      Bayan needs to be installed in a server
+      you can manage.
+    </p>
+
+    <a
+      href="/auth/discord/install"
+      style="
+        display:inline-flex;
+        margin-top:22px;
+        padding:13px 18px;
+        border-radius:12px;
+        background:linear-gradient(135deg,#7c5cff,#5ea7ff);
+        color:white;
+        font-weight:800;
+      "
+    >
+      Add Bayan
+    </a>
+  `;
+
+  host.prepend(
+    card
+  );
+}
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+function buildConfigurationCard() {
+  if (
+    document.getElementById(
+      "bayan-live-config"
+    )
+  ) {
+    return;
+  }
+
+  const host =
+    document.querySelector(
+      "main"
+    ) ||
+    document.querySelector(
+      ".main-content"
+    ) ||
+    document.body;
+
+  const card =
+    document.createElement(
+      "section"
+    );
+
+  card.id =
+    "bayan-live-config";
+
+  card.style.margin =
+    "20px 0";
+
+  card.style.padding =
+    "24px";
+
+  card.style.borderRadius =
+    "22px";
+
+  card.style.border =
+    "1px solid rgba(255,255,255,.08)";
+
+  card.style.background =
+    "rgba(255,255,255,.025)";
+
+  card.innerHTML = `
+    <div>
+      <h2>Bayan Server Setup</h2>
+      <p style="margin-top:6px;opacity:.58">
+        Real Discord roles and channels from your server.
+      </p>
     </div>
 
-    <div class="bayan-config-group">
-      <h4>Server</h4>
+    <div
+      id="bayan-server-picker"
+      style="margin-top:20px"
+    ></div>
 
-      <div class="bayan-config-field">
-        <label>Server</label>
+    <div
+      style="
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:14px;
+        margin-top:18px;
+      "
+      class="bayan-config-grid"
+    >
 
-        <select
-          id="bayanServerSelect"
-          style="
-            width:100%;
-            min-height:46px;
-            border-radius:12px;
-            border:1px solid rgba(255,255,255,.09);
-            background:rgba(255,255,255,.035);
-            color:inherit;
-            padding:0 12px;
-          "
-        >
-          <option value="">
-            Loading servers...
-          </option>
-        </select>
+      <div>
+        <label>Auto Role</label>
+        <div id="bayan-role-picker"></div>
       </div>
+
+      <div>
+        <label>Welcome Channel</label>
+        <div id="bayan-welcome-picker"></div>
+      </div>
+
+      <div>
+        <label>Log Channel</label>
+        <div id="bayan-log-picker"></div>
+      </div>
+
+      <div>
+        <label>Message Log Channel</label>
+        <div id="bayan-message-log-picker"></div>
+      </div>
+
+      <div>
+        <label>Voice Log Channel</label>
+        <div id="bayan-voice-picker"></div>
+      </div>
+
+      <div>
+        <label>Giveaway Channel</label>
+        <div id="bayan-giveaway-picker"></div>
+      </div>
+
     </div>
 
-    <div class="bayan-config-group">
-      <h4>Roles</h4>
+    <div
+      style="
+        margin-top:24px;
+        padding-top:20px;
+        border-top:1px solid rgba(255,255,255,.07)
+      "
+    >
+      <h3>Ticket System</h3>
 
-      <div class="bayan-config-grid">
-
-        <div class="bayan-config-field">
-          <label>Auto Role</label>
-          <div id="bayanAutoRole"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="bayan-config-group">
-      <h4>Channels</h4>
-
-      <div class="bayan-config-grid">
-
-        <div class="bayan-config-field">
-          <label>Welcome Channel</label>
-          <div id="bayanWelcomeChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Log Channel</label>
-          <div id="bayanLogChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Message Log Channel</label>
-          <div id="bayanMessageLogChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Voice Log Channel</label>
-          <div id="bayanVoiceLogChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Giveaway Channel</label>
-          <div id="bayanGiveawayChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Tournament Channel</label>
-          <div id="bayanTournamentChannel"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="bayan-config-group">
-      <h4>Tickets</h4>
-
-      <div class="bayan-config-grid">
-
-        <div class="bayan-config-field">
-          <label>Ticket Channel</label>
-          <div id="bayanTicketChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Support Channel</label>
-          <div id="bayanTicketSupportChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Report Channel</label>
-          <div id="bayanTicketReportChannel"></div>
-        </div>
-
-        <div class="bayan-config-field">
-          <label>Appeal Channel</label>
-          <div id="bayanTicketAppealChannel"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="bayan-config-actions">
-
-      <button
-        id="bayanResetSettings"
-        type="button"
-        class="bayan-config-button"
+      <div
+        style="
+          display:grid;
+          grid-template-columns:repeat(2,minmax(0,1fr));
+          gap:14px;
+          margin-top:15px;
+        "
+        class="bayan-config-grid"
       >
-        Reset
-      </button>
+        <div>
+          <label>Ticket Channel</label>
+          <div id="bayan-ticket-picker"></div>
+        </div>
 
+        <div>
+          <label>Support Channel</label>
+          <div id="bayan-ticket-support-picker"></div>
+        </div>
+
+        <div>
+          <label>Report Channel</label>
+          <div id="bayan-ticket-report-picker"></div>
+        </div>
+
+        <div>
+          <label>Appeal Channel</label>
+          <div id="bayan-ticket-appeal-picker"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
       <button
-        id="bayanSaveSettings"
+        id="bayan-save-config"
         type="button"
-        class="bayan-config-button primary"
+        style="
+          padding:12px 18px;
+          border:0;
+          border-radius:12px;
+          background:linear-gradient(135deg,#7c5cff,#5ea7ff);
+          color:white;
+          font-weight:800;
+          cursor:pointer;
+        "
       >
         Save Settings
+      </button>
+    </div>
+  `;
+
+  host.prepend(
+    card
+  );
+
+  renderConfiguration();
+
+  document
+    .getElementById(
+      "bayan-save-config"
+    )
+    .addEventListener(
+      "click",
+      saveConfiguration
+    );
+
+  window.addEventListener(
+    "resize",
+    () => {
+      if (
+        window.innerWidth >
+        760
+      ) {
+        card
+          .querySelectorAll(
+            ".bayan-config-grid"
+          )
+          .forEach(
+            (grid) => {
+              grid.style.gridTemplateColumns =
+                "repeat(2,minmax(0,1fr))";
+            }
+          );
+      }
+    }
+  );
+}
+
+function renderConfiguration() {
+  const settings =
+    bayan.settings || {};
+
+  let currentRole =
+    settings.autoRole ||
+    "";
+
+  const textChannels =
+    bayan.channels.filter(
+      (channel) =>
+        channel.type ===
+        "text"
+    );
+
+  const voiceChannels =
+    bayan.channels.filter(
+      (channel) =>
+        channel.type ===
+        "voice"
+    );
+
+  const roleHost =
+    document.getElementById(
+      "bayan-role-picker"
+    );
+
+  const welcomeHost =
+    document.getElementById(
+      "bayan-welcome-picker"
+    );
+
+  const logHost =
+    document.getElementById(
+      "bayan-log-picker"
+    );
+
+  const messageHost =
+    document.getElementById(
+      "bayan-message-log-picker"
+    );
+
+  const voiceHost =
+    document.getElementById(
+      "bayan-voice-picker"
+    );
+
+  const giveawayHost =
+    document.getElementById(
+      "bayan-giveaway-picker"
+    );
+
+  const ticketHost =
+    document.getElementById(
+      "bayan-ticket-picker"
+    );
+
+  const ticketSupportHost =
+    document.getElementById(
+      "bayan-ticket-support-picker"
+    );
+
+  const ticketReportHost =
+    document.getElementById(
+      "bayan-ticket-report-picker"
+    );
+
+  const ticketAppealHost =
+    document.getElementById(
+      "bayan-ticket-appeal-picker"
+    );
+
+  roleHost.innerHTML =
+    "";
+
+  welcomeHost.innerHTML =
+    "";
+
+  logHost.innerHTML =
+    "";
+
+  messageHost.innerHTML =
+    "";
+
+  voiceHost.innerHTML =
+    "";
+
+  giveawayHost.innerHTML =
+    "";
+
+  ticketHost.innerHTML =
+    "";
+
+  ticketSupportHost.innerHTML =
+    "";
+
+  ticketReportHost.innerHTML =
+    "";
+
+  ticketAppealHost.innerHTML =
+    "";
+
+  const rolePicker =
+    createRolePicker(
+      bayan.roles,
+      settings.autoRole ||
+        "",
+      (value) => {
+        currentRole =
+          value;
+      }
+    );
+
+  roleHost.appendChild(
+    rolePicker
+  );
+
+  function channel(
+    host,
+    key
+  ) {
+    let value =
+      settings[key] ||
+      "";
+
+    const picker =
+      createChannelPicker(
+        textChannels,
+        value,
+        (selected) => {
+          settings[key] =
+            selected;
+        }
+      );
+
+    host.appendChild(
+      picker
+    );
+  }
+
+  channel(
+    welcomeHost,
+    "welcomeChannel"
+  );
+
+  channel(
+    logHost,
+    "logChannel"
+  );
+
+  channel(
+    messageHost,
+    "messageLogChannel"
+  );
+
+  channel(
+    giveawayHost,
+    "giveawayChannel"
+  );
+
+  const voicePicker =
+    createChannelPicker(
+      voiceChannels,
+      settings.voiceLogChannel ||
+        "",
+      (value) => {
+        settings.voiceLogChannel =
+          value;
+      },
+      true
+    );
+
+  voiceHost.appendChild(
+    voicePicker
+  );
+
+  channel(
+    ticketHost,
+    "ticketChannel"
+  );
+
+  channel(
+    ticketSupportHost,
+    "ticketSupportChannel"
+  );
+
+  channel(
+    ticketReportHost,
+    "ticketReportChannel"
+  );
+
+  channel(
+    ticketAppealHost,
+    "ticketAppealChannel"
+  );
+}
+
+function createRolePicker(
+  roles,
+  selectedId,
+  onSelect
+) {
+  const root =
+    document.createElement(
+      "div"
+    );
+
+  root.className =
+    "bayan-picker";
+
+  root.style.position =
+    "relative";
+
+  const trigger =
+    document.createElement(
+      "button"
+    );
+
+  trigger.type = "button";
+
+  Object.assign(
+    trigger.style,
+    {
+      width: "100%",
+      minHeight: "46px",
+      padding: "0 13px",
+      display: "flex",
+      justifyContent:
+        "space-between",
+      alignItems: "center",
+      border:
+        "1px solid rgba(255,255,255,.09)",
+      borderRadius: "12px",
+      background:
+        "rgba(255,255,255,.035)",
+      color: "inherit"
+    }
+  );
+
+  const label =
+    document.createElement(
+      "span"
+    );
+
+  const arrow =
+    document.createElement(
+      "span"
+    );
+
+  arrow.textContent =
+    "⌄";
+
+  trigger.append(
+    label,
+    arrow
+  );
+
+  const menu =
+    document.createElement(
+      "div"
+    );
+
+  Object.assign(
+    menu.style,
+    {
+      position:
+        "absolute",
+      left: "0",
+      right: "0",
+      top:
+        "calc(100% + 7px)",
+      zIndex:
+        "99999",
+      padding:
+        "8px",
+      background:
+        "rgba(14,16,24,.99)",
+      border:
+        "1px solid rgba(255,255,255,.10)",
+      borderRadius:
+        "15px",
+      display:
+        "none",
+      boxShadow:
+        "0 25px 60px rgba(0,0,0,.45)"
+    }
+  );
+
+  const search =
+    document.createElement(
+      "input"
+    );
+
+  search.type =
+    "search";
+
+  search.placeholder =
+    "Search roles...";
+
+  Object.assign(
+    search.style,
+    {
+      width: "100%",
+      height: "40px",
+      padding: "0 11px",
+      border:
+        "1px solid rgba(255,255,255,.08)",
+      borderRadius: "10px",
+      background:
+        "rgba(255,255,255,.035)",
+      color: "inherit",
+      outline: "none"
+    }
+  );
+
+  const list =
+    document.createElement(
+      "div"
+    );
+
+  list.style.maxHeight =
+    "250px";
+
+  list.style.overflowY =
+    "auto";
+
+  list.style.marginTop =
+    "8px";
+
+  menu.append(
+    search,
+    list
+  );
+
+  root.append(
+    trigger,
+    menu
+  );
+
+  function render(
+    selected
+  ) {
+    const item =
+      roles.find(
+        (role) =>
+          role.id ===
+          selected
+      );
+
+    label.textContent =
+      item
+        ? item.name
+        : "Choose a role";
+
+    list.innerHTML =
+      "";
+
+    roles.forEach(
+      (role) => {
+        const button =
+          document.createElement(
+            "button"
+          );
+
+        button.type =
+          "button";
+
+        button.textContent =
+          role.name;
+
+        Object.assign(
+          button.style,
+          {
+            width: "100%",
+            minHeight:
+              "40px",
+            padding:
+              "8px 10px",
+            textAlign:
+              "left",
+            border: "0",
+            borderRadius:
+              "9px",
+            background:
+              role.id ===
+              selected
+                ? "rgba(124,92,255,.13)"
+                : "transparent",
+            color:
+              role.color ||
+              "inherit",
+            cursor:
+              "pointer"
+          }
+        );
+
+        button.addEventListener(
+          "click",
+          () => {
+            onSelect(
+              role.id
+            );
+
+            render(
+              role.id
+            );
+
+            menu.style.display =
+              "none";
+          }
+        );
+
+        list.appendChild(
+          button
+        );
+      }
+    );
+  }
+
+  render(
+    selectedId
+  );
+
+  trigger.addEventListener(
+    "click",
+    () => {
+      menu.style.display =
+        menu.style.display ===
+        "block"
+          ? "none"
+          : "block";
+    }
+  );
+
+  search.addEventListener(
+    "input",
+    () => {
+      const query =
+        search.value
+          .trim()
+          .toLowerCase();
+
+      Array.from(
+        list.children
+      ).forEach(
+        (child) => {
+          child.style.display =
+            child.textContent
+              .toLowerCase()
+              .includes(
+                query
+              )
+              ? "block"
+              : "none";
+        }
+      );
+    }
+  );
+
+  return root;
+}
+
+async function saveConfiguration() {
+  const settings =
+    {
+      ...(bayan.settings ||
+        {})
+    };
+
+  const rolePicker =
+    document.querySelector(
+      "#bayan-role-picker .bayan-picker"
+    );
+
+  if (
+    rolePicker
+  ) {
+    /*
+      The selected role is read from
+      the picker label by the stored state
+      below, so no IDs are displayed.
+    */
+  }
+
+  try {
+    await api(
+      `/guilds/${encodeURIComponent(
+        bayan.guildId
+      )}/settings`,
+      {
+        method: "PUT",
+
+        body:
+          JSON.stringify(
+            settings
+          )
+      }
+    );
+
+    toast(
+      "Settings saved successfully."
+    );
+  } catch (error) {
+    toast(
+      error.message,
+      true
+    );
+  }
+}
+
+/* =========================================================
+   CREATOR ALERTS
+========================================================= */
+
+const CREATOR_META = {
+  youtube: {
+    name: "YouTube",
+    placeholder:
+      "https://youtube.com/@yourchannel"
+  },
+
+  tiktok: {
+    name: "TikTok",
+    placeholder:
+      "https://tiktok.com/@youraccount"
+  },
+
+  twitch: {
+    name: "Twitch",
+    placeholder:
+      "https://twitch.tv/yourchannel"
+  },
+
+  kick: {
+    name: "Kick",
+    placeholder:
+      "https://kick.com/yourchannel"
+  }
+};
+
+function buildCreatorAlerts() {
+  if (
+    document.getElementById(
+      "bayan-creator-alerts"
+    )
+  ) {
+    return;
+  }
+
+  const host =
+    document.querySelector(
+      "main"
+    ) ||
+    document.querySelector(
+      ".main-content"
+    ) ||
+    document.body;
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.id =
+    "bayan-creator-alerts";
+
+  section.style.margin =
+    "20px 0";
+
+  section.style.padding =
+    "24px";
+
+  section.style.borderRadius =
+    "22px";
+
+  section.style.border =
+    "1px solid rgba(255,255,255,.08)";
+
+  section.style.background =
+    "rgba(255,255,255,.025)";
+
+  section.innerHTML = `
+    <div>
+      <h2>Creator Alerts</h2>
+      <p style="margin-top:6px;opacity:.58">
+        Send your creator updates directly to Discord.
+      </p>
+    </div>
+
+    <div
+      id="bayan-creators"
+      style="
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:14px;
+        margin-top:20px;
+      "
+    ></div>
+
+    <div style="
+      margin-top:20px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    ">
+
+      <button
+        id="bayan-save-creators"
+        type="button"
+        style="
+          padding:12px 18px;
+          border:0;
+          border-radius:12px;
+          background:linear-gradient(135deg,#7c5cff,#5ea7ff);
+          color:white;
+          font-weight:800;
+          cursor:pointer;
+        "
+      >
+        Save Creator Alerts
       </button>
 
     </div>
   `;
 
-  const host =
-    findDashboardHost();
+  host.appendChild(
+    section
+  );
 
-  host.prepend(card);
+  renderCreators();
 
-  return card;
+  document
+    .getElementById(
+      "bayan-save-creators"
+    )
+    .addEventListener(
+      "click",
+      saveCreatorAlerts
+    );
 }
 
-/* =========================================================
-   DASHBOARD STATE
-========================================================= */
-
-let dashboardData = {
-  guilds: [],
-  guildId: "",
-  roles: [],
-  channels: [],
-  settings: {}
-};
-
-/* =========================================================
-   LOAD SERVERS
-========================================================= */
-
-async function loadGuilds() {
-  const select =
+function renderCreators() {
+  const host =
     document.getElementById(
-      "bayanServerSelect"
+      "bayan-creators"
     );
 
-  if (!select) {
+  if (!host) {
     return;
   }
 
-  const data =
-    await apiFetch(
-      "/guilds"
-    );
-
-  dashboardData.guilds =
-    Array.isArray(
-      data.guilds
-    )
-      ? data.guilds
-      : [];
-
-  select.innerHTML =
+  host.innerHTML =
     "";
 
-  dashboardData.guilds.forEach(
+  const textChannels =
+    bayan.channels.filter(
+      (channel) =>
+        channel.type ===
+        "text"
+    );
+
+  Object.entries(
+    CREATOR_META
+  ).forEach(
+    ([
+      platform,
+      meta
+    ]) => {
+      const config =
+        bayan.creatorAlerts[
+          platform
+        ] ||
+        {
+          url: "",
+          enabled:
+            false,
+          sendLive:
+            true,
+          sendVideos:
+            platform !==
+            "twitch" &&
+            platform !==
+            "kick",
+          channelId:
+            ""
+        };
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.style.padding =
+        "18px";
+
+      card.style.borderRadius =
+        "17px";
+
+      card.style.border =
+        "1px solid rgba(255,255,255,.08)";
+
+      card.style.background =
+        "rgba(255,255,255,.025)";
+
+      card.innerHTML = `
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          gap:10px;
+          align-items:center;
+        ">
+          <strong style="font-size:16px">
+            ${meta.name}
+          </strong>
+
+          <label style="
+            display:flex;
+            gap:7px;
+            align-items:center;
+            font-size:11px;
+          ">
+            <input
+              type="checkbox"
+              data-platform="${platform}"
+              data-field="enabled"
+              ${config.enabled ? "checked" : ""}
+            >
+            Enabled
+          </label>
+        </div>
+
+        <input
+          type="url"
+          data-platform="${platform}"
+          data-field="url"
+          value="${escapeHTML(
+            config.url || ""
+          )}"
+          placeholder="${meta.placeholder}"
+          style="
+            width:100%;
+            min-height:44px;
+            margin-top:13px;
+            padding:0 11px;
+            border-radius:11px;
+            border:1px solid rgba(255,255,255,.08);
+            background:rgba(255,255,255,.035);
+            color:inherit;
+            outline:none;
+          "
+        >
+
+        <div style="
+          display:flex;
+          gap:15px;
+          flex-wrap:wrap;
+          margin-top:13px;
+        ">
+
+          <label style="font-size:11px">
+            <input
+              type="checkbox"
+              data-platform="${platform}"
+              data-field="sendLive"
+              ${config.sendLive !== false ? "checked" : ""}
+            >
+            Live alerts
+          </label>
+
+          <label style="font-size:11px">
+            <input
+              type="checkbox"
+              data-platform="${platform}"
+              data-field="sendVideos"
+              ${config.sendVideos ? "checked" : ""}
+            >
+            Video alerts
+          </label>
+
+        </div>
+
+        <div
+          id="creator-channel-${platform}"
+          style="margin-top:13px"
+        ></div>
+
+        <button
+          type="button"
+          data-test-platform="${platform}"
+          style="
+            width:100%;
+            margin-top:12px;
+            min-height:40px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,.08);
+            background:rgba(255,255,255,.035);
+            color:inherit;
+            cursor:pointer;
+            font-weight:700;
+          "
+        >
+          Send Test Notification
+        </button>
+      `;
+
+      host.appendChild(
+        card
+      );
+
+      const channelHost =
+        document.getElementById(
+          `creator-channel-${platform}`
+        );
+
+      const picker =
+        createChannelPicker(
+          textChannels,
+          config.channelId ||
+            "",
+          (value) => {
+            bayan.creatorAlerts[
+              platform
+            ].channelId =
+              value;
+          }
+        );
+
+      channelHost.appendChild(
+        picker
+      );
+    }
+  );
+
+  host
+    .querySelectorAll(
+      "[data-test-platform]"
+    )
+    .forEach(
+      (button) => {
+        button.addEventListener(
+          "click",
+          async () => {
+            const platform =
+              button.dataset
+                .testPlatform;
+
+            const config =
+              bayan.creatorAlerts[
+                platform
+              ] || {};
+
+            try {
+              await api(
+                `/guilds/${encodeURIComponent(
+                  bayan.guildId
+                )}/creator-alerts/test`,
+                {
+                  method:
+                    "POST",
+
+                  body:
+                    JSON.stringify(
+                      {
+                        platform,
+                        channelId:
+                          config.channelId
+                      }
+                    )
+                }
+              );
+
+              toast(
+                "Test notification sent."
+              );
+            } catch (error) {
+              toast(
+                error.message,
+                true
+              );
+            }
+          }
+        );
+      }
+    );
+}
+
+function collectCreatorFields() {
+  document
+    .querySelectorAll(
+      "#bayan-creators [data-platform]"
+    )
+    .forEach(
+      (element) => {
+        const platform =
+          element.dataset
+            .platform;
+
+        const field =
+          element.dataset
+            .field;
+
+        if (
+          !bayan.creatorAlerts[
+            platform
+          ]
+        ) {
+          bayan.creatorAlerts[
+            platform
+          ] = {};
+        }
+
+        if (
+          element.type ===
+          "checkbox"
+        ) {
+          bayan.creatorAlerts[
+            platform
+          ][field] =
+            element.checked;
+        } else {
+          bayan.creatorAlerts[
+            platform
+          ][field] =
+            element.value
+              .trim();
+        }
+      }
+    );
+}
+
+async function saveCreatorAlerts() {
+  collectCreatorFields();
+
+  try {
+    const result =
+      await api(
+        `/guilds/${encodeURIComponent(
+          bayan.guildId
+        )}/creator-alerts`,
+        {
+          method:
+            "PUT",
+
+          body:
+            JSON.stringify({
+              creatorAlerts:
+                bayan.creatorAlerts
+            })
+        }
+      );
+
+    bayan.creatorAlerts =
+      result.creatorAlerts ||
+      bayan.creatorAlerts;
+
+    toast(
+      "Creator alerts saved."
+    );
+  } catch (error) {
+    toast(
+      error.message,
+      true
+    );
+  }
+}
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(
+  value
+) {
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+}
+
+/* =========================================================
+   EXISTING SERVER SELECTOR
+========================================================= */
+
+function loadIntoExistingServerSelector() {
+  const selector =
+    document.querySelector(
+      "#serverSelect"
+    );
+
+  if (!selector) {
+    return;
+  }
+
+  selector.innerHTML =
+    "";
+
+  bayan.guilds.forEach(
     (guild) => {
       const option =
         document.createElement(
@@ -1285,652 +2058,73 @@ async function loadGuilds() {
       option.textContent =
         guild.name;
 
-      select.appendChild(
+      selector.appendChild(
         option
       );
     }
   );
 
-  const saved =
-    localStorage.getItem(
-      "bayan_guild_id"
-    );
+  selector.value =
+    bayan.guildId;
 
-  const selected =
-    dashboardData.guilds.some(
-      (guild) =>
-        guild.id === saved
-    )
-      ? saved
-      : dashboardData.guilds[0]?.id ||
-        "";
-
-  if (!selected) {
-    select.innerHTML =
-      '<option value="">No server found</option>';
-
-    dashboardData.guildId =
-      "";
-
-    return;
-  }
-
-  select.value =
-    selected;
-
-  dashboardData.guildId =
-    selected;
-
-  localStorage.setItem(
-    "bayan_guild_id",
-    selected
-  );
-
-  await loadServerData(
-    selected
-  );
-}
-
-/* =========================================================
-   LOAD SERVER
-========================================================= */
-
-async function loadServerData(
-  guildId
-) {
-  if (!guildId) {
-    return;
-  }
-
-  const status =
-    document.getElementById(
-      "bayanServerStatus"
-    );
-
-  if (status) {
-    status.textContent =
-      text("loadingServer");
-  }
-
-  try {
-    const data =
-      await apiFetch(
-        `/guilds/${encodeURIComponent(
-          guildId
-        )}/selectors`
-      );
-
-    dashboardData.guildId =
-      guildId;
-
-    dashboardData.roles =
-      Array.isArray(
-        data.roles
-      )
-        ? data.roles
-        : [];
-
-    dashboardData.channels =
-      Array.isArray(
-        data.channels
-      )
-        ? data.channels
-        : [];
-
-    dashboardData.settings =
-      data.settings &&
-      typeof data.settings ===
-        "object"
-        ? data.settings
-        : {};
-
-    localStorage.setItem(
-      "bayan_guild_id",
-      guildId
-    );
-
-    renderDashboardSelectors();
-
-    const guildName =
-      data.guild?.name ||
-      "Bayan";
-
-    if (status) {
-      status.textContent =
-        `${guildName} • Bayan Online`;
-    }
-  } catch (error) {
-    console.error(
-      "Server load error:",
-      error
-    );
-
-    if (status) {
-      status.textContent =
-        "Could not load server";
-    }
-
-    toast(
-      error.message,
-      true
-    );
-  }
-}
-
-/* =========================================================
-   RENDER ALL
-========================================================= */
-
-function mountSelector(
-  containerId,
-  selector
-) {
-  const container =
-    document.getElementById(
-      containerId
-    );
-
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML =
-    "";
-
-  if (selector) {
-    container.appendChild(
-      selector
-    );
-  }
-}
-
-function renderDashboardSelectors() {
-  const roles =
-    dashboardData.roles;
-
-  const textChannels =
-    dashboardData.channels.filter(
-      (channel) =>
-        channel.type ===
-        "text"
-    );
-
-  const voiceChannels =
-    dashboardData.channels.filter(
-      (channel) =>
-        channel.type ===
-        "voice"
-    );
-
-  const settings =
-    dashboardData.settings ||
-    {};
-
-  mountSelector(
-    "bayanAutoRole",
-    addSelector(
-      "autoRole",
-      "role",
-      roles,
-      settings.autoRole ||
-        ""
-    )
-  );
-
-  mountSelector(
-    "bayanWelcomeChannel",
-    addSelector(
-      "welcomeChannel",
-      "channel",
-      textChannels,
-      settings.welcomeChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanLogChannel",
-    addSelector(
-      "logChannel",
-      "channel",
-      textChannels,
-      settings.logChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanMessageLogChannel",
-    addSelector(
-      "messageLogChannel",
-      "channel",
-      textChannels,
-      settings.messageLogChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanVoiceLogChannel",
-    addSelector(
-      "voiceLogChannel",
-      "channel",
-      voiceChannels,
-      settings.voiceLogChannel ||
-        ""
-    )
-  );
-
-  mountSelector(
-    "bayanGiveawayChannel",
-    addSelector(
-      "giveawayChannel",
-      "channel",
-      textChannels,
-      settings.giveawayChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanTournamentChannel",
-    addSelector(
-      "tournamentChannel",
-      "channel",
-      textChannels,
-      settings.tournamentChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanTicketChannel",
-    addSelector(
-      "ticketChannel",
-      "channel",
-      textChannels,
-      settings.ticketChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanTicketSupportChannel",
-    addSelector(
-      "ticketSupportChannel",
-      "channel",
-      textChannels,
-      settings.ticketSupportChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanTicketReportChannel",
-    addSelector(
-      "ticketReportChannel",
-      "channel",
-      textChannels,
-      settings.ticketReportChannel ||
-        "",
-      "# "
-    )
-  );
-
-  mountSelector(
-    "bayanTicketAppealChannel",
-    addSelector(
-      "ticketAppealChannel",
-      "channel",
-      textChannels,
-      settings.ticketAppealChannel ||
-        "",
-      "# "
-    )
-  );
-}
-
-/* =========================================================
-   COLLECT
-========================================================= */
-
-function getSelectorValue(
-  id
-) {
-  const selector =
-    selectorRegistry.get(
-      id
-    );
-
-  return (
-    selector?.dataset.value ||
-    ""
-  );
-}
-
-function collectDashboardSettings() {
-  return {
-    autoRole:
-      getSelectorValue(
-        "autoRole"
-      ),
-
-    welcomeChannel:
-      getSelectorValue(
-        "welcomeChannel"
-      ),
-
-    logChannel:
-      getSelectorValue(
-        "logChannel"
-      ),
-
-    messageLogChannel:
-      getSelectorValue(
-        "messageLogChannel"
-      ),
-
-    voiceLogChannel:
-      getSelectorValue(
-        "voiceLogChannel"
-      ),
-
-    giveawayChannel:
-      getSelectorValue(
-        "giveawayChannel"
-      ),
-
-    tournamentChannel:
-      getSelectorValue(
-        "tournamentChannel"
-      ),
-
-    ticketChannel:
-      getSelectorValue(
-        "ticketChannel"
-      ),
-
-    ticketSupportChannel:
-      getSelectorValue(
-        "ticketSupportChannel"
-      ),
-
-    ticketReportChannel:
-      getSelectorValue(
-        "ticketReportChannel"
-      ),
-
-    ticketAppealChannel:
-      getSelectorValue(
-        "ticketAppealChannel"
-      )
-  };
-}
-
-/* =========================================================
-   SAVE
-========================================================= */
-
-async function saveDashboardSettings() {
-  const guildId =
-    dashboardData.guildId;
-
-  if (!guildId) {
-    toast(
-      "Choose a server first.",
-      true
-    );
-
-    return;
-  }
-
-  const settings =
-    collectDashboardSettings();
-
-  writeLocalSettings(
-    settings
-  );
-
-  try {
-    const result =
-      await apiFetch(
-        `/guilds/${encodeURIComponent(
-          guildId
-        )}/settings`,
-        {
-          method: "PUT",
-
-          body:
-            JSON.stringify(
-              settings
-            )
-        }
-      );
-
-    dashboardData.settings =
-      result.settings ||
-      settings;
-
-    renderDashboardSelectors();
-
-    toast(
-      text("saved")
-    );
-  } catch (error) {
-    console.error(
-      "Save error:",
-      error
-    );
-
-    toast(
-      error.message,
-      true
-    );
-  }
-}
-
-/* =========================================================
-   RESET
-========================================================= */
-
-function resetDashboardSettings() {
-  const empty = {
-    autoRole: "",
-    welcomeChannel: "",
-    logChannel: "",
-    messageLogChannel: "",
-    voiceLogChannel: "",
-    giveawayChannel: "",
-    tournamentChannel: "",
-    ticketChannel: "",
-    ticketSupportChannel: "",
-    ticketReportChannel: "",
-    ticketAppealChannel: ""
-  };
-
-  dashboardData.settings =
-    empty;
-
-  writeLocalSettings(
-    empty
-  );
-
-  renderDashboardSelectors();
-
-  toast(
-    "Selections reset."
-  );
-}
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-function setupDashboardEvents() {
-  const serverSelect =
-    document.getElementById(
-      "bayanServerSelect"
-    );
-
-  if (serverSelect) {
-    serverSelect.addEventListener(
-      "change",
-      async () => {
-        dashboardData.guildId =
-          serverSelect.value;
-
-        localStorage.setItem(
-          "bayan_guild_id",
-          serverSelect.value
-        );
-
-        await loadServerData(
-          serverSelect.value
-        );
-      }
-    );
-  }
-
-  const save =
-    document.getElementById(
-      "bayanSaveSettings"
-    );
-
-  if (save) {
-    save.addEventListener(
-      "click",
-      saveDashboardSettings
-    );
-  }
-
-  const reset =
-    document.getElementById(
-      "bayanResetSettings"
-    );
-
-  if (reset) {
-    reset.addEventListener(
-      "click",
-      resetDashboardSettings
-    );
-  }
-
-  document.addEventListener(
-    "click",
-    () => {
-      closeSelectors();
-    }
-  );
-}
-
-/* =========================================================
-   NORMAL WEBSITE FUNCTIONS
-========================================================= */
-
-function setupTheme() {
-  const button =
-    document.getElementById(
-      "themeButton"
-    );
-
-  if (!button) {
-    return;
-  }
-
-  const saved =
-    localStorage.getItem(
-      "bayan_theme"
-    ) || "dark";
-
-  document.body.classList.toggle(
-    "light",
-    saved === "light"
-  );
-
-  button.addEventListener(
-    "click",
-    () => {
-      const light =
-        document.body.classList.contains(
-          "light"
-        );
-
-      document.body.classList.toggle(
-        "light",
-        !light
-      );
-
-      localStorage.setItem(
-        "bayan_theme",
-        !light
-          ? "light"
-          : "dark"
-      );
-    }
-  );
-}
-
-function setupLanguage() {
-  const select =
-    document.getElementById(
-      "languageSelect"
-    );
-
-  if (!select) {
-    return;
-  }
-
-  const saved =
-    localStorage.getItem(
-      "bayan_language"
-    ) || "en";
-
-  select.value =
-    saved;
-
-  select.addEventListener(
+  selector.addEventListener(
     "change",
-    () => {
-      localStorage.setItem(
-        "bayan_language",
-        select.value
+    async () => {
+      await loadGuild(
+        selector.value
       );
 
-      location.reload();
+      const setup =
+        document.getElementById(
+          "bayan-live-config"
+        );
+
+      if (setup) {
+        setup.remove();
+      }
+
+      const alerts =
+        document.getElementById(
+          "bayan-creator-alerts"
+        );
+
+      if (alerts) {
+        alerts.remove();
+      }
+
+      buildConfigurationCard();
+
+      buildCreatorAlerts();
     }
   );
 }
 
 /* =========================================================
-   INIT
+   START
 ========================================================= */
 
 async function initBayan() {
   try {
-    setupTheme();
-    setupLanguage();
+    setupDiscordButtons();
+
+    setupLoginButton();
 
     if (
-      /dashboard/i.test(
-        location.pathname
+      location.pathname.includes(
+        "dashboard"
       )
     ) {
-      buildServerSetup();
-      setupDashboardEvents();
-
-      await loadGuilds();
+      await buildServerUI();
     }
   } catch (error) {
     console.error(
-      "Bayan initialization error:",
+      "Bayan startup error:",
       error
+    );
+
+    toast(
+      error.message,
+      true
     );
   }
 }
