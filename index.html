@@ -1,607 +1,673 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Bayan — Discord Bot</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <meta
         name="description"
-        content="Bayan is a powerful Discord bot for moderation, tickets, welcome messages and server management."
+        content="بيان - لوحة تحكم عربية متقدمة لسيرفر Discord"
     >
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <title>بيان | إدارة سيرفر Discord</title>
 
-        html {
-            scroll-behavior: smooth;
-        }
+    <link rel="stylesheet" href="/style.css">
 
-        body {
-            font-family:
-                Inter,
-                ui-sans-serif,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            background: #08090d;
-            color: #f5f7fa;
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .background {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            overflow: hidden;
-            background:
-                radial-gradient(
-                    circle at 50% -10%,
-                    rgba(110, 70, 255, .20),
-                    transparent 40%
-                ),
-                #08090d;
-        }
-
-        .glow {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: .16;
-        }
-
-        .glow.one {
-            background: #7c4dff;
-            top: 5%;
-            left: -10%;
-        }
-
-        .glow.two {
-            background: #5865f2;
-            right: -10%;
-            top: 30%;
-        }
-
-        nav {
-            width: min(1150px, calc(100% - 40px));
-            margin: 20px auto;
-            padding: 14px 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            border: 1px solid rgba(255,255,255,.08);
-            background: rgba(12,13,19,.72);
-            backdrop-filter: blur(18px);
-
-            border-radius: 18px;
-
-            position: sticky;
-            top: 15px;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            font-weight: 800;
-            font-size: 20px;
-        }
-
-        .logo {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-
-            display: grid;
-            place-items: center;
-
-            background: linear-gradient(135deg, #8b5cf6, #5b4cff);
-            box-shadow: 0 8px 30px rgba(110,70,255,.3);
-
-            font-weight: 900;
-        }
-
-        .navlinks {
-            display: flex;
-            gap: 8px;
-        }
-
-        .navlinks a {
-            color: #aeb3c2;
-            padding: 9px 13px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-
-        .navlinks a:hover {
-            background: rgba(255,255,255,.06);
-            color: white;
-        }
-
-        .hero {
-            min-height: 700px;
-            width: min(1150px, calc(100% - 40px));
-            margin: auto;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-
-            padding: 90px 0 120px;
-        }
-
-        .hero-content {
-            max-width: 850px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-
-            padding: 8px 13px;
-
-            border: 1px solid rgba(255,255,255,.09);
-            background: rgba(255,255,255,.045);
-
-            border-radius: 999px;
-
-            color: #c7cbd5;
-            font-size: 13px;
-            margin-bottom: 25px;
-        }
-
-        .status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #72e6a4;
-            box-shadow: 0 0 14px #72e6a4;
-        }
-
-        h1 {
-            font-size: clamp(52px, 9vw, 92px);
-            line-height: .98;
-            letter-spacing: -5px;
-            margin-bottom: 25px;
-
-            background: linear-gradient(
-                180deg,
-                #ffffff,
-                #aaa9ba
-            );
-
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .gradient {
-            background: linear-gradient(
-                135deg,
-                #a78bfa,
-                #6366f1
-            );
-
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .hero p {
-            max-width: 680px;
-            margin: auto;
-
-            color: #9da2b1;
-            font-size: 18px;
-            line-height: 1.7;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 35px;
-            flex-wrap: wrap;
-        }
-
-        .button {
-            padding: 13px 20px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-
-            transition:
-                transform .2s,
-                background .2s;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-        }
-
-        .primary {
-            background: white;
-            color: #08090d;
-        }
-
-        .secondary {
-            border: 1px solid rgba(255,255,255,.1);
-            background: rgba(255,255,255,.045);
-            color: white;
-        }
-
-        section {
-            width: min(1050px, calc(100% - 40px));
-            margin: auto;
-            padding: 80px 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 45px;
-        }
-
-        .section-title h2 {
-            font-size: 38px;
-            letter-spacing: -1.5px;
-            margin-bottom: 10px;
-        }
-
-        .section-title p {
-            color: #858b9a;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .card {
-            padding: 25px;
-            min-height: 200px;
-
-            border: 1px solid rgba(255,255,255,.07);
-            background: rgba(255,255,255,.035);
-
-            border-radius: 18px;
-
-            transition:
-                transform .2s,
-                border-color .2s,
-                background .2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(139,92,246,.35);
-            background: rgba(255,255,255,.055);
-        }
-
-        .icon {
-            width: 45px;
-            height: 45px;
-
-            display: grid;
-            place-items: center;
-
-            border-radius: 13px;
-            background: rgba(124,77,255,.13);
-
-            margin-bottom: 20px;
-
-            font-weight: 800;
-            color: #bba6ff;
-        }
-
-        .card h3 {
-            margin-bottom: 9px;
-            font-size: 18px;
-        }
-
-        .card p {
-            color: #858b9a;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .cta {
-            text-align: center;
-
-            border: 1px solid rgba(255,255,255,.08);
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(124,77,255,.12),
-                    rgba(255,255,255,.025)
-                );
-
-            border-radius: 24px;
-            padding: 60px 25px;
-        }
-
-        .cta h2 {
-            font-size: 40px;
-            letter-spacing: -1.5px;
-            margin-bottom: 12px;
-        }
-
-        .cta p {
-            color: #8d93a2;
-            margin-bottom: 25px;
-        }
-
-        footer {
-            width: min(1050px, calc(100% - 40px));
-            margin: auto;
-
-            padding: 35px 0 50px;
-
-            border-top: 1px solid rgba(255,255,255,.07);
-
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-
-            color: #6f7482;
-            font-size: 13px;
-        }
-
-        @media (max-width: 800px) {
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .navlinks {
-                display: none;
-            }
-
-            h1 {
-                letter-spacing: -3px;
-            }
-
-            .hero {
-                min-height: 600px;
-            }
-
-            footer {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <script src="/app.js" defer></script>
 </head>
 
-<body>
+<body class="landing-page">
 
-<div class="background">
-    <div class="glow one"></div>
-    <div class="glow two"></div>
-</div>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
 
-<nav>
-    <a href="#" class="brand">
-        <div class="logo">B</div>
-        Bayan
-    </a>
+    <div class="grid-overlay"></div>
 
-    <div class="navlinks">
-        <a href="#features">Features</a>
-        <a href="#about">About</a>
-        <a href="#invite">Invite</a>
-    </div>
-</nav>
+    <!-- شريط التنقل -->
+    <header class="site-header">
 
-<main>
-
-    <section class="hero">
-
-        <div class="hero-content">
-
-            <div class="badge">
-                <span class="status"></span>
-                Bayan is online
-            </div>
-
-            <h1>
-                Your server.<br>
-                <span class="gradient">Better.</span>
-            </h1>
-
-            <p>
-                Bayan is a modern Discord bot built to make server
-                management simple, powerful and clean.
-            </p>
-
-            <div class="buttons">
-                <a
-                    class="button primary"
-                    href="https://discord.com/oauth2/authorize"
-                    target="_blank"
-                >
-                    Add Bayan
-                </a>
-
-                <a
-                    class="button secondary"
-                    href="#features"
-                >
-                    Explore Features
-                </a>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <section id="features">
-
-        <div class="section-title">
-            <h2>Everything you need</h2>
-            <p>Powerful tools without the complicated setup.</p>
-        </div>
-
-        <div class="features">
-
-            <div class="card">
-                <div class="icon">M</div>
-
-                <h3>Moderation</h3>
-
-                <p>
-                    Keep your Discord server organized with
-                    moderation tools for warnings, kicks, bans
-                    and message management.
-                </p>
-            </div>
-
-
-            <div class="card">
-                <div class="icon">T</div>
-
-                <h3>Tickets</h3>
-
-                <p>
-                    Create clean support, report and appeal
-                    tickets with an easy-to-use ticket system.
-                </p>
-            </div>
-
-
-            <div class="card">
-                <div class="icon">W</div>
-
-                <h3>Welcome System</h3>
-
-                <p>
-                    Welcome new members and make your server
-                    feel active from the moment they join.
-                </p>
-            </div>
-
-
-            <div class="card">
-                <div class="icon">A</div>
-
-                <h3>Auto Role</h3>
-
-                <p>
-                    Automatically give new members the role
-                    you choose when they join your server.
-                </p>
-            </div>
-
-
-            <div class="card">
-                <div class="icon">L</div>
-
-                <h3>Logs</h3>
-
-                <p>
-                    Keep track of important server activity
-                    with useful moderation and event logs.
-                </p>
-            </div>
-
-
-            <div class="card">
-                <div class="icon">S</div>
-
-                <h3>Simple Setup</h3>
-
-                <p>
-                    Bayan is designed to be easy to configure
-                    while still giving server owners powerful
-                    controls.
-                </p>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <section id="about">
-
-        <div class="cta">
-
-            <h2>Built for Discord communities.</h2>
-
-            <p>
-                Clean design. Useful features. Simple management.
-            </p>
+        <div class="site-header-inner">
 
             <a
-                class="button primary"
-                href="https://discord.com"
-                target="_blank"
+                href="/"
+                class="brand"
+                data-sound="soft"
             >
-                Get Started
+
+                <div class="brand-logo">
+                    ب
+                </div>
+
+                <div class="brand-text">
+                    <strong>بيان</strong>
+                    <span>لوحة تحكم Discord</span>
+                </div>
+
+            </a>
+
+            <nav class="main-nav">
+
+                <a href="#features">
+                    المميزات
+                </a>
+
+                <a href="#commands">
+                    الأوامر
+                </a>
+
+                <a href="#dashboard-preview">
+                    لوحة التحكم
+                </a>
+
+            </nav>
+
+            <div class="header-actions">
+
+                <a
+                    href="/login"
+                    class="header-login"
+                    data-sound="soft"
+                >
+                    تسجيل الدخول
+                </a>
+
+                <a
+                    href="/add-bot"
+                    class="button button-primary button-small"
+                    data-sound="success"
+                >
+                    إضافة بيان
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- المحتوى الرئيسي -->
+    <main>
+
+        <!-- Hero -->
+        <section class="hero-section">
+
+            <div class="hero-particles"></div>
+
+            <div class="hero-content">
+
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    نظام إدارة متقدم لسيرفرك
+                </div>
+
+                <h1 class="hero-title">
+
+                    تحكم في سيرفرك
+                    <span>بطريقة مختلفة.</span>
+
+                </h1>
+
+                <p class="hero-description">
+
+                    بيان يجمع الإدارة، الحماية، التذاكر،
+                    الأوامر، السجلات، المسابقات والمزيد
+                    في لوحة تحكم عربية واحدة.
+
+                </p>
+
+                <div class="hero-actions">
+
+                    <a
+                        href="/add-bot"
+                        class="button button-primary button-large"
+                        data-sound="success"
+                    >
+                        <span>+</span>
+                        أضف بيان إلى سيرفرك
+                    </a>
+
+                    <a
+                        href="/login"
+                        class="button button-glass button-large"
+                        data-sound="soft"
+                    >
+                        فتح لوحة التحكم
+                        <span>←</span>
+                    </a>
+
+                </div>
+
+                <div class="hero-trust">
+
+                    <div class="trust-item">
+                        <strong>إدارة</strong>
+                        <span>متقدمة</span>
+                    </div>
+
+                    <div class="trust-divider"></div>
+
+                    <div class="trust-item">
+                        <strong>حماية</strong>
+                        <span>ذكية</span>
+                    </div>
+
+                    <div class="trust-divider"></div>
+
+                    <div class="trust-item">
+                        <strong>تحكم</strong>
+                        <span>بالعربية</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- بطاقة واجهة -->
+            <div class="hero-interface">
+
+                <div class="interface-window">
+
+                    <div class="window-top">
+
+                        <div class="window-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                        <span class="window-title">
+                            لوحة بيان
+                        </span>
+
+                        <span class="window-live">
+                            متصل
+                        </span>
+
+                    </div>
+
+                    <div class="window-body">
+
+                        <aside class="mini-sidebar">
+
+                            <div class="mini-brand">
+                                ب
+                            </div>
+
+                            <span class="mini-line active"></span>
+                            <span class="mini-line"></span>
+                            <span class="mini-line"></span>
+                            <span class="mini-line"></span>
+                            <span class="mini-line"></span>
+                            <span class="mini-line"></span>
+                            <span class="mini-line"></span>
+
+                        </aside>
+
+                        <div class="mini-content">
+
+                            <div class="mini-heading">
+
+                                <div>
+                                    <span>
+                                        مركز التحكم
+                                    </span>
+
+                                    <strong>
+                                        نظرة عامة
+                                    </strong>
+                                </div>
+
+                                <div class="mini-avatar">
+                                    م
+                                </div>
+
+                            </div>
+
+                            <div class="mini-stats">
+
+                                <div class="mini-stat">
+                                    <span>الأوامر</span>
+                                    <strong>٣٢</strong>
+                                </div>
+
+                                <div class="mini-stat">
+                                    <span>الأعضاء</span>
+                                    <strong>١,٢٨٤</strong>
+                                </div>
+
+                                <div class="mini-stat">
+                                    <span>الحماية</span>
+                                    <strong>نشطة</strong>
+                                </div>
+
+                            </div>
+
+                            <div class="mini-command-box">
+
+                                <div>
+                                    <span>
+                                        أمر جديد
+                                    </span>
+
+                                    <strong>
+                                        /حظر
+                                    </strong>
+                                </div>
+
+                                <div class="mini-toggle active">
+                                    <span></span>
+                                </div>
+
+                            </div>
+
+                            <div class="mini-bars">
+
+                                <span style="height:35%"></span>
+                                <span style="height:52%"></span>
+                                <span style="height:45%"></span>
+                                <span style="height:70%"></span>
+                                <span style="height:61%"></span>
+                                <span style="height:82%"></span>
+                                <span style="height:76%"></span>
+                                <span style="height:95%"></span>
+                                <span style="height:88%"></span>
+                                <span style="height:100%"></span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- شريط إحصائيات -->
+        <section class="numbers-section">
+
+            <div class="numbers-container">
+
+                <div class="number-card">
+
+                    <strong>٣٠+</strong>
+                    <span>أمر إداري</span>
+
+                </div>
+
+                <div class="number-card">
+
+                    <strong>١٠+</strong>
+                    <span>أنظمة متكاملة</span>
+
+                </div>
+
+                <div class="number-card">
+
+                    <strong>٢٤/٧</strong>
+                    <span>حماية ومراقبة</span>
+
+                </div>
+
+                <div class="number-card">
+
+                    <strong>١٠٠٪</strong>
+                    <span>واجهة عربية</span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- المميزات -->
+        <section
+            id="features"
+            class="content-section"
+        >
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    المميزات
+                </span>
+
+                <h2>
+                    كل ما يحتاجه سيرفرك
+                </h2>
+
+                <p>
+                    أنظمة متعددة في مكان واحد،
+                    بتصميم سريع وواضح.
+                </p>
+
+            </div>
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ⚡
+                    </div>
+
+                    <h3>
+                        إدارة متقدمة
+                    </h3>
+
+                    <p>
+                        تحكم بالأعضاء والقنوات
+                        والأوامر من خلال أدوات سهلة.
+                    </p>
+
+                </article>
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ◈
+                    </div>
+
+                    <h3>
+                        حماية تلقائية
+                    </h3>
+
+                    <p>
+                        إعداد أنظمة الحماية والمراقبة
+                        من لوحة واحدة.
+                    </p>
+
+                </article>
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ◇
+                    </div>
+
+                    <h3>
+                        نظام التذاكر
+                    </h3>
+
+                    <p>
+                        دعم، بلاغات، استئناف
+                        وإدارة فريق الدعم.
+                    </p>
+
+                </article>
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        /
+                    </div>
+
+                    <h3>
+                        مركز الأوامر
+                    </h3>
+
+                    <p>
+                        ابحث عن أوامرك واضبط
+                        الصلاحيات والقنوات.
+                    </p>
+
+                </article>
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ≡
+                    </div>
+
+                    <h3>
+                        السجلات
+                    </h3>
+
+                    <p>
+                        راقب أحداث السيرفر
+                        وسجل العمليات المهمة.
+                    </p>
+
+                </article>
+
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        ▶
+                    </div>
+
+                    <h3>
+                        البث المباشر
+                    </h3>
+
+                    <p>
+                        إدارة قنوات Twitch وYouTube
+                        وTikTok وKick.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- الأوامر -->
+        <section
+            id="commands"
+            class="content-section command-showcase"
+        >
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    مركز الأوامر
+                </span>
+
+                <h2>
+                    أوامر Discord في مكان واحد
+                </h2>
+
+                <p>
+                    الأوامر تعمل داخل Discord،
+                    واللوحة تمنحك تحكماً أسهل فيها.
+                </p>
+
+            </div>
+
+            <div class="command-preview">
+
+                <div class="command-preview-top">
+
+                    <div class="search-demo">
+                        <span>⌕</span>
+                        <span>ابحث عن أمر...</span>
+                    </div>
+
+                    <div class="command-filter">
+                        الكل
+                    </div>
+
+                </div>
+
+                <div class="command-preview-grid">
+
+                    <div class="command-demo-card">
+                        <span class="command-demo-icon">/</span>
+
+                        <div>
+                            <strong>حظر</strong>
+                            <span>/ban</span>
+                        </div>
+
+                        <i class="demo-active"></i>
+                    </div>
+
+                    <div class="command-demo-card">
+                        <span class="command-demo-icon">/</span>
+
+                        <div>
+                            <strong>طرد</strong>
+                            <span>/kick</span>
+                        </div>
+
+                        <i class="demo-active"></i>
+                    </div>
+
+                    <div class="command-demo-card">
+                        <span class="command-demo-icon">/</span>
+
+                        <div>
+                            <strong>تقييد</strong>
+                            <span>/timeout</span>
+                        </div>
+
+                        <i class="demo-active"></i>
+                    </div>
+
+                    <div class="command-demo-card">
+                        <span class="command-demo-icon">/</span>
+
+                        <div>
+                            <strong>تذكرة</strong>
+                            <span>/ticket</span>
+                        </div>
+
+                        <i class="demo-active"></i>
+                    </div>
+
+                    <div class="command-demo-card">
+                        <span class="command-demo-icon">/</span>
+
+                        <div>
+                            <strong>السحب</strong>
+                            <span>/giveaway</span>
+                        </div>
+
+                        <i class="demo-active"></i>
+                    </div>
+
+                    <div class="command-demo-card">
+                        <span class="command-demo-icon">/</span>
+
+                        <div>
+                            <strong>البطولة</strong>
+                            <span>/tournament</span>
+                        </div>
+
+                        <i class="demo-active"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Preview -->
+        <section
+            id="dashboard-preview"
+            class="content-section"
+        >
+
+            <div class="preview-banner">
+
+                <div class="preview-banner-content">
+
+                    <span class="section-label">
+                        لوحة التحكم
+                    </span>
+
+                    <h2>
+                        إدارة سيرفرك
+                        بدون تعقيد.
+                    </h2>
+
+                    <p>
+                        واجهة عربية حديثة تجمع
+                        أدوات بيان الأساسية في مكان واحد.
+                    </p>
+
+                    <a
+                        href="/login"
+                        class="button button-primary"
+                        data-sound="success"
+                    >
+                        افتح لوحة التحكم
+                        <span>←</span>
+                    </a>
+
+                </div>
+
+                <div class="preview-orbit">
+
+                    <div class="orbit-ring ring-one"></div>
+                    <div class="orbit-ring ring-two"></div>
+                    <div class="orbit-ring ring-three"></div>
+
+                    <div class="orbit-core">
+                        ب
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="footer-brand">
+
+            <div class="brand-logo">
+                ب
+            </div>
+
+            <div>
+                <strong>بيان</strong>
+                <span>
+                    إدارة سيرفرات Discord بطريقة أفضل.
+                </span>
+            </div>
+
+        </div>
+
+        <div class="footer-links">
+
+            <a href="#features">
+                المميزات
+            </a>
+
+            <a href="#commands">
+                الأوامر
+            </a>
+
+            <a href="/login">
+                لوحة التحكم
             </a>
 
         </div>
 
-    </section>
-
-
-    <section id="invite">
-
-        <div class="section-title">
-            <h2>Bring Bayan to your server</h2>
-
-            <p>
-                Add Bayan and start managing your community.
-            </p>
-
-            <div class="buttons">
-
-                <a
-                    class="button primary"
-                    href="https://discord.com/oauth2/authorize"
-                    target="_blank"
-                >
-                    Invite Bayan
-                </a>
-
-            </div>
+        <div class="footer-copy">
+            © ٢٠٢٦ بيان
         </div>
 
-    </section>
-
-</main>
-
-
-<footer>
-
-    <div>
-        © 2026 Bayan. All rights reserved.
-    </div>
-
-    <div>
-        Discord Bot
-    </div>
-
-</footer>
+    </footer>
 
 </body>
 </html>

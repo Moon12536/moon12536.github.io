@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>لوحة بيان</title>
+
+    <link rel="stylesheet" href="/style.css">
+
+    <script src="/dashboard.js" defer></script>
+</head>
+
+<body class="dashboard-page">
+
+    <div class="dashboard-background">
+        <div class="dashboard-glow glow-one"></div>
+        <div class="dashboard-glow glow-two"></div>
+    </div>
+
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+
+            <div class="dashboard-brand">
+
+                <div class="brand-logo">
+                    ب
+                </div>
+
+                <div>
+                    <strong>بيان</strong>
+                    <span>مركز التحكم</span>
+                </div>
+
+            </div>
+
+
+            <!-- السيرفر -->
+            <div class="server-picker">
+
+                <div class="server-avatar">
+                    س
+                </div>
+
+                <div class="server-picker-text">
+
+                    <strong id="serverName">
+                        جاري التحميل...
+                    </strong>
+
+                    <span>
+                        سيرفرك
+                    </span>
+
+                </div>
+
+                <button
+                    class="picker-arrow"
+                    type="button"
+                    data-sound="soft"
+                >
+                    ⌄
+                </button>
+
+            </div>
+
+
+            <nav class="dashboard-nav">
+
+                <div class="nav-title">
+                    الرئيسية
+                </div>
+
+                <button
+                    class="dash-nav-link active"
+                    data-section="overview"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">⌂</span>
+                    <span>نظرة عامة</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="commands"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">/</span>
+                    <span>الأوامر</span>
+                    <b id="commandCountBadge">٠</b>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="activity"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">◈</span>
+                    <span>النشاط</span>
+                </button>
+
+
+                <div class="nav-title">
+                    إدارة السيرفر
+                </div>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="moderation"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">◆</span>
+                    <span>الإدارة</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="tickets"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">◇</span>
+                    <span>التذاكر</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="permissions"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">♢</span>
+                    <span>الصلاحيات</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="welcome"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">✦</span>
+                    <span>الترحيب</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="automod"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">!</span>
+                    <span>الحماية التلقائية</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="logs"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">≡</span>
+                    <span>السجلات</span>
+                </button>
+
+
+                <div class="nav-title">
+                    الأنظمة
+                </div>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="giveaways"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">✧</span>
+                    <span>السحوبات</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="tournaments"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">◫</span>
+                    <span>البطولات</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="streaming"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">▶</span>
+                    <span>البث المباشر</span>
+                </button>
+
+
+                <div class="nav-title">
+                    النظام
+                </div>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="settings"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">⚙</span>
+                    <span>الإعدادات</span>
+                </button>
+
+                <button
+                    class="dash-nav-link"
+                    data-section="audit"
+                    data-sound="soft"
+                >
+                    <span class="dash-nav-icon">▤</span>
+                    <span>سجل التدقيق</span>
+                </button>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="bot-status-card">
+
+                    <span class="status-pulse"></span>
+
+                    <div>
+                        <strong>
+                            بيان متصل
+                        </strong>
+
+                        <span>
+                            جميع الأنظمة تعمل
+                        </span>
+                    </div>
+
+                </div>
+
+                <a
+                    href="/logout"
+                    class="logout-link"
+                    data-sound="soft"
+                >
+                    تسجيل الخروج
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Main -->
+        <main class="dashboard-main">
+
+            <!-- Topbar -->
+            <header class="dashboard-topbar">
+
+                <div class="mobile-title">
+
+                    <div class="brand-logo">
+                        ب
+                    </div>
+
+                    <strong>
+                        بيان
+                    </strong>
+
+                </div>
+
+                <div class="topbar-breadcrumb">
+
+                    <span>
+                        لوحة التحكم
+                    </span>
+
+                    <b>/</b>
+
+                    <strong id="breadcrumbText">
+                        نظرة عامة
+                    </strong>
+
+                </div>
+
+                <div class="topbar-right">
+
+                    <button
+                        class="topbar-icon"
+                        type="button"
+                        id="soundToggle"
+                        data-sound="soft"
+                        title="الصوت"
+                    >
+                        ♪
+                    </button>
+
+                    <button
+                        class="topbar-icon"
+                        type="button"
+                        data-sound="soft"
+                    >
+                        !
+                        <i></i>
+                    </button>
+
+                    <div class="user-mini">
+
+                        <div
+                            class="user-avatar"
+                            id="userAvatar"
+                        >
+                            م
+                        </div>
+
+                        <div>
+                            <strong id="userName">
+                                المستخدم
+                            </strong>
+
+                            <span>
+                                مدير
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- محتوى -->
+            <div class="dashboard-content">
+
+
+                <!-- =========================
+                     نظرة عامة
+                ========================== -->
+
+                <section
+                    class="dash-section active"
+                    id="section-overview"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+
+                            <span class="page-kicker">
+                                مركز التحكم
+                            </span>
+
+                            <h1>
+                                أهلاً بك في بيان
+                            </h1>
+
+                            <p>
+                                تحكم في سيرفرك من مكان واحد.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="/add-bot"
+                            class="button button-primary"
+                            data-sound="success"
+                        >
+                            إضافة بيان لسيرفر
+                        </a>
+
+                    </div>
+
+
+                    <div class="overview-hero">
+
+                        <div class="overview-hero-copy">
+
+                            <div class="online-label">
+                                <span></span>
+                                بيان يعمل بشكل طبيعي
+                            </div>
+
+                            <h2>
+                                سيرفرك تحت
+                                <span>السيطرة.</span>
+                            </h2>
+
+                            <p>
+                                استخدم لوحة التحكم لإدارة
+                                الأوامر والأنظمة والصلاحيات
+                                والإعدادات بسهولة.
+                            </p>
+
+                            <button
+                                class="button button-glass"
+                                data-section-target="commands"
+                                data-sound="soft"
+                            >
+                                فتح مركز الأوامر
+                                ←
+                            </button>
+
+                        </div>
+
+                        <div class="overview-core">
+
+                            <div class="core-ring ring-a"></div>
+                            <div class="core-ring ring-b"></div>
+                            <div class="core-ring ring-c"></div>
+
+                            <div class="core-logo">
+                                ب
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stats-cards">
+
+                        <div class="dash-stat-card">
+
+                            <div class="stat-card-icon purple">
+                                /
+                            </div>
+
+                            <div>
+                                <span>
+                                    الأوامر
+                                </span>
+
+                                <strong id="overviewCommandCount">
+                                    ٠
+                                </strong>
+
+                                <small>
+                                    أمر متاح
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="dash-stat-card">
+
+                            <div class="stat-card-icon blue">
+                                س
+                            </div>
+
+                            <div>
+                                <span>
+                                    السيرفر
+                                </span>
+
+                                <strong>
+                                    متصل
+                                </strong>
+
+                                <small>
+                                    اتصال ناجح
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="dash-stat-card">
+
+                            <div class="stat-card-icon green">
+                                ✓
+                            </div>
+
+                            <div>
+                                <span>
+                                    الحماية
+                                </span>
+
+                                <strong>
+                                    جاهزة
+                                </strong>
+
+                                <small>
+                                    بيان نشط
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="dash-stat-card">
+
+                            <div class="stat-card-icon gold">
+                                ◆
+                            </div>
+
+                            <div>
+                                <span>
+                                    الأنظمة
+                                </span>
+
+                                <strong>
+                                    ١٠+
+                                </strong>
+
+                                <small>
+                                    وحدات متاحة
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-two-column">
+
+                        <div class="dash-panel">
+
+                            <div class="panel-title-row">
+
+                                <div>
+                                    <span>
+                                        إجراءات سريعة
+                                    </span>
+
+                                    <h3>
+                                        ابدأ من هنا
+                                    </h3>
+                                </div>
+
+                            </div>
+
+                            <div class="quick-action-grid">
+
+                                <button
+                                    class="quick-action"
+                                    data-section-target="welcome"
+                                    data-sound="soft"
+                                >
+                                    <span>✦</span>
+
+                                    <div>
+                                        <strong>
+                                            إعداد الترحيب
+                                        </strong>
+
+                                        <small>
+                                            رسائل الأعضاء الجدد
+                                        </small>
+                                    </div>
+
+                                    <b>←</b>
+                                </button>
+
+                                <button
+                                    class="quick-action"
+                                    data-section-target="tickets"
+                                    data-sound="soft"
+                                >
+                                    <span>◇</span>
+
+                                    <div>
+                                        <strong>
+                                            إعداد التذاكر
+                                        </strong>
+
+                                        <small>
+                                            الدعم والبلاغات
+                                        </small>
+                                    </div>
+
+                                    <b>←</b>
+                                </button>
+
+                                <button
+                                    class="quick-action"
+                                    data-section-target="automod"
+                                    data-sound="soft"
+                                >
+                                    <span>!</span>
+
+                                    <div>
+                                        <strong>
+                                            حماية السيرفر
+                                        </strong>
+
+                                        <small>
+                                            الحماية التلقائية
+                                        </small>
+                                    </div>
+
+                                    <b>←</b>
+                                </button>
+
+                                <button
+                                    class="quick-action"
+                                    data-section-target="permissions"
+                                    data-sound="soft"
+                                >
+                                    <span>♢</span>
+
+                                    <div>
+                                        <strong>
+                                            الصلاحيات
+                                        </strong>
+
+                                        <small>
+                                            إدارة رتب الفريق
+                                        </small>
+                                    </div>
+
+                                    <b>←</b>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="dash-panel">
+
+                            <div class="panel-title-row">
+
+                                <div>
+                                    <span>
+                                        حالة بيان
+                                    </span>
+
+                                    <h3>
+                                        الأنظمة
+                                    </h3>
+                                </div>
+
+                                <span class="healthy-badge">
+                                    سليم
+                                </span>
+
+                            </div>
+
+                            <div class="health-list">
+
+                                <div class="health-item">
+
+                                    <div>
+                                        <strong>
+                                            الاتصال بـ Discord
+                                        </strong>
+
+                                        <small>
+                                            بوابة Discord
+                                        </small>
+                                    </div>
+
+                                    <span>
+                                        متصل
+                                    </span>
+
+                                </div>
+
+                                <div class="health-item">
+
+                                    <div>
+                                        <strong>
+                                            مركز الأوامر
+                                        </strong>
+
+                                        <small>
+                                            أوامر التطبيق
+                                        </small>
+                                    </div>
+
+                                    <span>
+                                        جاهز
+                                    </span>
+
+                                </div>
+
+                                <div class="health-item">
+
+                                    <div>
+                                        <strong>
+                                            لوحة التحكم
+                                        </strong>
+
+                                        <small>
+                                            واجهة الإدارة
+                                        </small>
+                                    </div>
+
+                                    <span>
+                                        تعمل
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     الأوامر
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-commands"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                مركز الأوامر
+                            </span>
+
+                            <h1>
+                                أوامر Discord
+                            </h1>
+
+                            <p>
+                                فعّل أو عطّل الأوامر وحدد من يستطيع استخدامها.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="commands-toolbar">
+
+                        <div class="dashboard-search">
+
+                            <span>⌕</span>
+
+                            <input
+                                id="commandSearch"
+                                type="search"
+                                placeholder="ابحث عن أمر أو اسم..."
+                            >
+
+                            <kbd>
+                                Ctrl K
+                            </kbd>
+
+                        </div>
+
+                        <div class="command-filters">
+
+                            <button
+                                class="command-filter-btn active"
+                                data-command-filter="الكل"
+                                data-sound="soft"
+                            >
+                                الكل
+                            </button>
+
+                            <button
+                                class="command-filter-btn"
+                                data-command-filter="الإدارة"
+                                data-sound="soft"
+                            >
+                                الإدارة
+                            </button>
+
+                            <button
+                                class="command-filter-btn"
+                                data-command-filter="التذاكر"
+                                data-sound="soft"
+                            >
+                                التذاكر
+                            </button>
+
+                            <button
+                                class="command-filter-btn"
+                                data-command-filter="الأدوات"
+                                data-sound="soft"
+                            >
+                                الأدوات
+                            </button>
+
+                            <button
+                                class="command-filter-btn"
+                                data-command-filter="الإعداد"
+                                data-sound="soft"
+                            >
+                                الإعداد
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="command-grid-large"
+                        id="commandGrid"
+                    >
+
+                        <!-- JavaScript يملأ الأوامر -->
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     النشاط
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-activity"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                مراقبة
+                            </span>
+
+                            <h1>
+                                النشاط الأخير
+                            </h1>
+
+                            <p>
+                                آخر العمليات التي تم تنفيذها.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="dash-panel activity-panel">
+
+                        <div class="activity-row">
+                            <span class="activity-symbol purple">/</span>
+
+                            <div>
+                                <strong>
+                                    تم فتح مركز الأوامر
+                                </strong>
+
+                                <small>
+                                    منذ لحظات
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="activity-row">
+                            <span class="activity-symbol blue">س</span>
+
+                            <div>
+                                <strong>
+                                    تم الاتصال بالسيرفر
+                                </strong>
+
+                                <small>
+                                    منذ لحظات
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="activity-row">
+                            <span class="activity-symbol green">✓</span>
+
+                            <div>
+                                <strong>
+                                    نظام الحماية جاهز
+                                </strong>
+
+                                <small>
+                                    اليوم
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="activity-row">
+                            <span class="activity-symbol gold">◆</span>
+
+                            <div>
+                                <strong>
+                                    لوحة بيان جاهزة
+                                </strong>
+
+                                <small>
+                                    اليوم
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     الإدارة
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-moderation"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                الإدارة
+                            </span>
+
+                            <h1>
+                                إعدادات الإدارة
+                            </h1>
+
+                            <p>
+                                تحكم في نظام الإدارة وأوامر المشرفين.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="settings-grid">
+
+                        <div class="dash-panel settings-card">
+
+                            <div class="settings-card-icon">
+                                ◆
+                            </div>
+
+                            <h3>
+                                نظام الإدارة
+                            </h3>
+
+                            <p>
+                                تشغيل أنظمة الإدارة الأساسية.
+                            </p>
+
+                            <label class="big-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="moderationEnabled"
+                                    checked
+                                >
+
+                                <span></span>
+
+                            </label>
+
+                        </div>
+
+                        <div class="dash-panel settings-card">
+
+                            <div class="settings-card-icon">
+                                /
+                            </div>
+
+                            <h3>
+                                أوامر المشرفين
+                            </h3>
+
+                            <p>
+                                إدارة أوامر الحظر والطرد والتحذير.
+                            </p>
+
+                            <button
+                                class="button button-secondary"
+                                data-section-target="commands"
+                                data-sound="soft"
+                            >
+                                إدارة الأوامر
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="button button-primary save-settings"
+                        data-save-section="moderation"
+                        data-sound="success"
+                    >
+                        حفظ التغييرات
+                    </button>
+
+                </section>
+
+
+                <!-- =========================
+                     التذاكر
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-tickets"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                الدعم
+                            </span>
+
+                            <h1>
+                                نظام التذاكر
+                            </h1>
+
+                            <p>
+                                جهّز نظام الدعم والبلاغات والاستئناف.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="settings-grid">
+
+                        <div class="dash-panel form-panel">
+
+                            <div class="form-panel-heading">
+                                <h3>
+                                    إعداد النظام
+                                </h3>
+
+                                <span>
+                                    التذاكر
+                                </span>
+                            </div>
+
+                            <label class="form-switch-row">
+                                <span>
+                                    تشغيل نظام التذاكر
+                                </span>
+
+                                <input
+                                    type="checkbox"
+                                    id="ticketsEnabled"
+                                    checked
+                                >
+                            </label>
+
+                            <label class="field-label">
+                                معرف قسم التذاكر
+                            </label>
+
+                            <input
+                                class="dark-input"
+                                id="ticketCategoryId"
+                                placeholder="أدخل معرف الفئة"
+                            >
+
+                            <label class="field-label">
+                                معرف رتبة فريق الدعم
+                            </label>
+
+                            <input
+                                class="dark-input"
+                                id="ticketStaffRoleId"
+                                placeholder="أدخل معرف الرتبة"
+                            >
+
+                            <button
+                                class="button button-primary full-width save-settings"
+                                data-save-section="tickets"
+                                data-sound="success"
+                            >
+                                حفظ إعدادات التذاكر
+                            </button>
+
+                        </div>
+
+                        <div class="dash-panel ticket-preview">
+
+                            <span class="section-label">
+                                المعاينة
+                            </span>
+
+                            <h3>
+                                لوحة الدعم
+                            </h3>
+
+                            <div class="ticket-preview-buttons">
+
+                                <button
+                                    class="ticket-preview-button"
+                                    data-sound="soft"
+                                >
+                                    دعم
+                                </button>
+
+                                <button
+                                    class="ticket-preview-button"
+                                    data-sound="soft"
+                                >
+                                    بلاغ
+                                </button>
+
+                                <button
+                                    class="ticket-preview-button"
+                                    data-sound="soft"
+                                >
+                                    استئناف
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     الصلاحيات
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-permissions"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                التحكم
+                            </span>
+
+                            <h1>
+                                الصلاحيات
+                            </h1>
+
+                            <p>
+                                حدد من يمكنه استخدام أنظمة بيان.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="permission-grid">
+
+                        <div class="permission-card">
+
+                            <div class="permission-card-top">
+                                <span>الإدارة</span>
+                                <i>◆</i>
+                            </div>
+
+                            <p>
+                                أوامر الحظر والطرد والتقييد والتحذير.
+                            </p>
+
+                            <button
+                                class="permission-button"
+                                data-sound="soft"
+                            >
+                                اختيار الرتبة
+                            </button>
+
+                        </div>
+
+                        <div class="permission-card">
+
+                            <div class="permission-card-top">
+                                <span>التذاكر</span>
+                                <i>◇</i>
+                            </div>
+
+                            <p>
+                                استلام وإغلاق وإدارة التذاكر.
+                            </p>
+
+                            <button
+                                class="permission-button"
+                                data-sound="soft"
+                            >
+                                اختيار الرتبة
+                            </button>
+
+                        </div>
+
+                        <div class="permission-card">
+
+                            <div class="permission-card-top">
+                                <span>السحوبات</span>
+                                <i>✧</i>
+                            </div>
+
+                            <p>
+                                إدارة السحوبات والمسابقات.
+                            </p>
+
+                            <button
+                                class="permission-button"
+                                data-sound="soft"
+                            >
+                                اختيار الرتبة
+                            </button>
+
+                        </div>
+
+                        <div class="permission-card">
+
+                            <div class="permission-card-top">
+                                <span>البطولات</span>
+                                <i>◫</i>
+                            </div>
+
+                            <p>
+                                إنشاء وإدارة البطولات.
+                            </p>
+
+                            <button
+                                class="permission-button"
+                                data-sound="soft"
+                            >
+                                اختيار الرتبة
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     الترحيب
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-welcome"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                الأعضاء
+                            </span>
+
+                            <h1>
+                                الترحيب
+                            </h1>
+
+                            <p>
+                                أنشئ رسالة جميلة للأعضاء الجدد.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="dash-panel form-panel">
+
+                        <label class="form-switch-row">
+
+                            <span>
+                                تشغيل الترحيب
+                            </span>
+
+                            <input
+                                type="checkbox"
+                                id="welcomeEnabled"
+                            >
+
+                        </label>
+
+                        <label class="field-label">
+                            معرف قناة الترحيب
+                        </label>
+
+                        <input
+                            class="dark-input"
+                            id="welcomeChannelId"
+                            placeholder="أدخل معرف القناة"
+                        >
+
+                        <label class="field-label">
+                            رسالة الترحيب
+                        </label>
+
+                        <textarea
+                            class="dark-textarea"
+                            id="welcomeMessage"
+                            rows="5"
+                        >مرحباً بك في السيرفر!</textarea>
+
+                        <button
+                            class="button button-primary save-settings"
+                            data-save-section="welcome"
+                            data-sound="success"
+                        >
+                            حفظ الترحيب
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     AutoMod
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-automod"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                الحماية
+                            </span>
+
+                            <h1>
+                                الحماية التلقائية
+                            </h1>
+
+                            <p>
+                                حافظ على نظافة وأمان السيرفر.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="protection-grid">
+
+                        <div class="protection-card">
+
+                            <div class="protection-icon">
+                                !
+                            </div>
+
+                            <div>
+                                <strong>
+                                    الحماية التلقائية
+                                </strong>
+
+                                <span>
+                                    النظام الرئيسي
+                                </span>
+                            </div>
+
+                            <label class="big-toggle">
+                                <input
+                                    type="checkbox"
+                                    id="automodEnabled"
+                                >
+                                <span></span>
+                            </label>
+
+                        </div>
+
+                        <div class="protection-card">
+
+                            <div class="protection-icon">
+                                ≋
+                            </div>
+
+                            <div>
+                                <strong>
+                                    مكافحة السبام
+                                </strong>
+
+                                <span>
+                                    رسائل متكررة
+                                </span>
+                            </div>
+
+                            <label class="big-toggle">
+                                <input type="checkbox">
+                                <span></span>
+                            </label>
+
+                        </div>
+
+                        <div class="protection-card">
+
+                            <div class="protection-icon">
+                                #
+                            </div>
+
+                            <div>
+                                <strong>
+                                    مكافحة الروابط
+                                </strong>
+
+                                <span>
+                                    الروابط غير المرغوبة
+                                </span>
+                            </div>
+
+                            <label class="big-toggle">
+                                <input type="checkbox">
+                                <span></span>
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="button button-primary save-settings"
+                        data-save-section="automod"
+                        data-sound="success"
+                    >
+                        حفظ إعدادات الحماية
+                    </button>
+
+                </section>
+
+
+                <!-- =========================
+                     السجلات
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-logs"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                المراقبة
+                            </span>
+
+                            <h1>
+                                السجلات
+                            </h1>
+
+                            <p>
+                                اختر أين يتم إرسال أحداث السيرفر.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="dash-panel form-panel">
+
+                        <label class="form-switch-row">
+
+                            <span>
+                                تشغيل السجلات
+                            </span>
+
+                            <input
+                                type="checkbox"
+                                id="logsEnabled"
+                            >
+
+                        </label>
+
+                        <label class="field-label">
+                            معرف قناة السجلات
+                        </label>
+
+                        <input
+                            class="dark-input"
+                            id="logsChannelId"
+                            placeholder="أدخل معرف القناة"
+                        >
+
+                        <button
+                            class="button button-primary save-settings"
+                            data-save-section="logs"
+                            data-sound="success"
+                        >
+                            حفظ إعدادات السجلات
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     السحوبات
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-giveaways"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                المسابقات
+                            </span>
+
+                            <h1>
+                                السحوبات
+                            </h1>
+
+                            <p>
+                                إدارة نظام السحوبات من مكان واحد.
+                            </p>
+                        </div>
+
+                        <button
+                            class="button button-primary"
+                            data-sound="success"
+                        >
+                            إنشاء سحب
+                        </button>
+
+                    </div>
+
+                    <div class="empty-system-card">
+
+                        <div class="empty-icon">
+                            ✧
+                        </div>
+
+                        <h3>
+                            لا توجد سحوبات حالية
+                        </h3>
+
+                        <p>
+                            أنشئ أول سحب من زر إنشاء سحب.
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     البطولات
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-tournaments"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                المنافسات
+                            </span>
+
+                            <h1>
+                                البطولات
+                            </h1>
+
+                            <p>
+                                أنشئ البطولات وأدر اللاعبين والمباريات.
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="button button-primary"
+                            data-sound="success"
+                        >
+                            إنشاء بطولة
+                        </button>
+
+                    </div>
+
+                    <div class="tournament-layout">
+
+                        <div class="tournament-card">
+
+                            <span>
+                                قالب البطولة
+                            </span>
+
+                            <strong>
+                                إقصاء مباشر
+                            </strong>
+
+                            <small>
+                                مناسب للبطولات السريعة.
+                            </small>
+
+                        </div>
+
+                        <div class="tournament-card">
+
+                            <span>
+                                اللاعبين
+                            </span>
+
+                            <strong>
+                                ٠
+                            </strong>
+
+                            <small>
+                                لم تبدأ بطولة حالياً.
+                            </small>
+
+                        </div>
+
+                        <div class="tournament-card">
+
+                            <span>
+                                المباريات
+                            </span>
+
+                            <strong>
+                                ٠
+                            </strong>
+
+                            <small>
+                                لا توجد مباريات حالياً.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     Streaming
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-streaming"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                البث المباشر
+                            </span>
+
+                            <h1>
+                                قنوات البث
+                            </h1>
+
+                            <p>
+                                أضف القنوات التي تريد مراقبتها.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="stream-platform-grid">
+
+                        <button
+                            class="stream-platform"
+                            data-platform="twitch"
+                            data-sound="soft"
+                        >
+                            <strong>
+                                تويتش
+                            </strong>
+
+                            <span>
+                                Twitch
+                            </span>
+                        </button>
+
+                        <button
+                            class="stream-platform"
+                            data-platform="youtube"
+                            data-sound="soft"
+                        >
+                            <strong>
+                                يوتيوب
+                            </strong>
+
+                            <span>
+                                YouTube
+                            </span>
+                        </button>
+
+                        <button
+                            class="stream-platform"
+                            data-platform="tiktok"
+                            data-sound="soft"
+                        >
+                            <strong>
+                                تيك توك
+                            </strong>
+
+                            <span>
+                                TikTok
+                            </span>
+                        </button>
+
+                        <button
+                            class="stream-platform"
+                            data-platform="kick"
+                            data-sound="soft"
+                        >
+                            <strong>
+                                كيك
+                            </strong>
+
+                            <span>
+                                Kick
+                            </span>
+                        </button>
+
+                    </div>
+
+                    <div class="dash-panel form-panel">
+
+                        <label class="field-label">
+                            المنصة
+                        </label>
+
+                        <select
+                            class="dark-input"
+                            id="streamPlatform"
+                        >
+                            <option value="twitch">
+                                تويتش
+                            </option>
+
+                            <option value="youtube">
+                                يوتيوب
+                            </option>
+
+                            <option value="tiktok">
+                                تيك توك
+                            </option>
+
+                            <option value="kick">
+                                كيك
+                            </option>
+                        </select>
+
+                        <label class="field-label">
+                            اسم القناة
+                        </label>
+
+                        <input
+                            class="dark-input"
+                            id="streamUsername"
+                            placeholder="اسم الحساب"
+                        >
+
+                        <button
+                            class="button button-primary"
+                            id="saveStream"
+                            data-sound="success"
+                        >
+                            إضافة قناة
+                        </button>
+
+                        <div
+                            class="stream-list"
+                            id="streamList"
+                        >
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     Settings
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-settings"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                النظام
+                            </span>
+
+                            <h1>
+                                إعدادات السيرفر
+                            </h1>
+
+                            <p>
+                                إعدادات عامة خاصة بسيرفرك.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dash-panel form-panel">
+
+                        <label class="field-label">
+                            لغة لوحة التحكم
+                        </label>
+
+                        <select class="dark-input">
+
+                            <option selected>
+                                العربية
+                            </option>
+
+                        </select>
+
+                        <label class="field-label">
+                            اسم السيرفر
+                        </label>
+
+                        <input
+                            class="dark-input"
+                            id="settingsServerName"
+                            placeholder="اسم السيرفر"
+                        >
+
+                        <button
+                            class="button button-primary"
+                            id="saveGeneral"
+                            data-sound="success"
+                        >
+                            حفظ الإعدادات
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     Audit
+                ========================== -->
+
+                <section
+                    class="dash-section"
+                    id="section-audit"
+                >
+
+                    <div class="section-top-row">
+
+                        <div>
+                            <span class="page-kicker">
+                                أمان
+                            </span>
+
+                            <h1>
+                                سجل التدقيق
+                            </h1>
+
+                            <p>
+                                سجل تغييرات لوحة التحكم.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dash-panel audit-panel">
+
+                        <div class="audit-row">
+
+                            <span class="audit-icon">
+                                /
+                            </span>
+
+                            <div>
+                                <strong>
+                                    تم تحميل مركز الأوامر
+                                </strong>
+
+                                <small>
+                                    المستخدم الحالي · الآن
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="audit-row">
+
+                            <span class="audit-icon">
+                                ✓
+                            </span>
+
+                            <div>
+                                <strong>
+                                    تم فتح لوحة التحكم
+                                </strong>
+
+                                <small>
+                                    المستخدم الحالي · اليوم
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- إشعار -->
+    <div
+        class="toast"
+        id="toast"
+    >
+        <span class="toast-icon">✓</span>
+
+        <div>
+            <strong id="toastTitle">
+                تم الحفظ
+            </strong>
+
+            <span id="toastMessage">
+                تم حفظ الإعدادات بنجاح.
+            </span>
+        </div>
+
+        <button
+            id="toastClose"
+            data-sound="soft"
+        >
+            ×
+        </button>
+
+    </div>
+
+</body>
+</html>
