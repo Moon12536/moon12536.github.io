@@ -1,33 +1,98 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>بيان | لوحة التحكم</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>Bayan — Control Panel</title>
+    <meta
+        name="description"
+        content="Bayan Discord Bot Control Panel"
+    >
 
     <style>
+        :root {
+            --bg: #05070c;
+            --bg-soft: #090d15;
+            --panel: rgba(15, 19, 30, 0.72);
+            --panel-2: rgba(21, 26, 40, 0.82);
+            --border: rgba(255,255,255,0.08);
+            --border-soft: rgba(255,255,255,0.045);
+            --text: #f7f9ff;
+            --muted: #8b95aa;
+            --muted-2: #5f687b;
+            --accent: #5865f2;
+            --accent-2: #7b87ff;
+            --success: #5de39a;
+            --warning: #f5c76d;
+            --danger: #ff6f82;
+            --shadow: 0 25px 80px rgba(0,0,0,.38);
+            --radius: 20px;
+            --sidebar: 278px;
+        }
+
         * {
             box-sizing: border-box;
         }
 
-        html,
-        body {
-            margin: 0;
-            min-height: 100%;
-            font-family:
-                Arial,
-                "Segoe UI",
-                Tahoma,
-                sans-serif;
-            background: #070a12;
-            color: #fff;
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at 12% 8%,
+                    rgba(88,101,242,.17),
+                    transparent 27%
+                ),
+                radial-gradient(
+                    circle at 90% 16%,
+                    rgba(123,135,255,.11),
+                    transparent 24%
+                ),
+                radial-gradient(
+                    circle at 52% 105%,
+                    rgba(88,101,242,.10),
+                    transparent 30%
+                ),
+                var(--bg);
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
             overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            background:
+                linear-gradient(
+                    rgba(255,255,255,.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.018) 1px,
+                    transparent 1px
+                );
+            background-size: 44px 44px;
+            mask-image: linear-gradient(
+                to bottom,
+                rgba(0,0,0,.8),
+                transparent 88%
+            );
         }
 
         button,
@@ -37,115 +102,231 @@
             font: inherit;
         }
 
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         button {
             cursor: pointer;
         }
 
-        .dashboard-shell {
-            min-height: 100vh;
-            display: flex;
-            background:
-                radial-gradient(
-                    circle at 80% 10%,
-                    rgba(88, 101, 242, 0.13),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 20% 90%,
-                    rgba(114, 137, 218, 0.09),
-                    transparent 28%
-                ),
-                #070a12;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        /* SIDEBAR */
+        ::selection {
+            background: rgba(88,101,242,.35);
+            color: white;
+        }
+
+        /* ========================================
+           BACKGROUND
+        ======================================== */
+
+        .ambient {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(95px);
+            opacity: .18;
+            animation: drift 14s ease-in-out infinite;
+        }
+
+        .orb-a {
+            width: 340px;
+            height: 340px;
+            top: 2%;
+            left: 2%;
+            background: #5865f2;
+        }
+
+        .orb-b {
+            width: 290px;
+            height: 290px;
+            right: 4%;
+            top: 34%;
+            background: #7289da;
+            animation-delay: -4s;
+        }
+
+        .orb-c {
+            width: 320px;
+            height: 320px;
+            left: 34%;
+            bottom: -8%;
+            background: #4655c7;
+            animation-delay: -8s;
+        }
+
+        @keyframes drift {
+            0%,
+            100% {
+                transform: translate3d(0,0,0) scale(1);
+            }
+
+            50% {
+                transform: translate3d(35px,-22px,0) scale(1.08);
+            }
+        }
+
+        /* ========================================
+           APP
+        ======================================== */
+
+        .app {
+            min-height: 100vh;
+        }
 
         .sidebar {
-            width: 270px;
-            min-height: 100vh;
             position: fixed;
-            right: 0;
             top: 0;
             bottom: 0;
-            padding: 22px 16px;
-            background: rgba(10, 13, 22, 0.92);
-            border-left: 1px solid rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(20px);
-            z-index: 20;
+            right: 0;
+            width: var(--sidebar);
+            padding: 18px;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(10,13,21,.90),
+                    rgba(7,9,15,.96)
+                );
+            border-left: 1px solid var(--border);
+            backdrop-filter: blur(28px);
+            z-index: 100;
             overflow-y: auto;
+            overflow-x: hidden;
+            transition: transform .28s ease;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,.08);
+            border-radius: 99px;
         }
 
         .brand {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 11px;
-            padding: 8px 10px 22px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-            margin-bottom: 18px;
+            gap: 12px;
+            padding: 7px 7px 20px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
+        .brand-mark {
+            width: 44px;
+            height: 44px;
             display: grid;
             place-items: center;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 1000;
+            color: #fff;
             background:
                 linear-gradient(
-                    135deg,
+                    145deg,
                     #5865f2,
-                    #7289da
+                    #7784ff
                 );
-            font-weight: 900;
             box-shadow:
-                0 12px 30px rgba(88, 101, 242, 0.25);
+                0 12px 34px rgba(88,101,242,.33),
+                inset 0 1px 1px rgba(255,255,255,.22);
+            position: relative;
+            overflow: hidden;
         }
 
-        .brand strong {
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 20px;
+            transform: rotate(-45deg);
+            background: rgba(255,255,255,.18);
+            top: -30px;
+            left: -50px;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-20px) rotate(-45deg);
+            }
+
+            60%,
+            100% {
+                transform: translateX(150px) rotate(-45deg);
+            }
+        }
+
+        .brand-name {
             font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -.4px;
         }
 
-        .brand small {
-            display: block;
+        .brand-subtitle {
             margin-top: 3px;
-            color: #7d879c;
             font-size: 11px;
+            color: var(--muted-2);
         }
 
-        .server-box {
+        .server-card {
             padding: 13px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.035);
+            border-radius: 16px;
             margin-bottom: 18px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: inset 0 1px rgba(255,255,255,.025);
         }
 
-        .server-box span {
+        .server-label {
             display: block;
-            color: #737d93;
-            font-size: 11px;
             margin-bottom: 8px;
+            font-size: 10px;
+            color: var(--muted-2);
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            font-weight: 800;
         }
 
         .server-select {
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            outline: 0;
-            background: #101522;
             color: #fff;
+            border: 1px solid var(--border);
+            background: #0d121d;
+            padding: 10px 11px;
             border-radius: 10px;
-            padding: 10px;
+            outline: none;
         }
 
-        .menu-title {
-            color: #5f6980;
-            font-size: 11px;
+        .server-select:focus {
+            border-color: rgba(88,101,242,.6);
+            box-shadow: 0 0 0 4px rgba(88,101,242,.09);
+        }
+
+        .nav-label {
+            margin: 17px 7px 7px;
+            color: var(--muted-2);
+            font-size: 10px;
             font-weight: 900;
-            padding: 0 10px;
-            margin: 18px 0 7px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .nav-menu {
+        .nav {
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -153,91 +334,233 @@
 
         .nav-item {
             width: 100%;
-            border: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #909aaf;
             background: transparent;
-            color: #9ca5b8;
-            text-align: right;
-            padding: 11px 13px;
-            border-radius: 11px;
-            transition: 0.18s ease;
+            text-align: left;
+            transition:
+                transform .18s ease,
+                background .18s ease,
+                border-color .18s ease,
+                color .18s ease;
         }
 
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.055);
             color: #fff;
+            background: rgba(255,255,255,.045);
+            transform: translateX(-2px);
         }
 
         .nav-item.active {
+            color: #fff;
             background:
                 linear-gradient(
                     135deg,
-                    rgba(88, 101, 242, 0.24),
-                    rgba(88, 101, 242, 0.08)
+                    rgba(88,101,242,.20),
+                    rgba(88,101,242,.065)
                 );
-            color: #fff;
-            border: 1px solid rgba(88, 101, 242, 0.2);
+            border-color: rgba(88,101,242,.18);
+            box-shadow:
+                inset 0 1px rgba(255,255,255,.025);
         }
 
-        /* MAIN */
+        .nav-icon {
+            width: 29px;
+            height: 29px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            color: #a3acc0;
+            background: rgba(255,255,255,.04);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .nav-item.active .nav-icon {
+            color: white;
+            background: rgba(88,101,242,.22);
+        }
+
+        .sidebar-bottom {
+            margin-top: 24px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 13px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .avatar {
+            width: 37px;
+            height: 37px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #232b43,
+                    #171c2a
+                );
+            color: #d9def0;
+            font-weight: 900;
+            font-size: 12px;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .user-status {
+            margin-top: 3px;
+            font-size: 10px;
+            color: var(--success);
+        }
+
+        /* ========================================
+           MAIN
+        ======================================== */
 
         .main {
-            width: calc(100% - 270px);
-            margin-right: 270px;
-            padding: 25px;
+            width: calc(100% - var(--sidebar));
+            margin-right: var(--sidebar);
+            min-height: 100vh;
+            padding: 22px;
         }
 
         .topbar {
+            position: sticky;
+            top: 12px;
+            z-index: 40;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 16px;
+            padding: 13px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: rgba(8,11,18,.70);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 14px 55px rgba(0,0,0,.18);
         }
 
-        .topbar h1 {
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        .page-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            background: rgba(88,101,242,.13);
+            color: #b9c1ff;
+            border: 1px solid rgba(88,101,242,.14);
+        }
+
+        .page-title {
             margin: 0;
-            font-size: 28px;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -.25px;
         }
 
-        .topbar p {
-            margin: 6px 0 0;
-            color: #788399;
-            font-size: 13px;
+        .page-description {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11px;
         }
 
         .top-actions {
             display: flex;
-            gap: 9px;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .top-btn {
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff;
-            background: rgba(255, 255, 255, 0.045);
+        .icon-button,
+        .action-button {
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            color: #e8ebf3;
             border-radius: 11px;
-            padding: 10px 14px;
+            transition:
+                transform .18s ease,
+                background .18s ease,
+                border-color .18s ease;
         }
 
-        .top-btn.primary {
-            background: #5865f2;
-            border-color: #5865f2;
+        .icon-button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            font-weight: 900;
         }
 
-        /* PANELS */
+        .action-button {
+            padding: 10px 13px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .icon-button:hover,
+        .action-button:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,.07);
+            border-color: rgba(255,255,255,.12);
+        }
+
+        .action-button.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 10px 28px rgba(88,101,242,.22);
+        }
+
+        .action-button.primary:hover {
+            background: #6471fa;
+        }
+
+        /* ========================================
+           PANELS
+        ======================================== */
 
         .panel {
             display: none;
+            animation: panelEnter .35s ease both;
         }
 
         .panel.active {
             display: block;
-            animation: panelIn 0.25s ease;
         }
 
-        @keyframes panelIn {
+        @keyframes panelEnter {
             from {
                 opacity: 0;
-                transform: translateY(8px);
+                transform: translateY(10px);
             }
 
             to {
@@ -246,121 +569,446 @@
             }
         }
 
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-bottom: 18px;
+        .section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 5px 0 16px;
         }
 
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-bottom: 18px;
+        .section-header h2 {
+            margin: 0;
+            font-size: 17px;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-            margin-bottom: 18px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.035);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 18px;
-            padding: 18px;
-        }
-
-        .stat-card {
-            min-height: 125px;
-        }
-
-        .stat-label {
-            color: #7f899e;
-            font-size: 12px;
-        }
-
-        .stat-value {
-            margin-top: 13px;
-            font-size: 28px;
-            font-weight: 900;
-        }
-
-        .stat-sub {
-            margin-top: 7px;
-            color: #626d82;
+        .section-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
             font-size: 11px;
         }
 
-        .card-title {
+        .panel-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 14px;
+        }
+
+        .panel-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 14px;
+        }
+
+        .panel-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 14px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255,255,255,.042),
+                    rgba(255,255,255,.022)
+                );
+            box-shadow: var(--shadow);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(
+                    110deg,
+                    transparent 35%,
+                    rgba(255,255,255,.025),
+                    transparent 65%
+                );
+            transform: translateX(-100%);
+            transition: transform .7s ease;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card-padding {
+            padding: 18px;
+        }
+
+        /* ========================================
+           STAT CARDS
+        ======================================== */
+
+        .stat-card {
+            min-height: 145px;
+            padding: 18px;
+            transition:
+                transform .2s ease,
+                border-color .2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255,255,255,.11);
+        }
+
+        .stat-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 16px;
         }
 
-        .card-title h3 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .card-title span {
-            color: #687389;
+        .stat-label {
+            color: var(--muted);
             font-size: 11px;
+            font-weight: 700;
         }
 
-        /* COMMANDS */
-
-        .command-search {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 12px;
-            outline: 0;
-            border: 1px solid rgba(255,255,255,.07);
-            background: #0d111b;
-            color: white;
-            margin-bottom: 13px;
-        }
-
-        .command-list {
+        .stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            place-items: center;
+            color: #bac1ff;
+            background: rgba(88,101,242,.10);
+            border: 1px solid rgba(88,101,242,.13);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .stat-value {
+            margin-top: 17px;
+            font-size: 31px;
+            line-height: 1;
+            font-weight: 950;
+            letter-spacing: -1px;
+        }
+
+        .stat-footer {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 12px;
+            color: var(--muted-2);
+            font-size: 10px;
+        }
+
+        .trend-up {
+            color: var(--success);
+            font-weight: 800;
+        }
+
+        .trend-neutral {
+            color: #96a0b5;
+        }
+
+        /* ========================================
+           CARD HEADER
+        ======================================== */
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 17px 18px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .card-header-left h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .card-header-left p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .card-header-tag {
+            padding: 6px 8px;
+            border-radius: 8px;
+            color: #8791a7;
+            font-size: 9px;
+            font-weight: 900;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.05);
+        }
+
+        /* ========================================
+           CHART
+        ======================================== */
+
+        .chart-area {
+            height: 220px;
+            padding: 18px;
+            display: flex;
+            align-items: end;
+            gap: 10px;
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(255,255,255,.018),
+                    transparent
+                );
+        }
+
+        .bar-wrap {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            align-items: end;
+            gap: 5px;
+        }
+
+        .bar {
+            flex: 1;
+            border-radius: 6px 6px 3px 3px;
+            min-width: 5px;
+            height: calc(var(--h) * 1%);
+            background:
+                linear-gradient(
+                    180deg,
+                    #7783ff,
+                    #5865f2
+                );
+            box-shadow: 0 0 22px rgba(88,101,242,.10);
+            transform-origin: bottom;
+            animation: barGrow .8s cubic-bezier(.2,.8,.2,1) both;
+        }
+
+        .bar:nth-child(2) {
+            opacity: .78;
+        }
+
+        @keyframes barGrow {
+            from {
+                transform: scaleY(0);
+            }
+
+            to {
+                transform: scaleY(1);
+            }
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 18px 16px;
+            color: var(--muted-2);
+            font-size: 9px;
+        }
+
+        /* ========================================
+           ACTIVITY
+        ======================================== */
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-soft);
+            transition: background .18s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: 0;
+        }
+
+        .activity-item:hover {
+            background: rgba(255,255,255,.018);
+        }
+
+        .activity-dot {
+            width: 9px;
+            height: 9px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(88,101,242,.5);
+        }
+
+        .activity-dot.success {
+            background: var(--success);
+            box-shadow: 0 0 12px rgba(93,227,154,.4);
+        }
+
+        .activity-dot.warning {
+            background: var(--warning);
+            box-shadow: 0 0 12px rgba(245,199,109,.35);
+        }
+
+        .activity-content {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .activity-main {
+            color: #dfe4ef;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .activity-meta {
+            margin-top: 3px;
+            color: var(--muted-2);
+            font-size: 9px;
+        }
+
+        .activity-time {
+            color: #626c80;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        /* ========================================
+           SEARCH
+        ======================================== */
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 44px;
+            padding: 0 40px 0 13px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.035);
+            color: white;
+            outline: 0;
+        }
+
+        .search-input::placeholder {
+            color: #626c7d;
+        }
+
+        .search-input:focus {
+            border-color: rgba(88,101,242,.55);
+            box-shadow: 0 0 0 4px rgba(88,101,242,.08);
+        }
+
+        .search-symbol {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667186;
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        .filter-select {
+            min-width: 150px;
+            height: 44px;
+            padding: 0 11px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #0d121d;
+            color: white;
+            outline: 0;
+        }
+
+        /* ========================================
+           COMMANDS
+        ======================================== */
+
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
             gap: 10px;
         }
 
         .command-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 12px;
             padding: 13px;
-            border-radius: 13px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.055);
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            background: rgba(255,255,255,.025);
+            transition:
+                transform .18s ease,
+                background .18s ease,
+                border-color .18s ease;
+        }
+
+        .command-row:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,.04);
+            border-color: rgba(255,255,255,.085);
+        }
+
+        .command-badge {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: #bbc2ff;
+            background: rgba(88,101,242,.10);
+            border: 1px solid rgba(88,101,242,.12);
+            font-size: 10px;
+            font-weight: 900;
+            font-family: Consolas, monospace;
+        }
+
+        .command-info {
+            min-width: 0;
+            flex: 1;
         }
 
         .command-name {
+            color: #edf0f7;
+            font-size: 12px;
             font-family: Consolas, monospace;
-            font-weight: 800;
-            color: #9ba5ff;
+            font-weight: 900;
         }
 
         .command-desc {
-            color: #737e93;
-            font-size: 11px;
             margin-top: 4px;
+            color: var(--muted);
+            font-size: 9px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* TOGGLE */
+        /* ========================================
+           SWITCH
+        ======================================== */
 
         .switch {
-            width: 46px;
-            height: 26px;
             position: relative;
+            width: 44px;
+            height: 24px;
             flex: 0 0 auto;
         }
 
@@ -373,33 +1021,42 @@
         .slider {
             position: absolute;
             inset: 0;
-            border-radius: 999px;
-            background: #232a39;
-            transition: 0.2s ease;
+            border-radius: 99px;
+            background: #242b3a;
+            border: 1px solid rgba(255,255,255,.05);
+            transition: .2s ease;
         }
 
         .slider::before {
             content: "";
             position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 3px;
-            right: 3px;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            top: 2px;
             border-radius: 50%;
-            background: #9099aa;
-            transition: 0.2s ease;
+            background: #929aac;
+            transition: .2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
         }
 
         .switch input:checked + .slider {
-            background: #5865f2;
+            background: rgba(88,101,242,.92);
+            border-color: rgba(88,101,242,.25);
         }
 
         .switch input:checked + .slider::before {
-            transform: translateX(-20px);
+            transform: translateX(20px);
             background: white;
         }
 
-        /* SETTINGS */
+        /* ========================================
+           SETTINGS
+        ======================================== */
+
+        .settings-list {
+            padding: 5px 18px;
+        }
 
         .setting-row {
             display: flex;
@@ -407,126 +1064,164 @@
             justify-content: space-between;
             gap: 15px;
             padding: 15px 0;
-            border-bottom: 1px solid rgba(255,255,255,.055);
+            border-bottom: 1px solid var(--border-soft);
         }
 
         .setting-row:last-child {
             border-bottom: 0;
         }
 
+        .setting-main {
+            min-width: 0;
+        }
+
         .setting-title {
-            font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .setting-description {
-            margin-top: 5px;
-            color: #707b90;
-            font-size: 11px;
+            margin-top: 4px;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 9px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 12px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            color: #8b95aa;
+            font-size: 10px;
+            font-weight: 800;
         }
 
         .input,
         .select,
         .textarea {
             width: 100%;
-            background: #0c1019;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: #0c111b;
             color: white;
-            border: 1px solid rgba(255,255,255,.08);
-            border-radius: 10px;
             padding: 11px 12px;
             outline: 0;
         }
 
+        .input:focus,
+        .select:focus,
+        .textarea:focus {
+            border-color: rgba(88,101,242,.56);
+            box-shadow: 0 0 0 4px rgba(88,101,242,.08);
+        }
+
         .textarea {
-            min-height: 100px;
+            min-height: 110px;
             resize: vertical;
         }
 
-        .save-btn {
-            width: 100%;
+        .button-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
             margin-top: 15px;
-            border: 0;
-            border-radius: 11px;
-            padding: 12px;
-            color: white;
-            background: #5865f2;
+        }
+
+        .danger-button {
+            padding: 10px 13px;
+            border-radius: 10px;
+            color: #ffb7c1;
+            border: 1px solid rgba(255,111,130,.16);
+            background: rgba(255,111,130,.06);
+            font-size: 11px;
             font-weight: 800;
         }
 
-        /* ACTIVITY */
+        /* ========================================
+           TAGS
+        ======================================== */
 
-        .activity {
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-        }
-
-        .activity-row {
-            display: flex;
+        .status {
+            display: inline-flex;
             align-items: center;
-            gap: 11px;
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(255,255,255,.03);
+            gap: 6px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 900;
         }
 
-        .activity-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #7289da;
+        .status.online {
+            color: #8ff0b8;
+            background: rgba(93,227,154,.075);
+            border: 1px solid rgba(93,227,154,.11);
         }
 
-        .activity-text strong {
-            display: block;
-            font-size: 13px;
-        }
-
-        .activity-text span {
-            display: block;
-            color: #6d778c;
-            font-size: 11px;
-            margin-top: 4px;
-        }
-
-        /* PLATFORM */
-
-        .platform-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .platform-label {
-            width: 80px;
-            color: #8d96a9;
-            font-size: 12px;
-        }
-
-        .platform-row .input {
-            flex: 1;
-        }
-
-        .remove-btn {
-            border: 1px solid rgba(255,255,255,.07);
+        .status.offline {
+            color: #a4adbd;
             background: rgba(255,255,255,.04);
-            color: #a9b1c0;
-            border-radius: 9px;
-            padding: 9px 11px;
+            border: 1px solid rgba(255,255,255,.06);
         }
 
-        .add-btn {
-            width: 100%;
-            border: 1px dashed rgba(255,255,255,.12);
-            background: transparent;
-            color: #8c97ad;
-            padding: 11px;
-            border-radius: 10px;
-            margin-top: 3px;
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
         }
 
-        /* TABLE */
+        /* ========================================
+           STREAMING
+        ======================================== */
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 10px;
+        }
+
+        .platform-card {
+            padding: 14px;
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .platform-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 11px;
+        }
+
+        .platform-name {
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .platform-handle {
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        /* ========================================
+           TABLE
+        ======================================== */
 
         .table-wrap {
             overflow-x: auto;
@@ -540,84 +1235,264 @@
         th,
         td {
             padding: 13px 10px;
-            text-align: right;
-            border-bottom: 1px solid rgba(255,255,255,.055);
-            white-space: nowrap;
+            text-align: left;
+            border-bottom: 1px solid var(--border-soft);
         }
 
         th {
-            color: #69748a;
-            font-size: 11px;
+            color: #657086;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
         }
 
         td {
-            font-size: 12px;
-            color: #aab2c1;
+            color: #b4bdce;
+            font-size: 10px;
         }
 
-        /* MOBILE */
-
-        .mobile-menu {
-            display: none;
+        tr:last-child td {
+            border-bottom: 0;
         }
 
-        @media (max-width: 1150px) {
-            .grid-4 {
-                grid-template-columns: repeat(2, 1fr);
+        /* ========================================
+           TOAST
+        ======================================== */
+
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            min-width: 275px;
+            max-width: 360px;
+            padding: 13px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(20,25,39,.96),
+                    rgba(11,15,24,.96)
+                );
+            box-shadow: 0 20px 45px rgba(0,0,0,.35);
+            backdrop-filter: blur(18px);
+            animation: toastIn .3s ease both;
+            pointer-events: auto;
+        }
+
+        .toast-icon {
+            width: 29px;
+            height: 29px;
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: rgba(88,101,242,.13);
+            color: #bbc2ff;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .toast-message {
+            color: #e9edf6;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(.97);
             }
 
-            .grid-3 {
-                grid-template-columns: repeat(2, 1fr);
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
         }
 
-        @media (max-width: 850px) {
+        .toast.hide {
+            animation: toastOut .24s ease forwards;
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateY(10px) scale(.97);
+            }
+        }
+
+        /* ========================================
+           LOADING
+        ======================================== */
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: grid;
+            place-items: center;
+            background: #05070c;
+            transition:
+                opacity .45s ease,
+                visibility .45s ease;
+        }
+
+        .loading-overlay.loaded {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 72px;
+            height: 72px;
+            display: grid;
+            place-items: center;
+            border-radius: 22px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #5865f2,
+                    #7480ff
+                );
+            box-shadow:
+                0 25px 70px rgba(88,101,242,.28);
+            animation: loaderPulse 1.2s ease-in-out infinite;
+        }
+
+        .loader span {
+            font-weight: 1000;
+            font-size: 25px;
+        }
+
+        @keyframes loaderPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.06);
+            }
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media (max-width: 1200px) {
+            .panel-grid-4 {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+
+            .panel-grid-3 {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+        }
+
+        @media (max-width: 980px) {
             .sidebar {
                 transform: translateX(100%);
-                transition: 0.25s ease;
             }
 
             .sidebar.open {
                 transform: translateX(0);
+                box-shadow: -30px 0 80px rgba(0,0,0,.35);
             }
 
             .main {
                 width: 100%;
                 margin-right: 0;
-                padding: 17px;
             }
 
             .mobile-menu {
-                display: inline-flex;
+                display: grid;
             }
 
-            .grid-2,
-            .grid-3,
-            .grid-4,
-            .command-list {
+            .panel-grid-2,
+            .panel-grid-3,
+            .panel-grid-4,
+            .command-grid,
+            .platform-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .topbar {
-                align-items: flex-start;
-            }
-
-            .top-actions {
-                flex-wrap: wrap;
             }
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: 650px) {
+            .main {
+                padding: 12px;
+            }
+
             .topbar {
+                top: 8px;
+                padding: 10px;
+                border-radius: 14px;
+            }
+
+            .page-icon {
+                width: 39px;
+                height: 39px;
+            }
+
+            .page-title {
+                font-size: 15px;
+            }
+
+            .page-description {
+                font-size: 9px;
+            }
+
+            .action-button.hide-mobile {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .search-row {
                 flex-direction: column;
             }
 
-            .top-actions {
+            .filter-select {
                 width: 100%;
             }
 
-            .top-btn {
-                flex: 1;
+            .toast-container {
+                right: 12px;
+                left: 12px;
+                bottom: 12px;
+            }
+
+            .toast {
+                min-width: 0;
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .001ms !important;
+                scroll-behavior: auto !important;
             }
         }
     </style>
@@ -625,1162 +1500,2033 @@
 
 <body>
 
-<div class="dashboard-shell">
-
-    <!-- SIDEBAR -->
-
-    <aside class="sidebar" id="sidebar">
-
-        <div class="brand">
-            <div class="brand-icon">ب</div>
-
-            <div>
-                <strong>بيان</strong>
-                <small>لوحة التحكم</small>
-            </div>
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader">
+            <span>B</span>
         </div>
+    </div>
 
-        <div class="server-box">
-            <span>السيرفر الحالي</span>
+    <!-- Ambient background -->
+    <div class="ambient">
+        <div class="orb orb-a"></div>
+        <div class="orb orb-b"></div>
+        <div class="orb orb-c"></div>
+    </div>
 
-            <select class="server-select">
-                <option>اختر السيرفر</option>
-                <option>السيرفر التجريبي</option>
-            </select>
-        </div>
+    <div class="app">
 
-        <div class="menu-title">
-            الرئيسية
-        </div>
+        <!-- ==========================================
+             SIDEBAR
+        =========================================== -->
 
-        <div class="nav-menu">
+        <aside class="sidebar" id="sidebar">
 
-            <button class="nav-item active" data-panel="overview">
-                نظرة عامة
-            </button>
+            <div class="brand">
+                <div class="brand-mark">B</div>
 
-            <button class="nav-item" data-panel="commands">
-                الأوامر
-            </button>
-
-            <button class="nav-item" data-panel="activity">
-                النشاط
-            </button>
-
-        </div>
-
-        <div class="menu-title">
-            الإدارة
-        </div>
-
-        <div class="nav-menu">
-
-            <button class="nav-item" data-panel="moderation">
-                الإدارة
-            </button>
-
-            <button class="nav-item" data-panel="tickets">
-                التذاكر
-            </button>
-
-            <button class="nav-item" data-panel="permissions">
-                الصلاحيات
-            </button>
-
-            <button class="nav-item" data-panel="welcome">
-                الترحيب
-            </button>
-
-            <button class="nav-item" data-panel="automod">
-                الحماية
-            </button>
-
-            <button class="nav-item" data-panel="logs">
-                السجلات
-            </button>
-
-        </div>
-
-        <div class="menu-title">
-            المجتمع
-        </div>
-
-        <div class="nav-menu">
-
-            <button class="nav-item" data-panel="giveaways">
-                السحوبات
-            </button>
-
-            <button class="nav-item" data-panel="tournaments">
-                البطولات
-            </button>
-
-            <button class="nav-item" data-panel="streaming">
-                البث
-            </button>
-
-        </div>
-
-        <div class="menu-title">
-            النظام
-        </div>
-
-        <div class="nav-menu">
-
-            <button class="nav-item" data-panel="settings">
-                الإعدادات
-            </button>
-
-            <button class="nav-item" data-panel="audit">
-                سجل التدقيق
-            </button>
-
-        </div>
-
-    </aside>
-
-    <!-- MAIN -->
-
-    <main class="main">
-
-        <div class="topbar">
-
-            <div>
-                <h1 id="pageTitle">
-                    نظرة عامة
-                </h1>
-
-                <p>
-                    تحكم كامل بإعدادات سيرفرك من مكان واحد.
-                </p>
+                <div>
+                    <div class="brand-name">Bayan</div>
+                    <div class="brand-subtitle">
+                        Discord Control Center
+                    </div>
+                </div>
             </div>
 
-            <div class="top-actions">
+            <div class="server-card">
+
+                <span class="server-label">
+                    Current Server
+                </span>
+
+                <select class="server-select" id="serverSelect">
+                    <option value="moon">
+                        Moon Network
+                    </option>
+
+                    <option value="demo">
+                        Demo Server
+                    </option>
+                </select>
+
+            </div>
+
+            <div class="nav-label">
+                Dashboard
+            </div>
+
+            <nav class="nav">
 
                 <button
-                    class="top-btn mobile-menu"
-                    id="mobileMenu"
+                    class="nav-item active"
+                    data-panel="overview"
+                    data-title="Overview"
+                    data-description="Your server at a glance"
                 >
-                    القائمة
+                    <span class="nav-icon">01</span>
+                    <span>Overview</span>
                 </button>
 
                 <button
-                    class="top-btn"
-                    onclick="showToast('تم تحديث البيانات')"
+                    class="nav-item"
+                    data-panel="commands"
+                    data-title="Commands"
+                    data-description="Manage Bayan commands"
                 >
-                    تحديث
+                    <span class="nav-icon">02</span>
+                    <span>Commands</span>
                 </button>
 
-                <a
-                    class="top-btn primary"
-                    href="index.html"
+                <button
+                    class="nav-item"
+                    data-panel="activity"
+                    data-title="Activity"
+                    data-description="Recent server activity"
                 >
-                    الرئيسية
-                </a>
+                    <span class="nav-icon">03</span>
+                    <span>Activity</span>
+                </button>
+
+            </nav>
+
+            <div class="nav-label">
+                Management
+            </div>
+
+            <nav class="nav">
+
+                <button
+                    class="nav-item"
+                    data-panel="moderation"
+                    data-title="Moderation"
+                    data-description="Moderation and security controls"
+                >
+                    <span class="nav-icon">04</span>
+                    <span>Moderation</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="tickets"
+                    data-title="Tickets"
+                    data-description="Configure the ticket system"
+                >
+                    <span class="nav-icon">05</span>
+                    <span>Tickets</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="automod"
+                    data-title="AutoMod"
+                    data-description="Automated protection"
+                >
+                    <span class="nav-icon">06</span>
+                    <span>AutoMod</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="logs"
+                    data-title="Logs"
+                    data-description="Server event logging"
+                >
+                    <span class="nav-icon">07</span>
+                    <span>Logs</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="permissions"
+                    data-title="Permissions"
+                    data-description="Role and command permissions"
+                >
+                    <span class="nav-icon">08</span>
+                    <span>Permissions</span>
+                </button>
+
+            </nav>
+
+            <div class="nav-label">
+                Community
+            </div>
+
+            <nav class="nav">
+
+                <button
+                    class="nav-item"
+                    data-panel="giveaways"
+                    data-title="Giveaways"
+                    data-description="Giveaway management"
+                >
+                    <span class="nav-icon">09</span>
+                    <span>Giveaways</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="tournaments"
+                    data-title="Tournaments"
+                    data-description="Tournament management"
+                >
+                    <span class="nav-icon">10</span>
+                    <span>Tournaments</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="streaming"
+                    data-title="Streaming"
+                    data-description="Creator and stream settings"
+                >
+                    <span class="nav-icon">11</span>
+                    <span>Streaming</span>
+                </button>
+
+            </nav>
+
+            <div class="nav-label">
+                System
+            </div>
+
+            <nav class="nav">
+
+                <button
+                    class="nav-item"
+                    data-panel="settings"
+                    data-title="Settings"
+                    data-description="General Bayan settings"
+                >
+                    <span class="nav-icon">12</span>
+                    <span>Settings</span>
+                </button>
+
+                <button
+                    class="nav-item"
+                    data-panel="audit"
+                    data-title="Audit Log"
+                    data-description="Track configuration changes"
+                >
+                    <span class="nav-icon">13</span>
+                    <span>Audit Log</span>
+                </button>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="user-mini">
+                    <div class="avatar">
+                        US
+                    </div>
+
+                    <div>
+                        <div class="user-name">
+                            Dashboard User
+                        </div>
+
+                        <div class="user-status">
+                           ● Connected
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
-        </div>
+        </aside>
 
-        <!-- OVERVIEW -->
+        <!-- ==========================================
+             MAIN
+        =========================================== -->
 
-        <section
-            class="panel active"
-            id="panel-overview"
-        >
+        <main class="main">
 
-            <div class="grid-4">
+            <!-- TOPBAR -->
 
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        أعضاء السيرفر
+            <header class="topbar">
+
+                <div class="top-left">
+
+                    <button
+                        class="icon-button mobile-menu"
+                        id="mobileMenu"
+                        aria-label="Open menu"
+                    >
+                        ☰
+                    </button>
+
+                    <div class="page-icon" id="pageIcon">
+                        01
                     </div>
 
-                    <div class="stat-value">
-                        1,284
+                    <div>
+                        <h1
+                            class="page-title"
+                            id="pageTitle"
+                        >
+                            Overview
+                        </h1>
+
+                        <div
+                            class="page-description"
+                            id="pageDescription"
+                        >
+                            Your server at a glance
+                        </div>
                     </div>
 
-                    <div class="stat-sub">
-                        آخر تحديث الآن
+                </div>
+
+                <div class="top-actions">
+
+                    <button
+                        class="icon-button"
+                        id="soundToggle"
+                        title="Toggle sounds"
+                    >
+                        ♪
+                    </button>
+
+                    <button
+                        class="action-button hide-mobile"
+                        id="refreshButton"
+                    >
+                        Refresh
+                    </button>
+
+                    <a
+                        class="action-button primary"
+                        href="index.html"
+                    >
+                        Website
+                    </a>
+
+                    <a
+                        class="action-button primary"
+                        href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-sound
+                    >
+                        Add Bayan
+                    </a>
+
+                </div>
+
+            </header>
+
+            <!-- ======================================
+                 OVERVIEW
+            ======================================= -->
+
+            <section
+                class="panel active"
+                id="panel-overview"
+            >
+
+                <div class="section-header">
+                    <div>
+                        <h2>Server Overview</h2>
+                        <p>
+                            Everything important in one place.
+                        </p>
+                    </div>
+
+                    <div class="status online">
+                        <span class="status-dot"></span>
+                        Bayan Online
                     </div>
                 </div>
 
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        أوامر مفعلة
-                    </div>
+                <div class="panel-grid-4">
 
-                    <div class="stat-value">
-                        20
-                    </div>
-
-                    <div class="stat-sub">
-                        من أصل 20
-                    </div>
-                </div>
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        التذاكر المفتوحة
-                    </div>
-
-                    <div class="stat-value">
-                        7
-                    </div>
-
-                    <div class="stat-sub">
-                        تحتاج إلى متابعة
-                    </div>
-                </div>
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        حالة بيان
-                    </div>
-
-                    <div class="stat-value">
-                        متصل
-                    </div>
-
-                    <div class="stat-sub">
-                        جميع الخدمات تعمل
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="grid-2">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>إعدادات سريعة</h3>
-                        <span>تحكم مباشر</span>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                الترحيب
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Members
                             </div>
-                            <div class="setting-description">
-                                رسائل ترحيب للأعضاء الجدد
+
+                            <div class="stat-icon">
+                                USR
                             </div>
                         </div>
 
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <div
+                            class="stat-value"
+                            data-counter="1284"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-footer">
+                            <span class="trend-up">
+                                +8.4%
+                            </span>
+                            <span>
+                                this month
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                الحماية
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Commands
                             </div>
-                            <div class="setting-description">
-                                أدوات الحماية التلقائية
+
+                            <div class="stat-icon">
+                                CMD
                             </div>
                         </div>
 
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <div
+                            class="stat-value"
+                            data-counter="20"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-footer">
+                            <span class="trend-neutral">
+                                20 enabled
+                            </span>
+                            <span>
+                                total
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                السجلات
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Open Tickets
                             </div>
-                            <div class="setting-description">
-                                حفظ أحداث الإدارة
+
+                            <div class="stat-icon">
+                                TKT
                             </div>
                         </div>
 
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
+                        <div
+                            class="stat-value"
+                            data-counter="7"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-footer">
+                            <span class="trend-neutral">
+                                2 awaiting reply
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Uptime
+                            </div>
+
+                            <div class="stat-icon">
+                                UP
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            99.9%
+                        </div>
+
+                        <div class="stat-footer">
+                            <span class="trend-up">
+                                Excellent
+                            </span>
+                        </div>
                     </div>
 
                 </div>
 
-                <div class="card">
+                <br>
 
-                    <div class="card-title">
-                        <h3>آخر النشاطات</h3>
-                        <span>اليوم</span>
+                <div class="panel-grid-2">
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>
+                                    Server Activity
+                                </h3>
+
+                                <p>
+                                    Command activity over the last 12 periods
+                                </p>
+                            </div>
+
+                            <span class="card-header-tag">
+                                LIVE STYLE
+                            </span>
+                        </div>
+
+                        <div class="chart-area">
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:42"></div>
+                                <div class="bar" style="--h:57"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:34"></div>
+                                <div class="bar" style="--h:47"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:63"></div>
+                                <div class="bar" style="--h:71"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:49"></div>
+                                <div class="bar" style="--h:61"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:74"></div>
+                                <div class="bar" style="--h:58"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:69"></div>
+                                <div class="bar" style="--h:83"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:79"></div>
+                                <div class="bar" style="--h:67"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:66"></div>
+                                <div class="bar" style="--h:88"></div>
+                            </div>
+
+                            <div class="bar-wrap">
+                                <div class="bar" style="--h:82"></div>
+                                <div class="bar" style="--h:91"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="chart-labels">
+                            <span>08:00</span>
+                            <span>10:00</span>
+                            <span>12:00</span>
+                            <span>14:00</span>
+                            <span>16:00</span>
+                            <span>18:00</span>
+                        </div>
+
                     </div>
 
-                    <div class="activity">
+                    <div class="card">
 
-                        <div class="activity-row">
-                            <div class="activity-dot"></div>
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>
+                                    Recent Activity
+                                </h3>
 
-                            <div class="activity-text">
-                                <strong>
-                                    تم استخدام /clear
-                                </strong>
-                                <span>
-                                    قبل دقيقة
+                                <p>
+                                    Latest events from your server
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="activity-list">
+
+                            <div class="activity-item">
+                                <span class="activity-dot success"></span>
+
+                                <div class="activity-content">
+                                    <div class="activity-main">
+                                        /clear was used
+                                    </div>
+
+                                    <div class="activity-meta">
+                                        #general · Moderator
+                                    </div>
+                                </div>
+
+                                <div class="activity-time">
+                                    1m
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <span class="activity-dot"></span>
+
+                                <div class="activity-content">
+                                    <div class="activity-main">
+                                        New ticket opened
+                                    </div>
+
+                                    <div class="activity-meta">
+                                        ticket-27 · Support
+                                    </div>
+                                </div>
+
+                                <div class="activity-time">
+                                    4m
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <span class="activity-dot warning"></span>
+
+                                <div class="activity-content">
+                                    <div class="activity-main">
+                                        AutoMod blocked a message
+                                    </div>
+
+                                    <div class="activity-meta">
+                                        #chat · Protection
+                                    </div>
+                                </div>
+
+                                <div class="activity-time">
+                                    7m
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <span class="activity-dot success"></span>
+
+                                <div class="activity-content">
+                                    <div class="activity-main">
+                                        Giveaway completed
+                                    </div>
+
+                                    <div class="activity-meta">
+                                        Community · 1 winner
+                                    </div>
+                                </div>
+
+                                <div class="activity-time">
+                                    12m
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <span class="activity-dot"></span>
+
+                                <div class="activity-content">
+                                    <div class="activity-main">
+                                        Settings updated
+                                    </div>
+
+                                    <div class="activity-meta">
+                                        Dashboard · Admin
+                                    </div>
+                                </div>
+
+                                <div class="activity-time">
+                                    18m
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="panel-grid-3">
+
+                    <div class="card card-padding">
+
+                        <div class="card-header-left">
+                            <h3>Quick Setup</h3>
+                            <p>
+                                Turn important systems on or off.
+                            </p>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-main">
+                                <div class="setting-title">
+                                    Welcome Messages
+                                </div>
+
+                                <div class="setting-description">
+                                    Welcome new members automatically.
+                                </div>
+                            </div>
+
+                            <label class="switch">
+                                <input
+                                    type="checkbox"
+                                    checked
+                                    data-feature="welcome"
+                                >
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-main">
+                                <div class="setting-title">
+                                    Ticket System
+                                </div>
+
+                                <div class="setting-description">
+                                    Allow members to create tickets.
+                                </div>
+                            </div>
+
+                            <label class="switch">
+                                <input
+                                    type="checkbox"
+                                    checked
+                                    data-feature="tickets"
+                                >
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-main">
+                                <div class="setting-title">
+                                    AutoMod
+                                </div>
+
+                                <div class="setting-description">
+                                    Automatically protect your server.
+                                </div>
+                            </div>
+
+                            <label class="switch">
+                                <input
+                                    type="checkbox"
+                                    checked
+                                    data-feature="automod"
+                                >
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="card card-padding">
+
+                        <div class="card-header-left">
+                            <h3>Bot Status</h3>
+                            <p>
+                                Bayan service status.
+                            </p>
+                        </div>
+
+                        <div style="margin-top:18px">
+                            <div class="status online">
+                                <span class="status-dot"></span>
+                                Operational
+                            </div>
+                        </div>
+
+                        <div style="margin-top:18px;color:#737d90;font-size:10px;line-height:1.7">
+                            All dashboard systems are responding normally.
+                        </div>
+
+                        <div style="margin-top:14px;color:#5865f2;font-size:10px;font-weight:900">
+                            RESPONSE: 42ms
+                        </div>
+
+                    </div>
+
+                    <div class="card card-padding">
+
+                        <div class="card-header-left">
+                            <h3>Server Health</h3>
+                            <p>
+                                Current configuration snapshot.
+                            </p>
+                        </div>
+
+                        <div style="margin-top:18px">
+
+                            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                <span style="font-size:10px;color:#7e889c">
+                                    Security
+                                </span>
+
+                                <span style="font-size:10px;color:#8ff0b8;font-weight:900">
+                                    Strong
                                 </span>
                             </div>
+
+                            <div style="height:7px;border-radius:99px;background:#171d29;overflow:hidden">
+                                <div style="width:91%;height:100%;border-radius:99px;background:linear-gradient(90deg,#5865f2,#8290ff)"></div>
+                            </div>
+
                         </div>
 
-                        <div class="activity-row">
-                            <div class="activity-dot"></div>
+                        <div style="margin-top:16px">
 
-                            <div class="activity-text">
-                                <strong>
-                                    تم فتح تذكرة جديدة
-                                </strong>
-                                <span>
-                                    قبل 4 دقائق
+                            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                <span style="font-size:10px;color:#7e889c">
+                                    Configuration
+                                </span>
+
+                                <span style="font-size:10px;color:#8ff0b8;font-weight:900">
+                                    100%
                                 </span>
                             </div>
-                        </div>
 
-                        <div class="activity-row">
-                            <div class="activity-dot"></div>
-
-                            <div class="activity-text">
-                                <strong>
-                                    تم تحديث إعدادات الحماية
-                                </strong>
-                                <span>
-                                    قبل 11 دقيقة
-                                </span>
+                            <div style="height:7px;border-radius:99px;background:#171d29;overflow:hidden">
+                                <div style="width:100%;height:100%;border-radius:99px;background:linear-gradient(90deg,#5865f2,#8290ff)"></div>
                             </div>
+
                         </div>
 
                     </div>
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+            <!-- ======================================
+                 COMMANDS
+            ======================================= -->
 
-        <!-- COMMANDS -->
+            <section
+                class="panel"
+                id="panel-commands"
+            >
 
-        <section
-            class="panel"
-            id="panel-commands"
-        >
-
-            <div class="card">
-
-                <div class="card-title">
-                    <h3>مركز الأوامر</h3>
-                    <span>
-                        تشغيل أو تعطيل الأوامر
-                    </span>
+                <div class="section-header">
+                    <div>
+                        <h2>Command Manager</h2>
+                        <p>
+                            Control which Bayan commands are enabled.
+                        </p>
+                    </div>
                 </div>
 
-                <input
-                    class="command-search"
-                    id="commandSearch"
-                    placeholder="ابحث عن أمر..."
-                >
+                <div class="card card-padding">
 
-                <div
-                    class="command-list"
-                    id="commandList"
-                >
+                    <div class="search-row">
 
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- ACTIVITY -->
-
-        <section
-            class="panel"
-            id="panel-activity"
-        >
-
-            <div class="card">
-
-                <div class="card-title">
-                    <h3>نشاط السيرفر</h3>
-                    <span>آخر الأحداث</span>
-                </div>
-
-                <div class="activity">
-
-                    <div class="activity-row">
-                        <div class="activity-dot"></div>
-                        <div class="activity-text">
-                            <strong>
-                                تسجيل دخول جديد
-                            </strong>
-                            <span>
-                                منذ دقيقة
+                        <div class="search-wrap">
+                            <span class="search-symbol">
+                                SEARCH
                             </span>
-                        </div>
-                    </div>
 
-                    <div class="activity-row">
-                        <div class="activity-dot"></div>
-                        <div class="activity-text">
-                            <strong>
-                                استخدام أمر إداري
-                            </strong>
-                            <span>
-                                منذ 3 دقائق
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="activity-row">
-                        <div class="activity-dot"></div>
-                        <div class="activity-text">
-                            <strong>
-                                إنشاء تذكرة
-                            </strong>
-                            <span>
-                                منذ 8 دقائق
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="activity-row">
-                        <div class="activity-dot"></div>
-                        <div class="activity-text">
-                            <strong>
-                                تعديل إعداد
-                            </strong>
-                            <span>
-                                منذ 14 دقيقة
-                            </span>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- MODERATION -->
-
-        <section
-            class="panel"
-            id="panel-moderation"
-        >
-
-            <div class="grid-2">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>إعدادات الإدارة</h3>
-                        <span>التحكم العام</span>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                أدوات الإدارة
-                            </div>
-                            <div class="setting-description">
-                                تفعيل أوامر الإدارة
-                            </div>
+                            <input
+                                id="commandSearch"
+                                class="search-input"
+                                type="text"
+                                placeholder="Search commands..."
+                            >
                         </div>
 
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                التحذيرات
-                            </div>
-                            <div class="setting-description">
-                                السماح بنظام التحذيرات
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                التقييد المؤقت
-                            </div>
-                            <div class="setting-description">
-                                تفعيل /timeout
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>الصلاحية الافتراضية</h3>
-                        <span>إدارة</span>
-                    </div>
-
-                    <select class="select">
-                        <option>Administrator</option>
-                        <option>Manage Guild</option>
-                        <option>Manage Messages</option>
-                    </select>
-
-                    <button
-                        class="save-btn"
-                        onclick="showToast('تم حفظ إعدادات الإدارة')"
-                    >
-                        حفظ الإعدادات
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- TICKETS -->
-
-        <section
-            class="panel"
-            id="panel-tickets"
-        >
-
-            <div class="grid-2">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>نظام التذاكر</h3>
-                        <span>التحكم</span>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                تفعيل التذاكر
-                            </div>
-
-                            <div class="setting-description">
-                                تشغيل نظام التذاكر
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                إغلاق التذكرة تلقائياً
-                            </div>
-
-                            <div class="setting-description">
-                                إغلاق التذاكر بعد مدة محددة
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>إعدادات اللوحة</h3>
-                        <span>التذاكر</span>
-                    </div>
-
-                    <input
-                        class="input"
-                        placeholder="اسم فئة التذاكر"
-                        value="Tickets"
-                    >
-
-                    <br><br>
-
-                    <input
-                        class="input"
-                        placeholder="اسم رتبة الدعم"
-                        value="Support"
-                    >
-
-                    <button
-                        class="save-btn"
-                        onclick="showToast('تم حفظ إعدادات التذاكر')"
-                    >
-                        حفظ
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- PERMISSIONS -->
-
-        <section
-            class="panel"
-            id="panel-permissions"
-        >
-
-            <div class="card">
-
-                <div class="card-title">
-                    <h3>الصلاحيات العامة</h3>
-                    <span>من يستطيع إدارة بيان</span>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-title">
-                            إدارة الأوامر
-                        </div>
-                        <div class="setting-description">
-                            الرتبة المطلوبة لتعديل الأوامر
-                        </div>
-                    </div>
-
-                    <select class="select" style="max-width:240px">
-                        <option>Administrator</option>
-                        <option>Manage Guild</option>
-                    </select>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-title">
-                            إدارة الإعدادات
-                        </div>
-                        <div class="setting-description">
-                            الرتبة المطلوبة للإعدادات
-                        </div>
-                    </div>
-
-                    <select class="select" style="max-width:240px">
-                        <option>Administrator</option>
-                        <option>Manage Guild</option>
-                    </select>
-                </div>
-
-                <div class="setting-row">
-                    <div>
-                        <div class="setting-title">
-                            إدارة التذاكر
-                        </div>
-                        <div class="setting-description">
-                            الصلاحية المطلوبة للتذاكر
-                        </div>
-                    </div>
-
-                    <select class="select" style="max-width:240px">
-                        <option>Manage Guild</option>
-                        <option>Administrator</option>
-                    </select>
-                </div>
-
-                <button
-                    class="save-btn"
-                    onclick="showToast('تم حفظ الصلاحيات')"
-                >
-                    حفظ الصلاحيات
-                </button>
-
-            </div>
-
-        </section>
-
-        <!-- WELCOME -->
-
-        <section
-            class="panel"
-            id="panel-welcome"
-        >
-
-            <div class="grid-2">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>الترحيب</h3>
-                        <span>Welcome</span>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                تفعيل الترحيب
-                            </div>
-
-                            <div class="setting-description">
-                                إرسال رسالة عند دخول عضو جديد
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <br>
-
-                    <input
-                        class="input"
-                        placeholder="معرف قناة الترحيب"
-                    >
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>رسالة الترحيب</h3>
-                        <span>يمكنك تعديلها</span>
-                    </div>
-
-                    <textarea
-                        class="textarea"
-                    >مرحباً {user} في سيرفرنا! نورتنا.</textarea>
-
-                    <button
-                        class="save-btn"
-                        onclick="showToast('تم حفظ رسالة الترحيب')"
-                    >
-                        حفظ
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- AUTOMOD -->
-
-        <section
-            class="panel"
-            id="panel-automod"
-        >
-
-            <div class="grid-2">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>الحماية التلقائية</h3>
-                        <span>AutoMod</span>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                الحماية التلقائية
-                            </div>
-
-                            <div class="setting-description">
-                                اكتشاف المخالفات تلقائياً
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                مكافحة السبام
-                            </div>
-
-                            <div class="setting-description">
-                                الحد من الرسائل المتكررة
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                منع الروابط
-                            </div>
-
-                            <div class="setting-description">
-                                حظر الروابط غير المسموحة
-                            </div>
-                        </div>
-
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                </div>
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>إجراء المخالفة</h3>
-                        <span>اختيار الإجراء</span>
-                    </div>
-
-                    <select class="select">
-                        <option>حذف الرسالة</option>
-                        <option>تحذير العضو</option>
-                        <option>تقييد العضو</option>
-                    </select>
-
-                    <button
-                        class="save-btn"
-                        onclick="showToast('تم حفظ إعدادات الحماية')"
-                    >
-                        حفظ
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- LOGS -->
-
-        <section
-            class="panel"
-            id="panel-logs"
-        >
-
-            <div class="card">
-
-                <div class="card-title">
-                    <h3>السجلات</h3>
-                    <span>Log Channels</span>
-                </div>
-
-                <div class="grid-2">
-
-                    <div>
-                        <label>قناة سجلات الإدارة</label>
-                        <br><br>
-                        <input
-                            class="input"
-                            placeholder="معرف القناة"
+                        <select
+                            id="commandFilter"
+                            class="filter-select"
                         >
-                    </div>
+                            <option value="all">
+                                All Categories
+                            </option>
 
-                    <div>
-                        <label>قناة سجلات الرسائل</label>
-                        <br><br>
-                        <input
-                            class="input"
-                            placeholder="معرف القناة"
-                        >
-                    </div>
+                            <option value="Moderation">
+                                Moderation
+                            </option>
 
-                    <div>
-                        <label>قناة سجلات الصوت</label>
-                        <br><br>
-                        <input
-                            class="input"
-                            placeholder="معرف القناة"
-                        >
-                    </div>
+                            <option value="Tickets">
+                                Tickets
+                            </option>
 
-                    <div>
-                        <label>قناة سجلات الأعضاء</label>
-                        <br><br>
-                        <input
-                            class="input"
-                            placeholder="معرف القناة"
-                        >
-                    </div>
+                            <option value="Community">
+                                Community
+                            </option>
 
-                </div>
+                            <option value="Utility">
+                                Utility
+                            </option>
+                        </select>
 
-                <button
-                    class="save-btn"
-                    onclick="showToast('تم حفظ السجلات')"
-                >
-                    حفظ
-                </button>
-
-            </div>
-
-        </section>
-
-        <!-- GIVEAWAYS -->
-
-        <section
-            class="panel"
-            id="panel-giveaways"
-        >
-
-            <div class="grid-3">
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        السحوبات النشطة
-                    </div>
-
-                    <div class="stat-value">
-                        2
-                    </div>
-                </div>
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        المشاركات
-                    </div>
-
-                    <div class="stat-value">
-                        94
-                    </div>
-                </div>
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        الجوائز
-                    </div>
-
-                    <div class="stat-value">
-                        5
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-title">
-                    <h3>السحوبات</h3>
-                    <span>الإدارة</span>
-                </div>
-
-                <p style="color:#7b859a">
-                    استخدم أوامر بيان داخل Discord لإنشاء السحوبات وإدارتها.
-                </p>
-
-            </div>
-
-        </section>
-
-        <!-- TOURNAMENTS -->
-
-        <section
-            class="panel"
-            id="panel-tournaments"
-        >
-
-            <div class="grid-3">
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        البطولات
-                    </div>
-
-                    <div class="stat-value">
-                        3
-                    </div>
-                </div>
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        المشاركون
-                    </div>
-
-                    <div class="stat-value">
-                        28
-                    </div>
-                </div>
-
-                <div class="card stat-card">
-                    <div class="stat-label">
-                        المباريات
-                    </div>
-
-                    <div class="stat-value">
-                        14
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-title">
-                    <h3>البطولات</h3>
-                    <span>الإدارة</span>
-                </div>
-
-                <p style="color:#7b859a">
-                    إدارة البطولات والمباريات من خلال أوامر بيان.
-                </p>
-
-            </div>
-
-        </section>
-
-        <!-- STREAMING -->
-
-        <section
-            class="panel"
-            id="panel-streaming"
-        >
-
-            <div class="grid-2">
-
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>حسابات البث</h3>
-                        <span>إضافة حسابات</span>
                     </div>
 
                     <div
-                        id="platformList"
-                    >
+                        class="command-grid"
+                        id="commandList"
+                    ></div>
 
-                        <div class="platform-row">
-                            <div class="platform-label">
-                                تيك توك
-                            </div>
+                </div>
 
-                            <input
-                                class="input"
-                                placeholder="اسم المستخدم"
-                            >
+            </section>
 
-                            <button
-                                class="remove-btn"
-                                onclick="this.parentElement.remove()"
-                            >
-                                حذف
-                            </button>
-                        </div>
+            <!-- ======================================
+                 ACTIVITY
+            ======================================= -->
 
-                        <div class="platform-row">
-                            <div class="platform-label">
-                                تويتش
-                            </div>
+            <section
+                class="panel"
+                id="panel-activity"
+            >
 
-                            <input
-                                class="input"
-                                placeholder="اسم المستخدم"
-                            >
-
-                            <button
-                                class="remove-btn"
-                                onclick="this.parentElement.remove()"
-                            >
-                                حذف
-                            </button>
-                        </div>
-
-                        <div class="platform-row">
-                            <div class="platform-label">
-                                يوتيوب
-                            </div>
-
-                            <input
-                                class="input"
-                                placeholder="اسم القناة"
-                            >
-
-                            <button
-                                class="remove-btn"
-                                onclick="this.parentElement.remove()"
-                            >
-                                حذف
-                            </button>
-                        </div>
-
-                        <div class="platform-row">
-                            <div class="platform-label">
-                                كيك
-                            </div>
-
-                            <input
-                                class="input"
-                                placeholder="اسم المستخدم"
-                            >
-
-                            <button
-                                class="remove-btn"
-                                onclick="this.parentElement.remove()"
-                            >
-                                حذف
-                            </button>
-                        </div>
-
+                <div class="section-header">
+                    <div>
+                        <h2>Activity</h2>
+                        <p>
+                            Review recent events and actions.
+                        </p>
                     </div>
-
-                    <button
-                        class="add-btn"
-                        onclick="addPlatform()"
-                    >
-                        + إضافة حساب
-                    </button>
-
-                    <button
-                        class="save-btn"
-                        onclick="showToast('تم حفظ حسابات البث')"
-                    >
-                        حفظ الحسابات
-                    </button>
-
                 </div>
 
                 <div class="card">
 
-                    <div class="card-title">
-                        <h3>الإشعارات</h3>
-                        <span>البث المباشر</span>
+                    <div class="activity-list">
+
+                        <div class="activity-item">
+                            <span class="activity-dot success"></span>
+                            <div class="activity-content">
+                                <div class="activity-main">
+                                    Command executed: /clear
+                                </div>
+                                <div class="activity-meta">
+                                    User: Moderator · Channel: #general
+                                </div>
+                            </div>
+                            <div class="activity-time">
+                                1 minute ago
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-dot"></span>
+                            <div class="activity-content">
+                                <div class="activity-main">
+                                    Ticket created
+                                </div>
+                                <div class="activity-meta">
+                                    Ticket #27 · Category: Support
+                                </div>
+                            </div>
+                            <div class="activity-time">
+                                4 minutes ago
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-dot warning"></span>
+                            <div class="activity-content">
+                                <div class="activity-main">
+                                    AutoMod action triggered
+                                </div>
+                                <div class="activity-meta">
+                                    Message removed · #chat
+                                </div>
+                            </div>
+                            <div class="activity-time">
+                                7 minutes ago
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-dot success"></span>
+                            <div class="activity-content">
+                                <div class="activity-main">
+                                    Giveaway finished
+                                </div>
+                                <div class="activity-meta">
+                                    Winner selected successfully
+                                </div>
+                            </div>
+                            <div class="activity-time">
+                                12 minutes ago
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <span class="activity-dot"></span>
+                            <div class="activity-content">
+                                <div class="activity-main">
+                                    Permission changed
+                                </div>
+                                <div class="activity-meta">
+                                    Commands manager · Admin
+                                </div>
+                            </div>
+                            <div class="activity-time">
+                                18 minutes ago
+                            </div>
+                        </div>
+
                     </div>
 
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 MODERATION
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-moderation"
+            >
+
+                <div class="panel-grid-2">
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>Moderation Controls</h3>
+                                <p>
+                                    Core moderation systems.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="settings-list">
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Moderation Commands
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Enable ban, kick, timeout and warning tools.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Warning System
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Track member warnings.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Timeout Protection
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Allow moderators to timeout members.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Lock / Unlock
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Enable channel lock controls.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>Default Actions</h3>
+                                <p>
+                                    Choose system behavior.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card-padding">
+
+                            <div class="field">
+                                <label>
+                                    Default AutoMod Action
+                                </label>
+
+                                <select class="select">
+                                    <option>
+                                        Delete Message
+                                    </option>
+
+                                    <option>
+                                        Warn Member
+                                    </option>
+
+                                    <option>
+                                        Timeout Member
+                                    </option>
+                                </select>
+                            </div>
+
+                            <br>
+
+                            <div class="field">
+                                <label>
+                                    Default Warning Duration
+                                </label>
+
+                                <select class="select">
+                                    <option>
+                                        10 minutes
+                                    </option>
+
+                                    <option>
+                                        30 minutes
+                                    </option>
+
+                                    <option>
+                                        1 hour
+                                    </option>
+
+                                    <option>
+                                        1 day
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="button-row">
+                                <button
+                                    class="action-button primary"
+                                    onclick="showToast('Moderation settings saved')"
+                                    data-sound
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 TICKETS
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-tickets"
+            >
+
+                <div class="panel-grid-3">
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Open Tickets
+                            </div>
+                            <div class="stat-icon">
+                                OPN
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            7
+                        </div>
+
+                        <div class="stat-footer">
+                            2 awaiting staff
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Closed Today
+                            </div>
+                            <div class="stat-icon">
+                                CLS
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            18
+                        </div>
+
+                        <div class="stat-footer">
+                            Average: 11m
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Total Tickets
+                            </div>
+                            <div class="stat-icon">
+                                ALL
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            426
+                        </div>
+
+                        <div class="stat-footer">
+                            Since installation
+                        </div>
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <div class="card-header-left">
+                            <h3>Ticket System</h3>
+                            <p>
+                                Configure your support workflow.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card-padding">
+
+                        <div class="setting-row">
+                            <div class="setting-main">
+                                <div class="setting-title">
+                                    Ticket System Enabled
+                                </div>
+                                <div class="setting-description">
+                                    Allow members to open support tickets.
+                                </div>
+                            </div>
+
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-main">
+                                <div class="setting-title">
+                                    Claim System
+                                </div>
+                                <div class="setting-description">
+                                    Allow support staff to claim tickets.
+                                </div>
+                            </div>
+
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="form-grid">
+
+                            <div class="field">
+                                <label>
+                                    Ticket Category
+                                </label>
+
+                                <input
+                                    class="input"
+                                    value="Tickets"
+                                >
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Support Role
+                                </label>
+
+                                <input
+                                    class="input"
+                                    value="Support"
+                                >
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Support Button Name
+                                </label>
+
+                                <input
+                                    class="input"
+                                    value="Support"
+                                >
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Report Button Name
+                                </label>
+
+                                <input
+                                    class="input"
+                                    value="Report"
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="button-row">
+                            <button
+                                class="action-button primary"
+                                onclick="showToast('Ticket settings saved')"
+                                data-sound
+                            >
+                                Save Ticket Settings
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 AUTOMOD
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-automod"
+            >
+
+                <div class="panel-grid-2">
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>Protection Systems</h3>
+                                <p>
+                                    Automated server protection.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="settings-list">
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        AutoMod
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Enable automatic message protection.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Anti-Spam
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Detect repeated messages.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Link Protection
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Block unauthorized links.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Mention Protection
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Prevent excessive mentions.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>Protection Statistics</h3>
+                                <p>
+                                    Current protection activity.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card-padding">
+
+                            <div class="panel-grid-2">
+
+                                <div
+                                    style="
+                                        padding:15px;
+                                        border-radius:14px;
+                                        background:rgba(255,255,255,.025);
+                                        border:1px solid rgba(255,255,255,.05)
+                                    "
+                                >
+                                    <div style="font-size:9px;color:#707a8e">
+                                        BLOCKED TODAY
+                                    </div>
+
+                                    <div style="font-size:28px;font-weight:950;margin-top:10px">
+                                        143
+                                    </div>
+                                </div>
+
+                                <div
+                                    style="
+                                        padding:15px;
+                                        border-radius:14px;
+                                        background:rgba(255,255,255,.025);
+                                        border:1px solid rgba(255,255,255,.05)
+                                    "
+                                >
+                                    <div style="font-size:9px;color:#707a8e">
+                                        WARNINGS TODAY
+                                    </div>
+
+                                    <div style="font-size:28px;font-weight:950;margin-top:10px">
+                                        21
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 LOGS
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-logs"
+            >
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <div class="card-header-left">
+                            <h3>Logging Configuration</h3>
+                            <p>
+                                Choose where Bayan sends server logs.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card-padding">
+
+                        <div class="form-grid">
+
+                            <div class="field">
+                                <label>
+                                    Moderation Log Channel
+                                </label>
+
+                                <input
+                                    class="input"
+                                    placeholder="Channel ID"
+                                >
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Message Log Channel
+                                </label>
+
+                                <input
+                                    class="input"
+                                    placeholder="Channel ID"
+                                >
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Voice Log Channel
+                                </label>
+
+                                <input
+                                    class="input"
+                                    placeholder="Channel ID"
+                                >
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Member Log Channel
+                                </label>
+
+                                <input
+                                    class="input"
+                                    placeholder="Channel ID"
+                                >
+                            </div>
+
+                        </div>
+
+                        <br>
+
+                        <div class="panel-grid-2">
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Message Logs
+                                    </div>
+                                    <div class="setting-description">
+                                        Record message edits and deletions.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Member Logs
+                                    </div>
+                                    <div class="setting-description">
+                                        Record joins, leaves and updates.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div class="button-row">
+                            <button
+                                class="action-button primary"
+                                onclick="showToast('Log settings saved')"
+                                data-sound
+                            >
+                                Save Log Settings
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 PERMISSIONS
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-permissions"
+            >
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <div class="card-header-left">
+                            <h3>Permission Management</h3>
+                            <p>
+                                Decide who can use Bayan management tools.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card-padding">
+
+                        <div class="form-grid">
+
+                            <div class="field">
+                                <label>
+                                    Command Management
+                                </label>
+
+                                <select class="select">
+                                    <option>Administrator</option>
+                                    <option>Manage Guild</option>
+                                    <option>Manage Messages</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Server Settings
+                                </label>
+
+                                <select class="select">
+                                    <option>Administrator</option>
+                                    <option>Manage Guild</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Ticket Management
+                                </label>
+
+                                <select class="select">
+                                    <option>Manage Guild</option>
+                                    <option>Administrator</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    Giveaway Management
+                                </label>
+
+                                <select class="select">
+                                    <option>Manage Guild</option>
+                                    <option>Administrator</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="button-row">
+                            <button
+                                class="action-button primary"
+                                onclick="showToast('Permissions saved')"
+                                data-sound
+                            >
+                                Save Permissions
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 GIVEAWAYS
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-giveaways"
+            >
+
+                <div class="panel-grid-3">
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Active Giveaways
+                            </div>
+                            <div class="stat-icon">
+                                GIV
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            2
+                        </div>
+
+                        <div class="stat-footer">
+                            Running now
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Participants
+                            </div>
+                            <div class="stat-icon">
+                                ENT
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            94
+                        </div>
+
+                        <div class="stat-footer">
+                            Across active events
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Completed
+                            </div>
+                            <div class="stat-icon">
+                                WIN
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            63
+                        </div>
+
+                        <div class="stat-footer">
+                            Total giveaways
+                        </div>
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="card card-padding">
+
+                    <div class="card-header-left">
+                        <h3>Giveaway Center</h3>
+                        <p>
+                            Manage giveaway functionality through Bayan.
+                        </p>
+                    </div>
+
+                    <div class="button-row">
+                        <button
+                            class="action-button primary"
+                            onclick="showToast('Giveaway creator opened')"
+                            data-sound
+                        >
+                            Create Giveaway
+                        </button>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 TOURNAMENTS
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-tournaments"
+            >
+
+                <div class="panel-grid-3">
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Active Tournaments
+                            </div>
+                            <div class="stat-icon">
+                                TRN
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            3
+                        </div>
+
+                        <div class="stat-footer">
+                            1 currently live
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Players
+                            </div>
+                            <div class="stat-icon">
+                                PLY
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            28
+                        </div>
+
+                        <div class="stat-footer">
+                            Registered
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-top">
+                            <div class="stat-label">
+                                Matches
+                            </div>
+                            <div class="stat-icon">
+                                MTCH
+                            </div>
+                        </div>
+
+                        <div class="stat-value">
+                            14
+                        </div>
+
+                        <div class="stat-footer">
+                            Completed today
+                        </div>
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="card card-padding">
+
+                    <div class="card-header-left">
+                        <h3>Tournament Center</h3>
+                        <p>
+                            Create and manage competitive events with Bayan.
+                        </p>
+                    </div>
+
+                    <div class="button-row">
+                        <button
+                            class="action-button primary"
+                            onclick="showToast('Tournament creator opened')"
+                            data-sound
+                        >
+                            Create Tournament
+                        </button>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+                 STREAMING
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-streaming"
+            >
+
+                <div class="section-header">
+                    <div>
+                        <h2>Streaming</h2>
+                        <p>
+                            Manage creator accounts and notification channels.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="platform-grid">
+
+                    <div class="card platform-card">
+
+                        <div class="platform-top">
+
+                            <div>
+                                <div class="platform-name">
+                                    TikTok
+                                </div>
+
+                                <div class="platform-handle">
+                                    Creator account
+                                </div>
+                            </div>
+
+                            <div class="status online">
+                                <span class="status-dot"></span>
+                                Ready
+                            </div>
+
+                        </div>
+
+                        <input
+                            class="input"
+                            value="@moonnetwork"
+                            placeholder="@username"
+                        >
+
+                    </div>
+
+                    <div class="card platform-card">
+
+                        <div class="platform-top">
+
+                            <div>
+                                <div class="platform-name">
+                                    Twitch
+                                </div>
+
+                                <div class="platform-handle">
+                                    Creator account
+                                </div>
+                            </div>
+
+                            <div class="status online">
+                                <span class="status-dot"></span>
+                                Ready
+                            </div>
+
+                        </div>
+
+                        <input
+                            class="input"
+                            placeholder="twitch username"
+                        >
+
+                    </div>
+
+                    <div class="card platform-card">
+
+                        <div class="platform-top">
+
+                            <div>
+                                <div class="platform-name">
+                                    YouTube
+                                </div>
+
+                                <div class="platform-handle">
+                                    Channel
+                                </div>
+                            </div>
+
+                            <div class="status online">
+                                <span class="status-dot"></span>
+                                Ready
+                            </div>
+
+                        </div>
+
+                        <input
+                            class="input"
+                            placeholder="Channel name"
+                        >
+
+                    </div>
+
+                    <div class="card platform-card">
+
+                        <div class="platform-top">
+
+                            <div>
+                                <div class="platform-name">
+                                    Kick
+                                </div>
+
+                                <div class="platform-handle">
+                                    Creator account
+                                </div>
+                            </div>
+
+                            <div class="status online">
+                                <span class="status-dot"></span>
+                                Ready
+                            </div>
+
+                        </div>
+
+                        <input
+                            class="input"
+                            placeholder="Kick username"
+                        >
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="card card-padding">
+
                     <div class="setting-row">
-                        <div>
+                        <div class="setting-main">
                             <div class="setting-title">
-                                إشعار بدء البث
+                                Stream Notifications
                             </div>
 
                             <div class="setting-description">
-                                إرسال رسالة عند بدء بث
+                                Notify your Discord server when supported creators go live.
                             </div>
                         </div>
 
@@ -1790,427 +3536,1185 @@
                         </label>
                     </div>
 
-                    <br>
+                    <div class="field" style="margin-top:15px">
+                        <label>
+                            Notification Channel
+                        </label>
 
-                    <input
-                        class="input"
-                        placeholder="معرف قناة الإشعارات"
-                    >
+                        <input
+                            class="input"
+                            placeholder="Channel ID"
+                        >
+                    </div>
+
+                    <div class="button-row">
+                        <button
+                            class="action-button primary"
+                            onclick="showToast('Streaming settings saved')"
+                            data-sound
+                        >
+                            Save Streaming Settings
+                        </button>
+                    </div>
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+            <!-- ======================================
+                 SETTINGS
+            ======================================= -->
 
-        <!-- SETTINGS -->
+            <section
+                class="panel"
+                id="panel-settings"
+            >
 
-        <section
-            class="panel"
-            id="panel-settings"
-        >
+                <div class="panel-grid-2">
 
-            <div class="grid-2">
+                    <div class="card">
 
-                <div class="card">
-
-                    <div class="card-title">
-                        <h3>إعدادات عامة</h3>
-                        <span>بيان</span>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                لغة البوت
-                            </div>
-                            <div class="setting-description">
-                                اللغة المستخدمة في رسائل بيان
-                            </div>
-                        </div>
-
-                        <select class="select" style="max-width:190px">
-                            <option>العربية</option>
-                        </select>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <div class="setting-title">
-                                المنطقة الزمنية
-                            </div>
-                            <div class="setting-description">
-                                المنطقة المستخدمة في الأحداث
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>General Settings</h3>
+                                <p>
+                                    Customize Bayan behavior.
+                                </p>
                             </div>
                         </div>
 
-                        <select class="select" style="max-width:190px">
-                            <option>الكويت</option>
-                        </select>
+                        <div class="settings-list">
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Bot Language
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Language used in Bayan's Discord messages.
+                                    </div>
+                                </div>
+
+                                <select
+                                    class="select"
+                                    style="max-width:150px"
+                                >
+                                    <option>Arabic</option>
+                                    <option>English</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Command Logging
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Keep a record of command usage.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-main">
+                                    <div class="setting-title">
+                                        Dashboard Sounds
+                                    </div>
+
+                                    <div class="setting-description">
+                                        Enable interface click and success sounds.
+                                    </div>
+                                </div>
+
+                                <label class="switch">
+                                    <input
+                                        type="checkbox"
+                                        id="settingsSoundToggle"
+                                        checked
+                                    >
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <h3>Interface</h3>
+                                <p>
+                                    Visual dashboard preferences.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card-padding">
+
+                            <div class="field">
+                                <label>
+                                    Accent Style
+                                </label>
+
+                                <select class="select">
+                                    <option>
+                                        Bayan Blue
+                                    </option>
+                                    <option>
+                                        Deep Purple
+                                    </option>
+                                    <option>
+                                        Midnight
+                                    </option>
+                                </select>
+                            </div>
+
+                            <br>
+
+                            <div class="field">
+                                <label>
+                                    Dashboard Density
+                                </label>
+
+                                <select class="select">
+                                    <option>
+                                        Comfortable
+                                    </option>
+
+                                    <option>
+                                        Compact
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="button-row">
+                                <button
+                                    class="action-button primary"
+                                    onclick="showToast('General settings saved')"
+                                    data-sound
+                                >
+                                    Save Settings
+                                </button>
+                            </div>
+
+                        </div>
+
                     </div>
 
                 </div>
+
+            </section>
+
+            <!-- ======================================
+                 AUDIT
+            ======================================= -->
+
+            <section
+                class="panel"
+                id="panel-audit"
+            >
 
                 <div class="card">
 
-                    <div class="card-title">
-                        <h3>إجراءات</h3>
-                        <span>النظام</span>
+                    <div class="card-header">
+                        <div class="card-header-left">
+                            <h3>Audit Log</h3>
+                            <p>
+                                Track important dashboard changes.
+                            </p>
+                        </div>
                     </div>
 
-                    <button
-                        class="save-btn"
-                        onclick="showToast('تم حفظ الإعدادات')"
-                    >
-                        حفظ التغييرات
-                    </button>
+                    <div class="table-wrap">
 
-                    <button
-                        class="save-btn"
-                        style="background:rgba(255,255,255,.05)"
-                        onclick="showToast('تم إعادة تحميل الواجهة')"
-                    >
-                        إعادة تحميل البيانات
-                    </button>
+                        <table>
 
-                </div>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Section</th>
+                                    <th>Details</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
 
-            </div>
+                            <tbody>
 
-        </section>
+                                <tr>
+                                    <td>Admin</td>
+                                    <td>Updated</td>
+                                    <td>Commands</td>
+                                    <td>Enabled /clear</td>
+                                    <td>2m ago</td>
+                                </tr>
 
-        <!-- AUDIT -->
+                                <tr>
+                                    <td>Admin</td>
+                                    <td>Updated</td>
+                                    <td>Tickets</td>
+                                    <td>Changed support role</td>
+                                    <td>8m ago</td>
+                                </tr>
 
-        <section
-            class="panel"
-            id="panel-audit"
-        >
+                                <tr>
+                                    <td>Moderator</td>
+                                    <td>Changed</td>
+                                    <td>AutoMod</td>
+                                    <td>Enabled Anti-Spam</td>
+                                    <td>17m ago</td>
+                                </tr>
 
-            <div class="card">
+                                <tr>
+                                    <td>Admin</td>
+                                    <td>Created</td>
+                                    <td>Giveaways</td>
+                                    <td>Created a giveaway</td>
+                                    <td>24m ago</td>
+                                </tr>
 
-                <div class="card-title">
-                    <h3>سجل التدقيق</h3>
-                    <span>آخر التغييرات</span>
-                </div>
+                                <tr>
+                                    <td>Admin</td>
+                                    <td>Updated</td>
+                                    <td>Permissions</td>
+                                    <td>Changed ticket permissions</td>
+                                    <td>31m ago</td>
+                                </tr>
 
-                <div class="table-wrap">
+                            </tbody>
 
-                    <table>
+                        </table>
 
-                        <thead>
-                            <tr>
-                                <th>المستخدم</th>
-                                <th>الإجراء</th>
-                                <th>القسم</th>
-                                <th>الوقت</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            <tr>
-                                <td>Admin</td>
-                                <td>تفعيل أمر</td>
-                                <td>الأوامر</td>
-                                <td>منذ 2 دقيقة</td>
-                            </tr>
-
-                            <tr>
-                                <td>Moderator</td>
-                                <td>تعديل التذاكر</td>
-                                <td>التذاكر</td>
-                                <td>منذ 8 دقائق</td>
-                            </tr>
-
-                            <tr>
-                                <td>Admin</td>
-                                <td>تعديل الحماية</td>
-                                <td>الحماية</td>
-                                <td>منذ 17 دقيقة</td>
-                            </tr>
-
-                        </tbody>
-
-                    </table>
+                    </div>
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+        </main>
 
-    </main>
+    </div>
 
-</div>
+    <!-- TOASTS -->
+    <div
+        class="toast-container"
+        id="toastContainer"
+    ></div>
 
-<!-- TOAST -->
+    <script>
+        /* =====================================================
+           BAYAN DASHBOARD
+           GitHub Pages compatible
+        ===================================================== */
 
-<div
-    id="toast"
-    style="
-        position:fixed;
-        bottom:22px;
-        left:22px;
-        padding:13px 17px;
-        border-radius:12px;
-        background:#151b29;
-        border:1px solid rgba(255,255,255,.08);
-        color:#fff;
-        opacity:0;
-        pointer-events:none;
-        transform:translateY(12px);
-        transition:.25s ease;
-        z-index:100;
-        font-size:13px;
-    "
-></div>
+        const state = {
+            sounds: true
+        };
 
-<script>
-    const titles = {
-        overview: "نظرة عامة",
-        commands: "الأوامر",
-        activity: "النشاط",
-        moderation: "الإدارة",
-        tickets: "التذاكر",
-        permissions: "الصلاحيات",
-        welcome: "الترحيب",
-        automod: "الحماية",
-        logs: "السجلات",
-        giveaways: "السحوبات",
-        tournaments: "البطولات",
-        streaming: "البث",
-        settings: "الإعدادات",
-        audit: "سجل التدقيق"
-    };
+        let audioContext = null;
 
-    const commands = [
-        ["ban", "حظر عضو"],
-        ["unban", "إلغاء حظر عضو"],
-        ["kick", "طرد عضو"],
-        ["timeout", "تقييد عضو مؤقتاً"],
-        ["warn", "تحذير عضو"],
-        ["unwarn", "إزالة تحذير"],
-        ["warnings", "عرض تحذيرات عضو"],
-        ["clear", "حذف الرسائل"],
-        ["lock", "قفل القناة"],
-        ["unlock", "فتح القناة"],
-        ["slowmode", "الوضع البطيء"],
-        ["ticket-setup", "إعداد التذاكر"],
-        ["ticket-permissions", "صلاحيات التذاكر"],
-        ["giveaway", "إنشاء سحب"],
-        ["tournament", "إدارة البطولات"],
-        ["autorole", "الرتبة التلقائية"],
-        ["afk", "حالة الغياب"],
-        ["serverinfo", "معلومات السيرفر"],
-        ["userinfo", "معلومات العضو"],
-        ["help", "عرض المساعدة"]
-    ];
+        /* ==========================================
+           AUDIO
+        ========================================== */
 
-    const navItems =
-        document.querySelectorAll(".nav-item");
-
-    const panels =
-        document.querySelectorAll(".panel");
-
-    const pageTitle =
-        document.getElementById("pageTitle");
-
-    navItems.forEach((item) => {
-        item.addEventListener("click", () => {
-
-            const panelName =
-                item.dataset.panel;
-
-            navItems.forEach((nav) => {
-                nav.classList.remove("active");
-            });
-
-            item.classList.add("active");
-
-            panels.forEach((panel) => {
-                panel.classList.remove("active");
-            });
-
-            const target =
-                document.getElementById(
-                    "panel-" + panelName
-                );
-
-            if (target) {
-                target.classList.add("active");
+        function ensureAudio() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (
+                        window.AudioContext ||
+                        window.webkitAudioContext
+                    )();
+                } catch (error) {
+                    return null;
+                }
             }
 
-            pageTitle.textContent =
-                titles[panelName] || "لوحة التحكم";
+            if (audioContext.state === "suspended") {
+                audioContext.resume().catch(() => {});
+            }
 
-            const sidebar =
-                document.getElementById("sidebar");
+            return audioContext;
+        }
 
-            sidebar.classList.remove("open");
-        });
-    });
+        function playTone(
+            frequency = 520,
+            duration = 0.07,
+            volume = 0.035,
+            type = "sine"
+        ) {
+            if (!state.sounds) {
+                return;
+            }
 
-    function renderCommands(list) {
+            const ctx = ensureAudio();
 
-        const container =
-            document.getElementById("commandList");
+            if (!ctx) {
+                return;
+            }
 
-        container.innerHTML = "";
+            try {
+                const oscillator =
+                    ctx.createOscillator();
 
-        list.forEach((command) => {
+                const gain =
+                    ctx.createGain();
 
-            const row =
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(
+                    frequency,
+                    ctx.currentTime
+                );
+
+                gain.gain.setValueAtTime(
+                    0.0001,
+                    ctx.currentTime
+                );
+
+                gain.gain.exponentialRampToValueAtTime(
+                    volume,
+                    ctx.currentTime + 0.008
+                );
+
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    ctx.currentTime + duration
+                );
+
+                oscillator.connect(gain);
+                gain.connect(ctx.destination);
+
+                oscillator.start();
+
+                oscillator.stop(
+                    ctx.currentTime + duration
+                );
+            } catch (error) {}
+        }
+
+        function playClick() {
+            playTone(580, 0.06, 0.024, "sine");
+        }
+
+        function playToggle() {
+            playTone(720, 0.08, 0.028, "sine");
+        }
+
+        function playSuccess() {
+            if (!state.sounds) {
+                return;
+            }
+
+            playTone(620, 0.07, 0.025);
+            setTimeout(
+                () => playTone(820, 0.10, 0.022),
+                55
+            );
+        }
+
+        function playError() {
+            playTone(230, 0.11, 0.03, "triangle");
+        }
+
+        /* ==========================================
+           TOASTS
+        ========================================== */
+
+        function showToast(message, type = "success") {
+
+            const container =
+                document.getElementById(
+                    "toastContainer"
+                );
+
+            const toast =
                 document.createElement("div");
 
-            row.className = "command-row";
+            toast.className = "toast";
 
-            row.innerHTML = `
-                <div>
-                    <div class="command-name">
-                        /${escapeHtml(command[0])}
-                    </div>
+            const icon =
+                document.createElement("div");
 
-                    <div class="command-desc">
-                        ${escapeHtml(command[1])}
-                    </div>
-                </div>
+            icon.className = "toast-icon";
 
-                <label class="switch">
-                    <input
-                        type="checkbox"
-                        checked
-                        onchange="commandChanged('${escapeJs(command[0])}', this.checked)"
-                    >
-                    <span class="slider"></span>
-                </label>
-            `;
+            icon.textContent =
+                type === "error"
+                    ? "!"
+                    : type === "warning"
+                    ? "!"
+                    : "✓";
 
-            container.appendChild(row);
+            const text =
+                document.createElement("div");
+
+            text.className = "toast-message";
+            text.textContent = message;
+
+            toast.appendChild(icon);
+            toast.appendChild(text);
+
+            container.appendChild(toast);
+
+            if (type === "error") {
+                playError();
+            } else {
+                playSuccess();
+            }
+
+            setTimeout(() => {
+                toast.classList.add("hide");
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 260);
+            }, 2300);
+        }
+
+        /* ==========================================
+           NAVIGATION
+        ========================================== */
+
+        const navItems =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+        const panels =
+            document.querySelectorAll(
+                ".panel"
+            );
+
+        const pageTitle =
+            document.getElementById(
+                "pageTitle"
+            );
+
+        const pageDescription =
+            document.getElementById(
+                "pageDescription"
+            );
+
+        const pageIcon =
+            document.getElementById(
+                "pageIcon"
+            );
+
+        const sidebar =
+            document.getElementById(
+                "sidebar"
+            );
+
+        navItems.forEach((item, index) => {
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    const panelName =
+                        item.dataset.panel;
+
+                    navItems.forEach(
+                        nav =>
+                            nav.classList.remove(
+                                "active"
+                            )
+                    );
+
+                    item.classList.add("active");
+
+                    panels.forEach(
+                        panel =>
+                            panel.classList.remove(
+                                "active"
+                            )
+                    );
+
+                    const target =
+                        document.getElementById(
+                            "panel-" + panelName
+                        );
+
+                    if (target) {
+                        target.classList.add(
+                            "active"
+                        );
+                    }
+
+                    pageTitle.textContent =
+                        item.dataset.title ||
+                        "Dashboard";
+
+                    pageDescription.textContent =
+                        item.dataset.description ||
+                        "";
+
+                    pageIcon.textContent =
+                        String(index + 1).padStart(
+                            2,
+                            "0"
+                        );
+
+                    sidebar.classList.remove(
+                        "open"
+                    );
+
+                    playClick();
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                }
+            );
+
         });
-    }
 
-    function commandChanged(name, enabled) {
-        showToast(
-            enabled
-                ? `تم تفعيل /${name}`
-                : `تم تعطيل /${name}`
-        );
-    }
+        /* ==========================================
+           MOBILE MENU
+        ========================================== */
 
-    const commandSearch =
-        document.getElementById(
-            "commandSearch"
-        );
+        document
+            .getElementById("mobileMenu")
+            .addEventListener(
+                "click",
+                () => {
+                    sidebar.classList.toggle(
+                        "open"
+                    );
 
-    commandSearch.addEventListener(
-        "input",
-        () => {
+                    playClick();
+                }
+            );
+
+        /* ==========================================
+           COUNTERS
+        ========================================== */
+
+        function animateCounters() {
+
+            document
+                .querySelectorAll(
+                    "[data-counter]"
+                )
+                .forEach((element) => {
+
+                    const target =
+                        Number(
+                            element.dataset.counter
+                        );
+
+                    let current = 0;
+
+                    const steps = 45;
+
+                    const increment =
+                        target / steps;
+
+                    const timer =
+                        setInterval(() => {
+
+                            current +=
+                                increment;
+
+                            if (
+                                current >=
+                                target
+                            ) {
+                                current =
+                                    target;
+
+                                clearInterval(
+                                    timer
+                                );
+                            }
+
+                            element.textContent =
+                                Math.floor(
+                                    current
+                                ).toLocaleString();
+
+                        }, 16);
+
+                });
+        }
+
+        /* ==========================================
+           COMMAND DATA
+        ========================================== */
+
+        const commandData = [
+
+            {
+                name: "ban",
+                description: "Ban a member",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "unban",
+                description: "Remove a ban",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "kick",
+                description: "Kick a member",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "timeout",
+                description: "Temporarily timeout a member",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "warn",
+                description: "Warn a member",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "warnings",
+                description: "View member warnings",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "unwarn",
+                description: "Remove a warning",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "clear",
+                description: "Delete messages",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "lock",
+                description: "Lock a channel",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "unlock",
+                description: "Unlock a channel",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "slowmode",
+                description: "Configure slowmode",
+                category: "Moderation",
+                enabled: true
+            },
+
+            {
+                name: "ticket-setup",
+                description: "Configure the ticket system",
+                category: "Tickets",
+                enabled: true
+            },
+
+            {
+                name: "ticket-permissions",
+                description: "Configure ticket permissions",
+                category: "Tickets",
+                enabled: true
+            },
+
+            {
+                name: "giveaway",
+                description: "Create a giveaway",
+                category: "Community",
+                enabled: true
+            },
+
+            {
+                name: "tournament",
+                description: "Manage tournaments",
+                category: "Community",
+                enabled: true
+            },
+
+            {
+                name: "autorole",
+                description: "Configure automatic roles",
+                category: "Utility",
+                enabled: true
+            },
+
+            {
+                name: "afk",
+                description: "Set an AFK status",
+                category: "Utility",
+                enabled: true
+            },
+
+            {
+                name: "serverinfo",
+                description: "View server information",
+                category: "Utility",
+                enabled: true
+            },
+
+            {
+                name: "userinfo",
+                description: "View member information",
+                category: "Utility",
+                enabled: true
+            },
+
+            {
+                name: "help",
+                description: "View Bayan help",
+                category: "Utility",
+                enabled: true
+            }
+
+        ];
+
+        const commandList =
+            document.getElementById(
+                "commandList"
+            );
+
+        const commandSearch =
+            document.getElementById(
+                "commandSearch"
+            );
+
+        const commandFilter =
+            document.getElementById(
+                "commandFilter"
+            );
+
+        function renderCommands() {
 
             const query =
-                commandSearch.value
+                (
+                    commandSearch.value ||
+                    ""
+                )
                     .trim()
                     .toLowerCase();
 
+            const filter =
+                commandFilter.value;
+
             const filtered =
-                commands.filter((command) =>
-                    command[0]
-                        .toLowerCase()
-                        .includes(query) ||
-                    command[1]
-                        .toLowerCase()
-                        .includes(query)
+                commandData.filter(
+                    command => {
+
+                        const matchesQuery =
+                            !query ||
+                            command.name
+                                .toLowerCase()
+                                .includes(query) ||
+                            command.description
+                                .toLowerCase()
+                                .includes(query);
+
+                        const matchesCategory =
+                            filter === "all" ||
+                            command.category ===
+                                filter;
+
+                        return (
+                            matchesQuery &&
+                            matchesCategory
+                        );
+                    }
                 );
 
-            renderCommands(filtered);
+            commandList.innerHTML = "";
+
+            if (!filtered.length) {
+
+                commandList.innerHTML = `
+                    <div
+                        style="
+                            grid-column:1/-1;
+                            padding:35px;
+                            text-align:center;
+                            color:#687287;
+                            border:1px dashed rgba(255,255,255,.08);
+                            border-radius:15px;
+                        "
+                    >
+                        No commands found.
+                    </div>
+                `;
+
+                return;
+            }
+
+            filtered.forEach((command) => {
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+                row.className =
+                    "command-row";
+
+                row.innerHTML = `
+                    <div class="command-badge">
+                        CMD
+                    </div>
+
+                    <div class="command-info">
+
+                        <div class="command-name">
+                            /${escapeHtml(
+                                command.name
+                            )}
+                        </div>
+
+                        <div class="command-desc">
+                            ${escapeHtml(
+                                command.description
+                            )}
+                        </div>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            ${
+                                command.enabled
+                                    ? "checked"
+                                    : ""
+                            }
+                            data-command="${
+                                escapeHtml(
+                                    command.name
+                                )
+                            }"
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+                `;
+
+                commandList.appendChild(row);
+
+            });
+
+            commandList
+                .querySelectorAll(
+                    "[data-command]"
+                )
+                .forEach((input) => {
+
+                    input.addEventListener(
+                        "change",
+                        () => {
+
+                            const name =
+                                input.dataset.command;
+
+                            const command =
+                                commandData.find(
+                                    item =>
+                                        item.name ===
+                                        name
+                                );
+
+                            if (!command) {
+                                return;
+                            }
+
+                            command.enabled =
+                                input.checked;
+
+                            playToggle();
+
+                            showToast(
+                                input.checked
+                                    ? `/${name} enabled`
+                                    : `/${name} disabled`
+                            );
+                        }
+                    );
+
+                });
+
         }
-    );
 
-    renderCommands(commands);
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll(
+                    '"',
+                    "&quot;"
+                )
+                .replaceAll(
+                    "'",
+                    "&#039;"
+                );
+        }
 
-    function addPlatform() {
+        commandSearch.addEventListener(
+            "input",
+            renderCommands
+        );
 
-        const list =
+        commandFilter.addEventListener(
+            "change",
+            renderCommands
+        );
+
+        renderCommands();
+
+        /* ==========================================
+           ALL SWITCHES
+        ========================================== */
+
+        document
+            .querySelectorAll(
+                '.switch input[type="checkbox"]'
+            )
+            .forEach((input) => {
+
+                input.addEventListener(
+                    "change",
+                    () => {
+
+                        playToggle();
+
+                        if (
+                            input.dataset.feature
+                        ) {
+
+                            const name =
+                                input.dataset.feature;
+
+                            showToast(
+                                input.checked
+                                    ? `${capitalize(
+                                          name
+                                      )} enabled`
+                                    : `${capitalize(
+                                          name
+                                      )} disabled`
+                            );
+                        }
+
+                    }
+                );
+
+            });
+
+        function capitalize(value) {
+            return value.charAt(0)
+                .toUpperCase() +
+                value.slice(1);
+        }
+
+        /* ==========================================
+           SOUND TOGGLE
+        ========================================== */
+
+        const soundToggle =
             document.getElementById(
-                "platformList"
+                "soundToggle"
             );
 
-        const row =
-            document.createElement("div");
+        const settingsSoundToggle =
+            document.getElementById(
+                "settingsSoundToggle"
+            );
 
-        row.className = "platform-row";
+        function updateSoundUI() {
 
-        row.innerHTML = `
-            <div class="platform-label">
-                منصة
-            </div>
+            soundToggle.textContent =
+                state.sounds
+                    ? "♪"
+                    : "×";
 
-            <input
-                class="input"
-                placeholder="اسم المستخدم"
-            >
+            soundToggle.title =
+                state.sounds
+                    ? "Sounds enabled"
+                    : "Sounds disabled";
 
-            <button
-                class="remove-btn"
-                onclick="this.parentElement.remove()"
-            >
-                حذف
-            </button>
-        `;
+            if (settingsSoundToggle) {
+                settingsSoundToggle.checked =
+                    state.sounds;
+            }
+        }
 
-        list.appendChild(row);
-    }
+        soundToggle.addEventListener(
+            "click",
+            () => {
 
-    function escapeHtml(value) {
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-    }
+                state.sounds =
+                    !state.sounds;
 
-    function escapeJs(value) {
-        return String(value)
-            .replaceAll("\\", "\\\\")
-            .replaceAll("'", "\\'");
-    }
+                updateSoundUI();
 
-    let toastTimer;
+                if (state.sounds) {
+                    playSuccess();
+                    showToast(
+                        "Dashboard sounds enabled"
+                    );
+                }
 
-    function showToast(message) {
+            }
+        );
 
-        const toast =
-            document.getElementById("toast");
+        settingsSoundToggle?.addEventListener(
+            "change",
+            () => {
 
-        toast.textContent = message;
+                state.sounds =
+                    settingsSoundToggle.checked;
 
-        toast.style.opacity = "1";
-        toast.style.transform =
-            "translateY(0)";
+                updateSoundUI();
 
-        clearTimeout(toastTimer);
+                if (state.sounds) {
+                    playSuccess();
+                }
 
-        toastTimer =
-            setTimeout(() => {
+            }
+        );
 
-                toast.style.opacity = "0";
+        updateSoundUI();
 
-                toast.style.transform =
-                    "translateY(12px)";
+        /* ==========================================
+           REFRESH
+        ========================================== */
 
-            }, 2200);
-    }
+        document
+            .getElementById("refreshButton")
+            .addEventListener(
+                "click",
+                () => {
 
-    document
-        .getElementById("mobileMenu")
-        .addEventListener("click", () => {
+                    playClick();
 
-            document
-                .getElementById("sidebar")
-                .classList.toggle("open");
+                    document.body.animate(
+                        [
+                            {
+                                opacity: .82
+                            },
+                            {
+                                opacity: 1
+                            }
+                        ],
+                        {
+                            duration: 260,
+                            easing:
+                                "ease-out"
+                        }
+                    );
 
-        });
-</script>
+                    showToast(
+                        "Dashboard refreshed"
+                    );
+                }
+            );
+
+        /* ==========================================
+           SERVER SELECT
+        ========================================== */
+
+        document
+            .getElementById("serverSelect")
+            .addEventListener(
+                "change",
+                (event) => {
+
+                    playClick();
+
+                    showToast(
+                        `Selected ${event.target.options[event.target.selectedIndex].text}`
+                    );
+
+                }
+            );
+
+        /* ==========================================
+           SOUNDS FOR LINKS AND BUTTONS
+        ========================================== */
+
+        document
+            .querySelectorAll(
+                "button, a[data-sound]"
+            )
+            .forEach((element) => {
+
+                if (
+                    element.id ===
+                    "soundToggle"
+                ) {
+                    return;
+                }
+
+                element.addEventListener(
+                    "pointerdown",
+                    () => {
+                        playClick();
+                    },
+                    {
+                        passive: true
+                    }
+                );
+
+            });
+
+        /* ==========================================
+           FIRST LOAD
+        ========================================== */
+
+        window.addEventListener(
+            "load",
+            () => {
+
+                animateCounters();
+
+                setTimeout(() => {
+
+                    document
+                        .getElementById(
+                            "loadingOverlay"
+                        )
+                        .classList.add(
+                            "loaded"
+                        );
+
+                }, 450);
+
+            }
+        );
+
+    </script>
 
 </body>
 </html>
