@@ -2,282 +2,830 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <title>بيان | بوت ديسكورد</title>
     <meta
         name="description"
-        content="بيان - لوحة تحكم عربية متقدمة لسيرفر Discord"
+        content="بيان - بوت ديسكورد لإدارة السيرفرات والتذاكر والحماية والمسابقات."
     >
 
-    <title>بيان | إدارة سيرفر Discord</title>
+    <link rel="stylesheet" href="style.css">
 
-    <link rel="stylesheet" href="/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    <script src="/app.js" defer></script>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family:
+                Arial,
+                "Segoe UI",
+                Tahoma,
+                sans-serif;
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(88, 101, 242, 0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 25%,
+                    rgba(114, 137, 218, 0.14),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(88, 101, 242, 0.12),
+                    transparent 35%
+                ),
+                #070a12;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .background-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.25;
+            animation: floatOrb 10s ease-in-out infinite;
+        }
+
+        .orb.one {
+            width: 280px;
+            height: 280px;
+            top: 5%;
+            left: 5%;
+            background: #5865f2;
+        }
+
+        .orb.two {
+            width: 220px;
+            height: 220px;
+            top: 30%;
+            right: 7%;
+            background: #7289da;
+            animation-delay: -3s;
+        }
+
+        .orb.three {
+            width: 260px;
+            height: 260px;
+            bottom: 5%;
+            left: 40%;
+            background: #3f4fb8;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatOrb {
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate3d(20px, -25px, 0) scale(1.08);
+            }
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(18px);
+            background: rgba(7, 10, 18, 0.72);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .nav-inner {
+            width: min(1180px, calc(100% - 32px));
+            margin: auto;
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 900;
+            font-size: 22px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background:
+                linear-gradient(
+                    135deg,
+                    #5865f2,
+                    #7c89ff
+                );
+            box-shadow:
+                0 10px 35px rgba(88, 101, 242, 0.35);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #b9c0d0;
+            transition: 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 0;
+            border-radius: 13px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            color: #fff;
+            background:
+                linear-gradient(
+                    135deg,
+                    #5865f2,
+                    #6f7cff
+                );
+            box-shadow:
+                0 12px 35px rgba(88, 101, 242, 0.28);
+        }
+
+        .btn-primary:hover {
+            box-shadow:
+                0 16px 45px rgba(88, 101, 242, 0.38);
+        }
+
+        .btn-secondary {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* HERO */
+
+        .hero {
+            width: min(1180px, calc(100% - 32px));
+            margin: auto;
+            min-height: calc(100vh - 76px);
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            align-items: center;
+            gap: 60px;
+            padding: 70px 0;
+        }
+
+        .hero-content {
+            animation: heroIn 0.8s ease both;
+        }
+
+        @keyframes heroIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: rgba(255, 255, 255, 0.045);
+            border-radius: 999px;
+            color: #c7ccef;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #5865f2;
+            box-shadow: 0 0 15px #5865f2;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(45px, 7vw, 82px);
+            line-height: 0.98;
+            letter-spacing: -2px;
+        }
+
+        .hero h1 span {
+            color: #7289da;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 24px 0 0;
+            color: #aeb6ca;
+            font-size: 18px;
+            line-height: 1.9;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .hero-note {
+            margin-top: 15px;
+            color: #737d94;
+            font-size: 13px;
+        }
+
+        /* HERO CARD */
+
+        .hero-card {
+            position: relative;
+            padding: 20px;
+            border-radius: 24px;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.075),
+                    rgba(255, 255, 255, 0.03)
+                );
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.35);
+            animation:
+                cardFloat 5s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .window {
+            overflow: hidden;
+            border-radius: 18px;
+            background: #0d111b;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .window-top {
+            height: 48px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.035);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .window-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #41495c;
+        }
+
+        .window-title {
+            color: #8e98ae;
+            font-size: 13px;
+        }
+
+        .preview {
+            padding: 22px;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .preview-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: #5865f2;
+            font-weight: 900;
+        }
+
+        .preview-name {
+            font-weight: 900;
+        }
+
+        .preview-sub {
+            margin-top: 3px;
+            color: #727d93;
+            font-size: 12px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .preview-item {
+            padding: 15px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .preview-item strong {
+            display: block;
+            font-size: 22px;
+        }
+
+        .preview-item span {
+            display: block;
+            margin-top: 4px;
+            color: #79849a;
+            font-size: 12px;
+        }
+
+        /* SECTION */
+
+        .section {
+            width: min(1180px, calc(100% - 32px));
+            margin: auto;
+            padding: 100px 0;
+        }
+
+        .section-head {
+            max-width: 700px;
+            margin: 0 auto 45px;
+            text-align: center;
+        }
+
+        .section-head .eyebrow {
+            color: #8290ff;
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 48px);
+        }
+
+        .section-head p {
+            margin: 14px 0 0;
+            color: #929cb2;
+            line-height: 1.8;
+        }
+
+        /* FEATURE GRID */
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .feature {
+            padding: 24px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            border-color: rgba(114, 137, 218, 0.32);
+            background: rgba(255, 255, 255, 0.055);
+        }
+
+        .feature-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(88, 101, 242, 0.15);
+            color: #aeb7ff;
+            margin-bottom: 16px;
+            font-weight: 900;
+        }
+
+        .feature h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .feature p {
+            margin: 10px 0 0;
+            color: #808ba0;
+            line-height: 1.75;
+            font-size: 14px;
+        }
+
+        /* COMMANDS */
+
+        .commands {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .command {
+            padding: 17px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .command code {
+            color: #8996ff;
+            font-family: Consolas, monospace;
+            font-weight: 800;
+        }
+
+        .command p {
+            margin: 8px 0 0;
+            color: #778197;
+            font-size: 13px;
+        }
+
+        /* CTA */
+
+        .cta {
+            padding: 70px 35px;
+            border-radius: 28px;
+            text-align: center;
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(88, 101, 242, 0.20),
+                    rgba(255, 255, 255, 0.035)
+                );
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .cta h2 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 48px);
+        }
+
+        .cta p {
+            max-width: 650px;
+            margin: 15px auto 0;
+            color: #909aae;
+            line-height: 1.8;
+        }
+
+        .cta-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        /* FOOTER */
+
+        footer {
+            width: min(1180px, calc(100% - 32px));
+            margin: auto;
+            padding: 30px 0 45px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            color: #687287;
+            font-size: 13px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 950px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .commands {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .nav-actions .dashboard-btn {
+                display: none;
+            }
+
+            .hero {
+                padding: 50px 0;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .features,
+            .commands {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 70px 0;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-actions,
+            .cta-actions {
+                flex-direction: column;
+            }
+
+            .hero-actions .btn,
+            .cta-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
-<body class="landing-page">
+<body>
 
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-    <div class="ambient ambient-three"></div>
+    <div class="background-glow">
+        <div class="orb one"></div>
+        <div class="orb two"></div>
+        <div class="orb three"></div>
+    </div>
 
-    <div class="grid-overlay"></div>
+    <div class="page">
 
-    <!-- شريط التنقل -->
-    <header class="site-header">
+        <!-- NAVBAR -->
+        <header class="navbar">
+            <div class="nav-inner">
 
-        <div class="site-header-inner">
-
-            <a
-                href="/"
-                class="brand"
-                data-sound="soft"
-            >
-
-                <div class="brand-logo">
-                    ب
-                </div>
-
-                <div class="brand-text">
-                    <strong>بيان</strong>
-                    <span>لوحة تحكم Discord</span>
-                </div>
-
-            </a>
-
-            <nav class="main-nav">
-
-                <a href="#features">
-                    المميزات
+                <a class="brand" href="#home">
+                    <div class="brand-icon">ب</div>
+                    <span>بيان</span>
                 </a>
 
-                <a href="#commands">
-                    الأوامر
-                </a>
+                <nav class="nav-links">
+                    <a href="#home">الرئيسية</a>
+                    <a href="#features">المميزات</a>
+                    <a href="#commands">الأوامر</a>
+                    <a href="#about">عن بيان</a>
+                </nav>
 
-                <a href="#dashboard-preview">
-                    لوحة التحكم
-                </a>
-
-            </nav>
-
-            <div class="header-actions">
-
-                <a
-                    href="/login"
-                    class="header-login"
-                    data-sound="soft"
-                >
-                    تسجيل الدخول
-                </a>
-
-                <a
-                    href="/add-bot"
-                    class="button button-primary button-small"
-                    data-sound="success"
-                >
-                    إضافة بيان
-                </a>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- المحتوى الرئيسي -->
-    <main>
-
-        <!-- Hero -->
-        <section class="hero-section">
-
-            <div class="hero-particles"></div>
-
-            <div class="hero-content">
-
-                <div class="hero-badge">
-                    <span class="pulse-dot"></span>
-                    نظام إدارة متقدم لسيرفرك
-                </div>
-
-                <h1 class="hero-title">
-
-                    تحكم في سيرفرك
-                    <span>بطريقة مختلفة.</span>
-
-                </h1>
-
-                <p class="hero-description">
-
-                    بيان يجمع الإدارة، الحماية، التذاكر،
-                    الأوامر، السجلات، المسابقات والمزيد
-                    في لوحة تحكم عربية واحدة.
-
-                </p>
-
-                <div class="hero-actions">
+                <div class="nav-actions">
 
                     <a
-                        href="/add-bot"
-                        class="button button-primary button-large"
-                        data-sound="success"
+                        class="btn btn-secondary dashboard-btn"
+                        href="dashboard.html"
                     >
-                        <span>+</span>
-                        أضف بيان إلى سيرفرك
+                        لوحة التحكم
                     </a>
 
+                    <!-- DIRECT DISCORD BOT INVITE -->
                     <a
-                        href="/login"
-                        class="button button-glass button-large"
-                        data-sound="soft"
+                        class="btn btn-primary"
+                        href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-sound
                     >
-                        فتح لوحة التحكم
-                        <span>←</span>
+                        إضافة بيان
                     </a>
 
                 </div>
 
-                <div class="hero-trust">
+            </div>
+        </header>
 
-                    <div class="trust-item">
-                        <strong>إدارة</strong>
-                        <span>متقدمة</span>
+        <!-- HERO -->
+        <main id="home">
+
+            <section class="hero">
+
+                <div class="hero-content">
+
+                    <div class="badge">
+                        <span class="badge-dot"></span>
+                        بوت ديسكورد لإدارة السيرفر
                     </div>
 
-                    <div class="trust-divider"></div>
+                    <h1>
+                        إدارة سيرفرك
+                        <br>
+                        مع <span>بيان</span>
+                    </h1>
 
-                    <div class="trust-item">
-                        <strong>حماية</strong>
-                        <span>ذكية</span>
+                    <p>
+                        بيان يجمع أدوات الإدارة والحماية والتذاكر
+                        والمسابقات والإعدادات في بوت واحد،
+                        مع لوحة تحكم حديثة وسهلة الاستخدام.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <!-- DIRECT DISCORD BOT INVITE -->
+                        <a
+                            class="btn btn-primary"
+                            href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-sound
+                        >
+                            إضافة بيان إلى سيرفرك
+                        </a>
+
+                        <a
+                            class="btn btn-secondary"
+                            href="#features"
+                            data-sound
+                        >
+                            استكشف المميزات
+                        </a>
+
                     </div>
 
-                    <div class="trust-divider"></div>
-
-                    <div class="trust-item">
-                        <strong>تحكم</strong>
-                        <span>بالعربية</span>
+                    <div class="hero-note">
+                        لا تحتاج إلى فتح /add-bot — الزر يفتح Discord مباشرة.
                     </div>
 
                 </div>
 
-            </div>
+                <!-- PREVIEW CARD -->
+                <div class="hero-card">
 
-            <!-- بطاقة واجهة -->
-            <div class="hero-interface">
+                    <div class="window">
 
-                <div class="interface-window">
+                        <div class="window-top">
 
-                    <div class="window-top">
+                            <div class="window-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
 
-                        <div class="window-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                            <div class="window-title">
+                                لوحة بيان
+                            </div>
+
                         </div>
 
-                        <span class="window-title">
-                            لوحة بيان
-                        </span>
+                        <div class="preview">
 
-                        <span class="window-live">
-                            متصل
-                        </span>
+                            <div class="preview-header">
 
-                    </div>
-
-                    <div class="window-body">
-
-                        <aside class="mini-sidebar">
-
-                            <div class="mini-brand">
-                                ب
-                            </div>
-
-                            <span class="mini-line active"></span>
-                            <span class="mini-line"></span>
-                            <span class="mini-line"></span>
-                            <span class="mini-line"></span>
-                            <span class="mini-line"></span>
-                            <span class="mini-line"></span>
-                            <span class="mini-line"></span>
-
-                        </aside>
-
-                        <div class="mini-content">
-
-                            <div class="mini-heading">
+                                <div class="preview-logo">
+                                    ب
+                                </div>
 
                                 <div>
-                                    <span>
-                                        مركز التحكم
-                                    </span>
+                                    <div class="preview-name">
+                                        بيان
+                                    </div>
 
-                                    <strong>
-                                        نظرة عامة
-                                    </strong>
-                                </div>
-
-                                <div class="mini-avatar">
-                                    م
+                                    <div class="preview-sub">
+                                        نظام إدارة متكامل
+                                    </div>
                                 </div>
 
                             </div>
 
-                            <div class="mini-stats">
+                            <div class="preview-grid">
 
-                                <div class="mini-stat">
-                                    <span>الأوامر</span>
-                                    <strong>٣٢</strong>
+                                <div class="preview-item">
+                                    <strong>20+</strong>
+                                    <span>أمر</span>
                                 </div>
 
-                                <div class="mini-stat">
-                                    <span>الأعضاء</span>
-                                    <strong>١,٢٨٤</strong>
+                                <div class="preview-item">
+                                    <strong>24/7</strong>
+                                    <span>حماية وإدارة</span>
                                 </div>
 
-                                <div class="mini-stat">
-                                    <span>الحماية</span>
-                                    <strong>نشطة</strong>
+                                <div class="preview-item">
+                                    <strong>تذاكر</strong>
+                                    <span>نظام دعم</span>
                                 </div>
 
-                            </div>
-
-                            <div class="mini-command-box">
-
-                                <div>
-                                    <span>
-                                        أمر جديد
-                                    </span>
-
-                                    <strong>
-                                        /حظر
-                                    </strong>
+                                <div class="preview-item">
+                                    <strong>مسابقات</strong>
+                                    <span>سحوبات وبطولات</span>
                                 </div>
-
-                                <div class="mini-toggle active">
-                                    <span></span>
-                                </div>
-
-                            </div>
-
-                            <div class="mini-bars">
-
-                                <span style="height:35%"></span>
-                                <span style="height:52%"></span>
-                                <span style="height:45%"></span>
-                                <span style="height:70%"></span>
-                                <span style="height:61%"></span>
-                                <span style="height:82%"></span>
-                                <span style="height:76%"></span>
-                                <span style="height:95%"></span>
-                                <span style="height:88%"></span>
-                                <span style="height:100%"></span>
 
                             </div>
 
@@ -287,387 +835,332 @@
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+        </main>
 
+        <!-- FEATURES -->
+        <section class="section" id="features">
 
-        <!-- شريط إحصائيات -->
-        <section class="numbers-section">
+            <div class="section-head">
 
-            <div class="numbers-container">
-
-                <div class="number-card">
-
-                    <strong>٣٠+</strong>
-                    <span>أمر إداري</span>
-
-                </div>
-
-                <div class="number-card">
-
-                    <strong>١٠+</strong>
-                    <span>أنظمة متكاملة</span>
-
-                </div>
-
-                <div class="number-card">
-
-                    <strong>٢٤/٧</strong>
-                    <span>حماية ومراقبة</span>
-
-                </div>
-
-                <div class="number-card">
-
-                    <strong>١٠٠٪</strong>
-                    <span>واجهة عربية</span>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- المميزات -->
-        <section
-            id="features"
-            class="content-section"
-        >
-
-            <div class="section-heading">
-
-                <span class="section-label">
+                <div class="eyebrow">
                     المميزات
-                </span>
+                </div>
 
                 <h2>
                     كل ما يحتاجه سيرفرك
                 </h2>
 
                 <p>
-                    أنظمة متعددة في مكان واحد،
-                    بتصميم سريع وواضح.
+                    أدوات متعددة مصممة لتسهيل إدارة مجتمعك
+                    وتحسين تجربة الأعضاء.
                 </p>
 
             </div>
 
-            <div class="feature-grid">
+            <div class="features">
 
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        ⚡
-                    </div>
-
-                    <h3>
-                        إدارة متقدمة
-                    </h3>
-
+                <article class="feature">
+                    <div class="feature-icon">⚙</div>
+                    <h3>إدارة السيرفر</h3>
                     <p>
-                        تحكم بالأعضاء والقنوات
-                        والأوامر من خلال أدوات سهلة.
+                        أدوات للحظر والطرد والتحذيرات ومسح الرسائل
+                        والتحكم بالقنوات.
                     </p>
-
                 </article>
 
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        ◈
-                    </div>
-
-                    <h3>
-                        حماية تلقائية
-                    </h3>
-
+                <article class="feature">
+                    <div class="feature-icon">🛡</div>
+                    <h3>الحماية</h3>
                     <p>
-                        إعداد أنظمة الحماية والمراقبة
-                        من لوحة واحدة.
+                        إعدادات للحماية والمراقبة والمساعدة في
+                        الحفاظ على سيرفرك منظماً.
                     </p>
-
                 </article>
 
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        ◇
-                    </div>
-
-                    <h3>
-                        نظام التذاكر
-                    </h3>
-
+                <article class="feature">
+                    <div class="feature-icon">🎫</div>
+                    <h3>التذاكر</h3>
                     <p>
-                        دعم، بلاغات، استئناف
-                        وإدارة فريق الدعم.
+                        نظام تذاكر منظم للدعم والبلاغات
+                        والاستئنافات.
                     </p>
-
                 </article>
 
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        /
-                    </div>
-
-                    <h3>
-                        مركز الأوامر
-                    </h3>
-
+                <article class="feature">
+                    <div class="feature-icon">🎉</div>
+                    <h3>السحوبات</h3>
                     <p>
-                        ابحث عن أوامرك واضبط
-                        الصلاحيات والقنوات.
+                        إنشاء وإدارة السحوبات والمسابقات
+                        داخل السيرفر.
                     </p>
-
                 </article>
 
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        ≡
-                    </div>
-
-                    <h3>
-                        السجلات
-                    </h3>
-
+                <article class="feature">
+                    <div class="feature-icon">🏆</div>
+                    <h3>البطولات</h3>
                     <p>
-                        راقب أحداث السيرفر
-                        وسجل العمليات المهمة.
+                        نظام بطولات ومباريات يساعدك على إدارة
+                        المنافسات داخل مجتمعك.
                     </p>
-
                 </article>
 
-                <article class="feature-card">
-
-                    <div class="feature-icon">
-                        ▶
-                    </div>
-
-                    <h3>
-                        البث المباشر
-                    </h3>
-
+                <article class="feature">
+                    <div class="feature-icon">📋</div>
+                    <h3>السجلات</h3>
                     <p>
-                        إدارة قنوات Twitch وYouTube
-                        وTikTok وKick.
+                        تنظيم أحداث الإدارة والتغييرات المهمة
+                        داخل السيرفر.
                     </p>
-
                 </article>
 
             </div>
 
         </section>
 
+        <!-- COMMANDS -->
+        <section class="section" id="commands">
 
-        <!-- الأوامر -->
-        <section
-            id="commands"
-            class="content-section command-showcase"
-        >
+            <div class="section-head">
 
-            <div class="section-heading">
-
-                <span class="section-label">
-                    مركز الأوامر
-                </span>
+                <div class="eyebrow">
+                    الأوامر
+                </div>
 
                 <h2>
-                    أوامر Discord في مكان واحد
+                    أوامر بيان
                 </h2>
 
                 <p>
-                    الأوامر تعمل داخل Discord،
-                    واللوحة تمنحك تحكماً أسهل فيها.
+                    مجموعة من أوامر الإدارة والخدمات الأساسية.
                 </p>
 
             </div>
 
-            <div class="command-preview">
+            <div class="commands">
 
-                <div class="command-preview-top">
-
-                    <div class="search-demo">
-                        <span>⌕</span>
-                        <span>ابحث عن أمر...</span>
-                    </div>
-
-                    <div class="command-filter">
-                        الكل
-                    </div>
-
+                <div class="command">
+                    <code>/ban</code>
+                    <p>حظر عضو</p>
                 </div>
 
-                <div class="command-preview-grid">
+                <div class="command">
+                    <code>/kick</code>
+                    <p>طرد عضو</p>
+                </div>
 
-                    <div class="command-demo-card">
-                        <span class="command-demo-icon">/</span>
+                <div class="command">
+                    <code>/timeout</code>
+                    <p>تقييد عضو مؤقتاً</p>
+                </div>
 
-                        <div>
-                            <strong>حظر</strong>
-                            <span>/ban</span>
-                        </div>
+                <div class="command">
+                    <code>/warn</code>
+                    <p>تحذير عضو</p>
+                </div>
 
-                        <i class="demo-active"></i>
-                    </div>
+                <div class="command">
+                    <code>/clear</code>
+                    <p>حذف الرسائل</p>
+                </div>
 
-                    <div class="command-demo-card">
-                        <span class="command-demo-icon">/</span>
+                <div class="command">
+                    <code>/lock</code>
+                    <p>قفل القناة</p>
+                </div>
 
-                        <div>
-                            <strong>طرد</strong>
-                            <span>/kick</span>
-                        </div>
+                <div class="command">
+                    <code>/unlock</code>
+                    <p>فتح القناة</p>
+                </div>
 
-                        <i class="demo-active"></i>
-                    </div>
+                <div class="command">
+                    <code>/slowmode</code>
+                    <p>تفعيل الوضع البطيء</p>
+                </div>
 
-                    <div class="command-demo-card">
-                        <span class="command-demo-icon">/</span>
+                <div class="command">
+                    <code>/ticket-setup</code>
+                    <p>إعداد نظام التذاكر</p>
+                </div>
 
-                        <div>
-                            <strong>تقييد</strong>
-                            <span>/timeout</span>
-                        </div>
+                <div class="command">
+                    <code>/ticket-permissions</code>
+                    <p>إدارة صلاحيات التذاكر</p>
+                </div>
 
-                        <i class="demo-active"></i>
-                    </div>
+                <div class="command">
+                    <code>/giveaway</code>
+                    <p>إنشاء سحب</p>
+                </div>
 
-                    <div class="command-demo-card">
-                        <span class="command-demo-icon">/</span>
-
-                        <div>
-                            <strong>تذكرة</strong>
-                            <span>/ticket</span>
-                        </div>
-
-                        <i class="demo-active"></i>
-                    </div>
-
-                    <div class="command-demo-card">
-                        <span class="command-demo-icon">/</span>
-
-                        <div>
-                            <strong>السحب</strong>
-                            <span>/giveaway</span>
-                        </div>
-
-                        <i class="demo-active"></i>
-                    </div>
-
-                    <div class="command-demo-card">
-                        <span class="command-demo-icon">/</span>
-
-                        <div>
-                            <strong>البطولة</strong>
-                            <span>/tournament</span>
-                        </div>
-
-                        <i class="demo-active"></i>
-                    </div>
-
+                <div class="command">
+                    <code>/tournament</code>
+                    <p>إدارة البطولات</p>
                 </div>
 
             </div>
 
         </section>
 
+        <!-- ABOUT -->
+        <section class="section" id="about">
 
-        <!-- Preview -->
-        <section
-            id="dashboard-preview"
-            class="content-section"
-        >
+            <div class="cta">
 
-            <div class="preview-banner">
+                <h2>
+                    جاهز لإضافة بيان؟
+                </h2>
 
-                <div class="preview-banner-content">
+                <p>
+                    ابدأ بإضافة بيان إلى سيرفرك من خلال Discord
+                    مباشرة.
+                </p>
 
-                    <span class="section-label">
-                        لوحة التحكم
-                    </span>
-
-                    <h2>
-                        إدارة سيرفرك
-                        بدون تعقيد.
-                    </h2>
-
-                    <p>
-                        واجهة عربية حديثة تجمع
-                        أدوات بيان الأساسية في مكان واحد.
-                    </p>
+                <div class="cta-actions">
 
                     <a
-                        href="/login"
-                        class="button button-primary"
-                        data-sound="success"
+                        class="btn btn-primary"
+                        href="https://discord.com/oauth2/authorize?client_id=1548309026280964106&scope=bot%20applications.commands&permissions=8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-sound
                     >
-                        افتح لوحة التحكم
-                        <span>←</span>
+                        إضافة بيان
+                    </a>
+
+                    <a
+                        class="btn btn-secondary"
+                        href="dashboard.html"
+                        data-sound
+                    >
+                        فتح لوحة التحكم
                     </a>
 
                 </div>
 
-                <div class="preview-orbit">
-
-                    <div class="orbit-ring ring-one"></div>
-                    <div class="orbit-ring ring-two"></div>
-                    <div class="orbit-ring ring-three"></div>
-
-                    <div class="orbit-core">
-                        ب
-                    </div>
-
-                </div>
-
             </div>
 
         </section>
 
-    </main>
-
-
-    <!-- Footer -->
-    <footer class="site-footer">
-
-        <div class="footer-brand">
-
-            <div class="brand-logo">
-                ب
-            </div>
+        <!-- FOOTER -->
+        <footer>
 
             <div>
-                <strong>بيان</strong>
-                <span>
-                    إدارة سيرفرات Discord بطريقة أفضل.
-                </span>
+                © 2026 بيان — جميع الحقوق محفوظة
             </div>
 
-        </div>
+            <div class="footer-links">
+                <a href="#home">الرئيسية</a>
+                <a href="#features">المميزات</a>
+                <a href="#commands">الأوامر</a>
+                <a href="dashboard.html">لوحة التحكم</a>
+            </div>
 
-        <div class="footer-links">
+        </footer>
 
-            <a href="#features">
-                المميزات
-            </a>
+    </div>
 
-            <a href="#commands">
-                الأوامر
-            </a>
+    <script>
+        /* Simple click sound */
+        let audioContext = null;
 
-            <a href="/login">
-                لوحة التحكم
-            </a>
+        function playClickSound() {
+            try {
+                if (!audioContext) {
+                    audioContext =
+                        new (
+                            window.AudioContext ||
+                            window.webkitAudioContext
+                        )();
+                }
 
-        </div>
+                const oscillator =
+                    audioContext.createOscillator();
 
-        <div class="footer-copy">
-            © ٢٠٢٦ بيان
-        </div>
+                const gain =
+                    audioContext.createGain();
 
-    </footer>
+                oscillator.type = "sine";
+                oscillator.frequency.value = 520;
+
+                gain.gain.setValueAtTime(
+                    0.0001,
+                    audioContext.currentTime
+                );
+
+                gain.gain.exponentialRampToValueAtTime(
+                    0.035,
+                    audioContext.currentTime + 0.01
+                );
+
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    audioContext.currentTime + 0.08
+                );
+
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+
+                oscillator.start();
+                oscillator.stop(
+                    audioContext.currentTime + 0.08
+                );
+            } catch (error) {
+                // Sound is optional.
+            }
+        }
+
+        document
+            .querySelectorAll("[data-sound]")
+            .forEach((element) => {
+                element.addEventListener(
+                    "click",
+                    playClickSound
+                );
+            });
+
+        /* Reveal animations */
+        const revealElements =
+            document.querySelectorAll(
+                ".feature, .command, .hero-card, .cta"
+            );
+
+        const revealObserver =
+            new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (
+                            entry.isIntersecting
+                        ) {
+                            entry.target.style.opacity =
+                                "1";
+
+                            entry.target.style.transform =
+                                "translateY(0)";
+
+                            revealObserver.unobserve(
+                                entry.target
+                            );
+                        }
+                    });
+                },
+                {
+                    threshold: 0.12
+                }
+            );
+
+        revealElements.forEach((element) => {
+            element.style.opacity = "0";
+            element.style.transform =
+                "translateY(18px)";
+            element.style.transition =
+                "opacity .55s ease, transform .55s ease";
+
+            revealObserver.observe(element);
+        });
+    </script>
 
 </body>
 </html>
